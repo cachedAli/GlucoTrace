@@ -1,11 +1,10 @@
-import React from "react";
 import { contact } from "../../pages/site/constants";
 
 const Contact = () => {
   return (
     <section
       id="contact"
-      className="bg-[#F4F6F8]  selection:bg-indigo-800 selection:text-amber-300"
+      className="bg-[#F4F6F8]  selection:bg-indigo-800 selection:text-white"
     >
       <ContactDetails />
       <ContactForm />
@@ -83,7 +82,7 @@ const ContactForm = () => {
       </div>
 
       {/* Submit button */}
-      <button className=" bg-blue-900 text-white hover:opacity-90 hover:transition-all hover:duration-300 rounded-md text-base font-medium w-24 p-1 selection:text-blue-800 selection:bg-amber-300 mt-2">
+      <button className=" bg-blue-900 text-white hover:opacity-90 hover:transition-all hover:duration-300 rounded-md text-base font-medium w-24 p-1 mt-2">
         Submit
       </button>
     </form>

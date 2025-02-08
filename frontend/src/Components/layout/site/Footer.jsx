@@ -1,10 +1,10 @@
-import React from "react";
 import { FaEnvelope, FaGithub, FaLinkedin } from "react-icons/fa";
+
 import GlucoTrace from "/GlucoTraceDark.png";
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-900 rounded-2xl mx-2 mb-2 text-white py-8 px-6 selection:bg-amber-400 selection:text-indigo-800">
+    <footer className="bg-gray-900 rounded-2xl mx-2 mb-2 text-white py-8 px-6 selection:bg-white selection:text-gray-800">
       {/* Logo */}
       <div className="flex justify-center mb-6">
         <img

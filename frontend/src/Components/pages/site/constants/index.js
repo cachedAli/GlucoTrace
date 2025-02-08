@@ -17,6 +17,7 @@ export const healthAdvice = {
 
 export const Main = {
   heading: "Manage Diabetes the Smart Way",
+  tagline: "Track, analyze, and share your glucose data effortlessly with our easy-to-use tools.",
   description:
     "Are you struggling to track your blood sugar levels? Is your current treatment plan effective? With GlucoTrace, you'll gain the insights needed to monitor your glucose levels, adjust your routine, and take control of your health. As a powerful glucose tracker, GlucoTrace helps you make smarter choices every day, whether you have Type 1 or Type 2 diabetes.",
 };
@@ -25,19 +26,19 @@ export const features = [
     heading: "Track and Log Blood Sugar",
     img: img1,
     description:
-      "Manually enter your blood sugar levels and track them over time. Add tags like 'Before Breakfast' or 'After Dinner' to help keep your readings organized.",
+      `Manually log your blood sugar levels and track changes over time. Add tags like "Before Breakfast" or "After Dinner" to keep your readings organized.`,
   },
   {
-    heading: "Blood Sugar Trends Made Simple",
+    heading: "Understand Your Blood Sugar Trends",
     img: img2,
     description:
-      "Quickly see how your blood sugar levels change over time. With helpful charts, you can spot patterns and understand how different factors like meals, insulin or exercise affect your readings.",
+      "Quickly spot patterns in your blood sugar levels with intuitive charts. See how meals, insulin, and exercise impact your readings for better diabetes management.",
   },
   {
-    heading: "Easily Share Your Data",
+    heading: "Share Your Data with Ease",
     img: img3,
     description:
-      "Generate PDF or CSV reports to share your blood sugar progress with your doctor or healthcare provider. You can email or download the reports. These reports include detailed insights, such as meal-related sugar levels and insulin tracking at different times of the day.",
+      "Generate PDF or CSV reports to share with your doctor. Email or download detailed insights, including meal-related glucose levels and insulin tracking.",
   },
 ];
 

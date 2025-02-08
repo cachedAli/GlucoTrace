@@ -7,10 +7,12 @@ import { Link } from "react-router-dom";
 
 import glucoTrace from "/GlucoTrace.png";
 
-const Header = () => {
+const Header = ({ headerRef }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   return (
     <header
+      ref={headerRef}
+      id="home"
       className={`bg-transparent h-[88px] flex font-roboto md:selection:bg-indigo-800  md:selection:text-white`}
     >
       <div className="w-full flex px-8 max-sm:px-4 items-center justify-between">
