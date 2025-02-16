@@ -3,13 +3,13 @@ import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaArrowUp } from "react-icons/fa6";
 
-import DiabetesAdvice from "../../layout/site/sections/adviceSection/DiabetesAdvice";
-import HealthAdvice from "../../layout/site/sections/adviceSection/HealthAdvice";
-import FeatureSection from "../../layout/site/sections/FeatureSection";
-import HeroSection from "../../layout/site/sections/HeroSection";
-import Contact from "../../layout/site/Contact";
-import Header from "../../layout/site/Header";
-import Footer from "../../layout/site/Footer";
+import DiabetesAdvice from "@/components/layout/site/sections/adviceSection/DiabetesAdvice";
+import HealthAdvice from "@/components/layout/site/sections/adviceSection/HealthAdvice";
+import FeatureSection from "@/components/layout/site/sections/FeatureSection";
+import HeroSection from "@/components/layout/site/sections/HeroSection";
+import Contact from "@/components/layout/site/Contact";
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
 
 const HomePage = () => {
   const headerRef = useRef(null);
@@ -59,9 +59,9 @@ const ScrollToTopButton = ({ headerRef }) => {
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0 }}
+            whileHover={{ translateY: -5 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="fixed bottom-6 right-6 p-4 bg-indigo-900 text-white rounded-full shadow-lg 
-                 hover:bg-blue-800 hover:-translate-y-1"
+            className="fixed bottom-6 right-6 p-4 bg-indigo-800 text-white rounded-full shadow-lg hover:bg-blue-700 "
           >
             <FaArrowUp size={20} />
           </motion.button>

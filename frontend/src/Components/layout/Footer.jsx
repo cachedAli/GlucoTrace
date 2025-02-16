@@ -1,6 +1,7 @@
 import { FaEnvelope, FaGithub, FaLinkedin } from "react-icons/fa";
 
 import GlucoTrace from "/GlucoTraceDark.png";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -22,9 +23,9 @@ const Footer = () => {
           <h1 className="font-bold text-lg mb-2">Navigation</h1>
           <ul className="space-y-2">
             <li>
-              <a href="#home" className="hover:underline">
+              <Link to="/" className="hover:underline">
                 Home
-              </a>
+              </Link>
             </li>
             <li>
               <a href="#features" className="hover:underline">

@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { motion } from "framer-motion";
 
-import { healthAdvice } from "../../../../pages/site/constants/index";
+import { healthAdvice } from "../../../../utils/constants/homepage";
 
 const HealthAdvice = () => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);

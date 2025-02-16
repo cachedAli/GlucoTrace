@@ -1,6 +1,6 @@
 import Highlighter from "react-highlight-words";
 
-import { features, Main } from "../../../pages/site/constants";
+import { features, Main } from "../../../utils/constants/homepage";
 import { motion } from "framer-motion";
 
 const FeatureSection = () => {
@@ -29,7 +29,7 @@ const FeatureSection = () => {
   return (
     <main
       id="features"
-      className="selection:bg-indigo-800 selection:text-white bg-gradient-to-b from-[#f9fbff] to-[#ffffff]"
+      className="selection:bg-indigo-800 selection:text-white bg-slate-50"
     >
       <FeatureHeader descriptionWordsToBold={descriptionWordsToBold} />
       <FeatureCards wordsToBold={wordsToBold} />
@@ -50,7 +50,7 @@ const FeatureHeader = ({ descriptionWordsToBold }) => {
         {Main.heading}
       </motion.h1>
 
-      <p className="text-gray-800 text-base md:text-lg leading-relaxed font-medium">
+      <p className="text-gray-800 text-base md:text-lg leading-relaxed font-medium font-roboto">
         {Main.description
           .split(/(GlucoTrace|smarter choices)/g)
           .map((part, index) =>

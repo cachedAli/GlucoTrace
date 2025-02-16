@@ -1,7 +1,7 @@
 import { FaArrowRight } from "react-icons/fa6";
 import { motion } from "framer-motion";
 
-import { Hero } from "../../../pages/site/constants/index";
+import { Hero } from "../../../utils/constants/homepage";
 import mockup from "/MockLaptop.png";
 
 const HeroSection = () => {

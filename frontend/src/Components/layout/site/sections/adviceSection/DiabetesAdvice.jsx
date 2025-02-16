@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { motion } from "framer-motion";
 
-import { complications } from "../../../../pages/site/constants/index";
+import { complications } from "../../../../utils/constants/homepage";
 
 const DiabetesAdvice = () => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);

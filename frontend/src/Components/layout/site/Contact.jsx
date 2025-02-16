@@ -1,10 +1,10 @@
-import { contact } from "../../pages/site/constants";
+import { contact } from "../../utils/constants/homepage";
 
 const Contact = () => {
   return (
     <section
       id="contact"
-      className="bg-[#F4F6F8]  selection:bg-indigo-800 selection:text-white"
+      className="bg-slate-50  selection:bg-indigo-800 selection:text-white"
     >
       <ContactDetails />
       <ContactForm />
