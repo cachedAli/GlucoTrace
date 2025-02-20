@@ -1,13 +1,17 @@
+import clsx from "clsx";
+import { motion } from "framer-motion";
+
 import Header from "../Header";
 import Footer from "../Footer";
-import { motion } from "framer-motion";
 
 type authProps = {
   children: React.ReactNode;
   isSignIn?: boolean;
-  currentPage: string;
-  formTitle: string;
+  currentPage?: string;
+  formTitle?: string;
   formDescription?: string;
+  resetPage?: boolean;
+  className?: string;
 };
 
 const AuthLayout = ({
@@ -15,30 +19,48 @@ const AuthLayout = ({
   isSignIn,
   currentPage,
   formTitle,
-  formDescription
+  formDescription,
+  resetPage = false,
+  className,
 }: authProps) => {
   return (
     <>
-      <Header authPage={true} isSignInPage={isSignIn} />
-      <div className="relative min-h-screen h-full overflow-hidden mb-2 mx-3 rounded-2xl flex flex-col items-center justify-center gap-16 px-4 pt-28 pb-52">
-        {/* Background Container */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#1a237e] to-[#283593]">
-          <div className="absolute inset-0 bg-[url('/authbg.png')] bg-bottom bg-no-repeat opacity-40 mix-blend-overlay bg-cover"></div>
-        </div>
+      <Header authPage={true} resetPage={resetPage} isSignInPage={isSignIn} />
+      <div
+        className={clsx(
+          "relative min-h-[150vh] overflow-hidden mb-2 mx-3 rounded-2xl flex flex-col items-center justify-center gap-10 px-4"
+        )}
+      >
+        <AuthPageBackground />
 
-        {/* Foreground Content */}
-        <h1 className="text-white text-5xl font-bold font-lora z-10">
+        <h1
+          className={clsx(
+            "text-white text-5xl font-bold font-lora z-10",
+            "max-lg:text-4xl",
+            "max-sm:text-3xl"
+          )}
+        >
           {currentPage}
         </h1>
 
-        {/* Animated Form Container */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="relative bg-slate-50 w-[600px] py-12 px-12 rounded-3xl shadow-2xl flex flex-col items-center justify-center z-10"
+          className={clsx(
+            "relative mx-auto bg-slate-50 w-[600px] py-12 px-12 rounded-3xl shadow-2xl flex flex-col items-center justify-center z-10",
+            "2xl:w-[700px]",
+            "max-lg:w-[500px] max-lg:px-8",
+            "max-sm:w-full max-sm:px-6",
+            className
+          )}
         >
-          <AuthFormHeader formDescription={formDescription} formTitle={formTitle}/>
+          {formTitle && (
+            <AuthFormHeader
+              formDescription={formDescription}
+              formTitle={formTitle}
+            />
+          )}
 
           {children}
         </motion.div>
@@ -51,17 +73,48 @@ const AuthLayout = ({
 
 export default AuthLayout;
 
+type AuthFormHeaderProps = {
+  formTitle?: string;
+  formDescription?: string;
+};
 
-const AuthFormHeader =({formTitle,formDescription}:any)=>{
-  return(
-<div className="flex flex-col gap-2 mb-6 items-center justify-center w-96">
-            <h1 className="text-zinc-800 text-2xl font-lora tracking-wide ">
-              {formTitle}
-            </h1>
-           {formDescription && <p className="text-gray-400 text-base text-center font-roboto">
-              Enter your email address and we'll send you a link to reset your
-              password
-            </p>}
-          </div>
-  )
-}
+const AuthFormHeader = ({
+  formTitle,
+  formDescription,
+}: AuthFormHeaderProps) => {
+  return (
+    <div className="flex flex-col gap-2 mb-6 items-center justify-center w-full max-w-xs text-center">
+      <h1
+        className={clsx(
+          "text-zinc-800 text-2xl font-lora tracking-wide",
+          "max-sm:text-xl"
+        )}
+      >
+        {formTitle}
+      </h1>
+      {formDescription && (
+        <p
+          className={clsx(
+            "text-gray-500 text-base text-center font-roboto",
+            "max-sm:text-sm"
+          )}
+        >
+          {formDescription}
+        </p>
+      )}
+    </div>
+  );
+};
+
+const AuthPageBackground = () => {
+  return (
+    <div
+      className={clsx(
+        "absolute h-full inset-0 bg-gradient-to-r from-[#1a237e] to-[#283593]",
+        "max-sm:bg-gradient-to-b from-[#1a237e] to-[#283593]"
+      )}
+    >
+      <div className="absolute inset-0 bg-[url('/userAuth/authPageBackground.webp')] bg-bottom bg-no-repeat opacity-40 mix-blend-overlay bg-cover"></div>
+    </div>
+  );
+};

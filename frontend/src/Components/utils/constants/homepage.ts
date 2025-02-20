@@ -1,12 +1,9 @@
-import img1 from "/img1.webp";
-import img2 from "/img2.webp";
-import img3 from "/img3.webp";
 
 export const Hero = {
   heading: "Easily Track Your Blood Sugar Levels",
   description:
     "GlucoTrace is a web-based tool that makes blood sugar tracking simple, reliable, and accessible from your browser.",
-  value: "Start tracking your levels today - it's free!"  
+  value: "Start tracking your levels today - it's free!"
 };
 
 export const healthAdvice = {
@@ -24,19 +21,19 @@ export const Main = {
 export const features = [
   {
     heading: "Track and Log Blood Sugar",
-    img: img1,
+    img: "/homepage/img1.webp",
     description:
       `Manually log your blood sugar levels and track changes over time. Add tags like "Before Breakfast" or "After Dinner" to keep your readings organized.`,
   },
   {
     heading: "Understand Your Blood Sugar Trends",
-    img: img2,
+    img: "/homepage/img2.webp",
     description:
       "Quickly spot patterns in your blood sugar levels with intuitive charts. See how meals, insulin, and exercise impact your readings for better diabetes management.",
   },
   {
     heading: "Share Your Data with Ease",
-    img: img3,
+    img: "/homepage/img3.webp",
     description:
       "Generate PDF or CSV reports to share with your doctor. Email or download detailed insights, including meal-related glucose levels and insulin tracking.",
   },

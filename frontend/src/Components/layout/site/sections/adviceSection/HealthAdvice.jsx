@@ -16,14 +16,14 @@ const HealthAdvice = () => {
       className="h-screen mx-2 rounded-bl-2xl rounded-br-2xl bg-cover bg-center bg-no-repeat bg-fixed flex items-center justify-center relative"
       style={{
         backgroundImage: isImageLoaded
-          ? "url('/diabeticBG.webp')"
-          : "url('/blurBG.png')",
+          ? "url('/homepage/diabeticBG.webp')"
+          : "url('/homepage/blurBG.png')",
         transition: "background-image 0.5s ease-out",
         backgroundColor: "#f0f0f0",
       }}
     >
       <img
-        src="/diabeticBG.webp"
+        src="/homepage/diabeticBG.webp"
         alt="Background"
         className="hidden"
         onLoad={handleImageLoad}
@@ -34,12 +34,12 @@ const HealthAdvice = () => {
         whileInView={{ scale: 1 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
         viewport={{ once: true, amount: 0.3 }}
-        className="bg-black text-white text-center flex flex-col justify-center items-center bg-opacity-80 px-8 py-8 rounded-xl gap-4 lg:mx-40 md:mx-20 mx-8"
+        className="bg-black text-white max-w-screen-2xl w-full text-center flex flex-col justify-center items-center bg-opacity-80 px-8 py-8 rounded-xl gap-4 lg:mx-40 md:mx-20 mx-8"
       >
-        <h1 className="md:text-4xl text-3xl font-lora font-semibold">
+        <h1 className="md:text-4xl text-2xl font-lora font-semibold">
           {healthAdvice.heading}
         </h1>
-        <p className="font-roboto text-base md:text-lg md:text-justify text-center">
+        <p className="font-roboto text-sm md:text-lg md:text-justify text-center">
           {
             healthAdvice.description.split(
               "monitor your blood glucose levels regularly"

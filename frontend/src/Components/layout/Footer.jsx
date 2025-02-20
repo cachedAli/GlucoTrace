@@ -1,6 +1,6 @@
 import { FaEnvelope, FaGithub, FaLinkedin } from "react-icons/fa";
 
-import GlucoTrace from "/GlucoTraceDark.png";
+import GlucoTrace from "/homepage/GlucoTraceDark.png";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
@@ -43,7 +43,7 @@ const Footer = () => {
         {/* Stay Connected */}
         <div className="text-center sm:text-left">
           <h1 className="font-bold text-lg mb-2">Stay Connected</h1>
-          <ul className="space-y-2">
+          <ul className="space-y-2 max-sm:justify-center max-sm:items-center max-sm:flex max-sm:flex-col">
             <li className="flex items-center gap-2">
               <FaEnvelope className="text-lg" />
               <a

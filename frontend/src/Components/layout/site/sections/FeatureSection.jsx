@@ -29,7 +29,7 @@ const FeatureSection = () => {
   return (
     <main
       id="features"
-      className="selection:bg-indigo-800 selection:text-white bg-slate-50"
+      className="selection:bg-indigo-800 max-w-screen-2xl w-full mx-auto selection:text-white bg-slate-50"
     >
       <FeatureHeader descriptionWordsToBold={descriptionWordsToBold} />
       <FeatureCards wordsToBold={wordsToBold} />
@@ -76,7 +76,7 @@ const FeatureHeader = ({ descriptionWordsToBold }) => {
 
 const FeatureCards = ({ wordsToBold }) => {
   return (
-    <section className="flex flex-col gap-16 px-4 md:px-12 py-12 mx-auto max-w-6xl">
+    <section className="flex flex-col gap-16 px-4 md:px-12 py-12 mx-auto max-w-6xl overflow-x-hidden">
       {features.map((feature, index) => {
         const isEven = index % 2 === 0;
 
@@ -85,20 +85,20 @@ const FeatureCards = ({ wordsToBold }) => {
             initial={{ opacity: 0, x: isEven ? -50 : 50 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
-            viewport={{ once: true, amount: 0.2 }}
+            viewport={{ once: true, amount: 0.1 }}
             key={index}
             className={`flex flex-col md:flex-row items-center gap-12 md:gap-20 text-center ${
               isEven ? "md:flex-row" : "md:flex-row-reverse"
             }`}
           >
             <motion.img
-              initial={{ opacity: 0, x: isEven ? -50 : 50 }}
+              initial={{ opacity: 0, x: isEven ? -20 : 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, ease: "easeOut" }}
-              viewport={{ once: true, amount: 1 }}
+              viewport={{ once: true }}
               src={feature.img}
               alt=""
-              className="w-64 md:w-80 h-auto rounded-xl shadow-lg"
+              className="w-64 md:w-80 h-auto rounded-xl shadow-lg max-w-full"
             />
 
             <div className="flex-1 flex flex-col gap-4 md:items-start items-center">

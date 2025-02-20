@@ -15,8 +15,8 @@ const HomePage = () => {
   const headerRef = useRef(null);
 
   return (
-    <div className="max-w-screen-2xl w-full flex flex-col mx-auto ">
-      <Header headerRef={headerRef} />
+    <>
+    <Header headerRef={headerRef} />
       <HeroSection />
       <HealthAdvice />
       <FeatureSection />
@@ -24,7 +24,7 @@ const HomePage = () => {
       <Contact />
       <Footer />
       <ScrollToTopButton headerRef={headerRef} />
-    </div>
+    // </>
   );
 };
 

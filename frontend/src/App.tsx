@@ -1,13 +1,14 @@
+import { MantineProvider } from "@mantine/core";
 import Router from "./components/router/Router";
 
 function App() {
   return (
-    <>
-      <div className=" antialiased">
+    <MantineProvider>
+      <div className="antialiased">
         <Router />
       </div>
-    </>
+    </MantineProvider>
   );
 }
 
-export default App; 
+export default App;

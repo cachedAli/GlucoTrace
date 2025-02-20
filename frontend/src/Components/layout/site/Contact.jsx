@@ -1,91 +1,39 @@
+import { contactFormFields } from "@/components/utils/constants/authPage/formFields";
+import { contactSchema } from "@/components/utils/validations/authSchema";
 import { contact } from "../../utils/constants/homepage";
 
+import Form from "@/components/ui/Form";
+
 const Contact = () => {
+  const submit = (data) => {
+    console.log("Contact Form Submit: ", data);
+  };
   return (
     <section
       id="contact"
-      className="bg-slate-50  selection:bg-indigo-800 selection:text-white"
+      className="bg-slate-50 max-w-screen-2xl w-full mx-auto  selection:bg-indigo-800 selection:text-white"
     >
       <ContactDetails />
-      <ContactForm />
+      <ContactForm
+        contactFormFields={contactFormFields}
+        contactSchema={contactSchema}
+        submit={submit}
+      />
     </section>
   );
 };
 
-const ContactForm = () => {
+const ContactForm = ({ contactFormFields, contactSchema, submit }) => {
   return (
-    <form className="flex flex-col gap-6  px-6 py-20 md:px-4 md:mx-20">
-      {/* First and Last Name */}
-      <div className="flex flex-col md:flex-row gap-6">
-        {/* First Name */}
-        <div className="flex flex-col w-full">
-          <label
-            className="font-semibold text-blue-800 mb-2 font-lora"
-            htmlFor="first-name"
-          >
-            First Name *
-          </label>
-          <input
-            type="text"
-            id="first-name"
-            className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            required
-          />
-        </div>
-
-        {/* Last Name */}
-        <div className="flex flex-col w-full">
-          <label
-            className="font-semibold text-blue-800 mb-2 font-lora"
-            htmlFor="last-name"
-          >
-            Last Name *
-          </label>
-          <input
-            type="text"
-            id="last-name"
-            className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            required
-          />
-        </div>
-      </div>
-      {/* Email */}
-      <div className="flex flex-col">
-        <label
-          className="font-semibold text-blue-800 mb-2 font-lora"
-          htmlFor="email"
-        >
-          Email *
-        </label>
-        <input
-          type="email"
-          id="email"
-          className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          required
-        />
-      </div>
-
-      {/* Message */}
-      <div className="flex flex-col">
-        <label
-          className="font-semibold text-blue-800 mb-2 font-lora"
-          htmlFor="message"
-        >
-          Message
-        </label>
-        <textarea
-          name="message"
-          id="message"
-          rows="5"
-          className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        ></textarea>
-      </div>
-
-      {/* Submit button */}
-      <button className=" bg-blue-900 text-white hover:opacity-90 hover:transition-all hover:duration-300 rounded-md text-base font-medium w-24 p-1 mt-2">
-        Submit
-      </button>
-    </form>
+    <div className="flex flex-col gap-6  px-6 pb-20 pt-10 md:px-4 md:mx-20">
+      <Form
+        fields={contactFormFields}
+        schema={contactSchema}
+        googleAuth={false}
+        buttonLabel="Submit"
+        onSubmit={submit}
+      />
+    </div>
   );
 };
 

@@ -1,39 +1,29 @@
 import React from "react";
 
+import { signInFields } from "@/components/utils/constants/authPage/formFields";
+import { SignInSchema } from "@/components/utils/validations/authSchema";
 import AuthLayout from "@/components/layout/userAuth/AuthLayout";
-import Button from "@/components/ui/Button";
 import Form from "@/components/ui/Form";
-import { z } from "zod";
 
-type FormField = {
-  name: string;
-  type: "text" | "email" | "password" | "textarea";
-  label: string;
-  colSpan?: number;
+type Data = {
+  email: string;
+  password: string;
 };
 
 const SignIn = () => {
-  const contactSchema = z.object({
-    email: z.string().email("Invalid email"),
-    password: z.string().min(8, "Name must be at least 3 characters"),
-  });
-  const contactFields: FormField[] = [
-    { name: "email", type: "email", label: "Email" },
-    { name: "password", type: "password", label: "Password" },
-  ];
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: Data) => {
     console.log("Form Data:", data);
   };
   return (
     <AuthLayout
       isSignIn={true}
       currentPage={"Sign In"}
-      formTitle="Sign in to your Account"
+      formTitle="Sign in to your account"
     >
       <Form
-        fields={contactFields}
+        fields={signInFields}
         onSubmit={onSubmit}
-        schema={contactSchema}
+        schema={SignInSchema}
         buttonLabel="Sign in"
       />
     </AuthLayout>
