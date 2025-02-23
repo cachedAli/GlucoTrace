@@ -1,11 +1,12 @@
 import { useState } from "react";
 import clsx from "clsx";
 
-import { FaBarsStaggered } from "react-icons/fa6";
-import { IoCloseSharp } from "react-icons/io5";
+import { Menu, X } from "lucide-react";
 import { Link } from "react-router-dom";
 
-import glucoTrace from "/homepage/GlucoTrace.png";
+// import { preloadSignIn } from "../router/LazyRoutes";
+import glucoTrace from "/homepage/GlucoTrace.webp";
+import { preloadSignIn, SignUp } from "../router/LazyRoutes";
 
 type HeaderProps = {
   headerRef?: React.RefObject<HTMLElement>;
@@ -64,7 +65,7 @@ const MobileMenuButton = ({
   return (
     <div className="md:hidden flex order-1">
       <button onClick={() => setMenuOpen(!menuOpen)}>
-        <FaBarsStaggered className="text-blue-700 text-2xl cursor-pointer" />
+        <Menu className="text-blue-700 text-2xl cursor-pointer" />
       </button>
       <MobileMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
     </div>
@@ -81,7 +82,7 @@ const MobileMenu = ({ menuOpen, setMenuOpen }: MobileMenuProps) => (
       className="absolute top-4 right-4 text-2xl text-white cursor-pointer"
       onClick={() => setMenuOpen(false)}
     >
-      <IoCloseSharp className="text-blue-800 text-3xl" />
+      <X className="text-blue-800 text-3xl" />
     </button>
 
     <nav className="p-6 mt-4">
@@ -165,6 +166,7 @@ const AuthSection = ({
     ) : (
       <Link
         to="/signin"
+        onMouseEnter={preloadSignIn}
         className="text-indigo-500 tracking-wide hover:opacity-85 hover:transition-all hover:duration-300 text-lg max-sm:text-sm font-semibold p-1"
       >
         Sign In

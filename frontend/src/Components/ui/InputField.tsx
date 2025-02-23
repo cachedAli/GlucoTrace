@@ -1,13 +1,13 @@
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import clsx from "clsx";
 
 import { Controller, Control, ControllerRenderProps } from "react-hook-form";
+import { MantineProvider, PinInput } from "@mantine/core";
 import InputAdornment from "@mui/material/InputAdornment";
 import IconButton from "@mui/material/IconButton";
 import TextField from "@mui/material/TextField";
 import { Eye, EyeClosed } from "lucide-react";
 import { Link } from "react-router-dom";
-import { PinInput } from "@mantine/core";
 
 interface CommonInputProps {
   label: string;
@@ -201,24 +201,26 @@ const OtpInput = ({
   const otpGap = otpLength === 4 ? "gap-4 max-sm:gap-2" : "gap-3 max-sm:gap-2";
 
   return (
-    <div className="flex flex-col gap-2 items-center justify-center">
-      <PinInput
-        length={otpLength}
-        type="number"
-        placeholder=""
-        value={field.value || ""}
-        onChange={(value) => field.onChange(value)}
-        classNames={{
-          root: `flex justify-center w-full ${otpGap}`,
-          input: `${otpWidth} transition-all text-xl text-center border focus:border-2 rounded-lg outline-none ${
-            error
-              ? "border-red-500 focus:border-red-500 focus:bg-red-50"
-              : "border-gray-300 hover:border-blue-600 focus:border-blue-600 focus:bg-blue-50"
-          }`,
-        }}
-      />
-      {error && <p className="text-red-400 text-sm">{error}</p>}
-    </div>
+    <MantineProvider>
+      <div className="flex flex-col gap-2 items-center justify-center">
+        <PinInput
+          length={otpLength}
+          type="number"
+          placeholder=""
+          value={field.value || ""}
+          onChange={(value) => field.onChange(value)}
+          classNames={{
+            root: `flex justify-center w-full ${otpGap}`,
+            input: `${otpWidth} transition-all text-xl text-center border focus:border-2 rounded-lg outline-none ${
+              error
+                ? "border-red-500 focus:border-red-500 focus:bg-red-50"
+                : "border-gray-300 hover:border-blue-600 focus:border-blue-600 focus:bg-blue-50"
+            }`,
+          }}
+        />
+        {error && <p className="text-red-400 text-sm">{error}</p>}
+      </div>
+    </MantineProvider>
   );
 };
 

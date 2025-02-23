@@ -46,7 +46,7 @@ const AuthLayout = ({
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
           className={clsx(
             "relative mx-auto bg-slate-50 w-[600px] py-12 px-12 rounded-3xl shadow-2xl flex flex-col items-center justify-center z-10",
             "2xl:w-[700px]",

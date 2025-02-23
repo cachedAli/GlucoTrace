@@ -1,9 +1,9 @@
 import { forgotPasswordFields } from "@/components/utils/constants/authPage/formFields";
 import { forgotPasswordSchema } from "@/components/utils/validations/authSchema";
 import AuthLayout from "@/components/layout/userAuth/AuthLayout";
+import { OTP } from "@/components/router/LazyRoutes";
 import Form from "@/components/ui/Form";
 import { useState } from "react";
-import Otp from "../../layout/userAuth/Otp";
 
 type Data = {
   email: string;
@@ -38,7 +38,7 @@ const ForgotPassword = () => {
           />
         </AuthLayout>
       ) : (
-        <Otp otpLength={4} currentPage="Forgot Password" />
+        <OTP otpLength={4} currentPage="Forgot Password" />
       )}
     </>
   );

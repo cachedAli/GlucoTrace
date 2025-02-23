@@ -1,7 +1,7 @@
 import clsx from "clsx";
 
 import { useNavigate } from "react-router-dom";
-import { TbMailOpenedFilled } from "react-icons/tb";
+import { MailOpen } from "lucide-react";
 
 import Button from "@/components/ui/Button";
 import AuthLayout from "./AuthLayout";
@@ -10,7 +10,7 @@ const EmailSent = () => {
   return (
     <AuthLayout className="gap-4">
       <div className="flex rounded-2xl bg-blue-100 p-5 ">
-        <TbMailOpenedFilled size={96} className="text-blue-600" />
+        <MailOpen size={96} className="text-blue-600" />
       </div>
 
       <p

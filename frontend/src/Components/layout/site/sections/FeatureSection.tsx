@@ -37,7 +37,11 @@ const FeatureSection = () => {
   );
 };
 
-const FeatureHeader = ({ descriptionWordsToBold }) => {
+const FeatureHeader = ({
+  descriptionWordsToBold,
+}: {
+  descriptionWordsToBold: string[];
+}) => {
   return (
     <div className="flex flex-col items-center lg:mx-44 gap-6 px-6 py-12 pt-24 text-center">
       <motion.h1
@@ -74,7 +78,7 @@ const FeatureHeader = ({ descriptionWordsToBold }) => {
   );
 };
 
-const FeatureCards = ({ wordsToBold }) => {
+const FeatureCards = ({ wordsToBold }: { wordsToBold: string[] }) => {
   return (
     <section className="flex flex-col gap-16 px-4 md:px-12 py-12 mx-auto max-w-6xl overflow-x-hidden">
       {features.map((feature, index) => {

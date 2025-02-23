@@ -1,7 +1,8 @@
-import { FaArrowRight } from "react-icons/fa6";
+import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
+import { preloadSignUp } from "@/components/router/LazyRoutes";
 import { Hero } from "../../../utils/constants/homepage";
 import mockup from "/homepage/MockLaptop.png";
 
@@ -62,10 +63,11 @@ const AnimatedButton = () => {
 
       <Link
         to="/signup"
+        onMouseEnter={preloadSignUp}
         className="relative px-2 py-2 w-full h-full z-10 font-semibold inline-flex items-center justify-center gap-2"
       >
         <h2 className="text-base">Get Started</h2>
-        <FaArrowRight className="text-lg mt-1" />
+        <ArrowRight className="text-lg mt-1" />
       </Link>
     </button>
   );

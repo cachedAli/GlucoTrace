@@ -1,6 +1,6 @@
-import { FaEnvelope, FaGithub, FaLinkedin } from "react-icons/fa";
+import { Mail, Github, Linkedin } from "lucide-react";
 
-import GlucoTrace from "/homepage/GlucoTraceDark.png";
+import GlucoTrace from "/homepage/GlucoTraceDark.webp";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
@@ -45,7 +45,7 @@ const Footer = () => {
           <h1 className="font-bold text-lg mb-2">Stay Connected</h1>
           <ul className="space-y-2 max-sm:justify-center max-sm:items-center max-sm:flex max-sm:flex-col">
             <li className="flex items-center gap-2">
-              <FaEnvelope className="text-lg" />
+              <Mail className="text-lg" />
               <a
                 href="mailto:contact.monkebytes@gmail.com"
                 className="hover:underline"
@@ -54,7 +54,7 @@ const Footer = () => {
               </a>
             </li>
             <li className="flex items-center gap-2">
-              <FaGithub className="text-lg" />
+              <Github className="text-lg" />
               <a
                 href="https://github.com/not-aLi"
                 target="_blank"
@@ -65,7 +65,7 @@ const Footer = () => {
               </a>
             </li>
             <li className="flex items-center gap-2">
-              <FaLinkedin className="text-lg" />
+              <Linkedin className="text-lg" />
               <a
                 href="https://linkedin.com/in/notali"
                 target="_blank"

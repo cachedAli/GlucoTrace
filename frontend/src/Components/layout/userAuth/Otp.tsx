@@ -1,9 +1,9 @@
 import { OtpField } from "@/components/utils/constants/authPage/formFields";
 import { OtpSchema } from "@/components/utils/validations/authSchema";
 import AuthLayout from "@/components/layout/userAuth/AuthLayout";
+import { EmailSent } from "@/components/router/LazyRoutes";
 import Form from "@/components/ui/Form";
 import { useState } from "react";
-import EmailSent from "./EmailSent";
 
 type Data = {
   otp: string;

@@ -1,9 +1,9 @@
-import Otp from "../../layout/userAuth/Otp";
+import { OTP } from "@/components/router/LazyRoutes";
 
 const VerifyEmail = () => {
   return (
     <>
-      <Otp currentPage="Verify Email" otpLength={6} />
+      <OTP currentPage="Verify Email" otpLength={6} />
     </>
   );
 };

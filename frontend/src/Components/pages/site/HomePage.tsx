@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { FaArrowUp } from "react-icons/fa6";
+import { ArrowUp } from "lucide-react";
 
 import DiabetesAdvice from "@/components/layout/site/sections/adviceSection/DiabetesAdvice";
 import HealthAdvice from "@/components/layout/site/sections/adviceSection/HealthAdvice";
@@ -12,11 +12,11 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 
 const HomePage = () => {
-  const headerRef = useRef(null);
+  const headerRef = useRef<HTMLElement | null>(null);
 
   return (
     <>
-    <Header headerRef={headerRef} />
+      <Header headerRef={headerRef} />
       <HeroSection />
       <HealthAdvice />
       <FeatureSection />
@@ -24,11 +24,15 @@ const HomePage = () => {
       <Contact />
       <Footer />
       <ScrollToTopButton headerRef={headerRef} />
-    // </>
+    </>
   );
 };
 
-const ScrollToTopButton = ({ headerRef }) => {
+const ScrollToTopButton = ({
+  headerRef,
+}: {
+  headerRef: React.RefObject<HTMLElement>;
+}) => {
   const [showButton, setShowButton] = useState(false);
 
   useEffect(() => {
@@ -63,7 +67,7 @@ const ScrollToTopButton = ({ headerRef }) => {
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className="fixed bottom-6 right-6 p-4 bg-indigo-800 text-white rounded-full shadow-lg hover:bg-blue-700 "
           >
-            <FaArrowUp size={20} />
+            <ArrowUp size={20} />
           </motion.button>
         )}
       </AnimatePresence>

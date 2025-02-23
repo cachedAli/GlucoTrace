@@ -4,8 +4,15 @@ import { contact } from "../../utils/constants/homepage";
 
 import Form from "@/components/ui/Form";
 
+type Data = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  description?: string;
+};
+
 const Contact = () => {
-  const submit = (data) => {
+  const submit = (data: Data) => {
     console.log("Contact Form Submit: ", data);
   };
   return (
@@ -23,7 +30,7 @@ const Contact = () => {
   );
 };
 
-const ContactForm = ({ contactFormFields, contactSchema, submit }) => {
+const ContactForm = ({ contactFormFields, contactSchema, submit }: any) => {
   return (
     <div className="flex flex-col gap-6  px-6 pb-20 pt-10 md:px-4 md:mx-20">
       <Form
