@@ -1,8 +1,14 @@
-import { contactFormFields } from "@/components/utils/constants/authPage/formFields";
-import { contactSchema } from "@/components/utils/validations/authSchema";
-import { contact } from "../../utils/constants/homepage";
+import { useRef } from "react";
 
-import Form from "@/components/ui/Form";
+import { contactFormFields } from "@/libs/constants/authPage/formFields";
+import { contactSchema } from "@/libs/validations/authSchema";
+import { contact } from "@/libs/constants/homepage";
+
+import FormSkeleton from "@/components/ui/skeleton/FormSkeleton";
+import usePreloadOnScroll from "@/hooks/usePreloadOnScroll";
+import { preloadForm } from "@/router/preloadRoutes";
+import { Form } from "@/router/LazyRoutes";
+import LazyLoader from "@/libs/LazyLoader";
 
 type Data = {
   firstName: string;
@@ -12,11 +18,13 @@ type Data = {
 };
 
 const Contact = () => {
+  const formRef = useRef<HTMLDivElement>(null);
   const submit = (data: Data) => {
     console.log("Contact Form Submit: ", data);
   };
   return (
     <section
+      ref={formRef}
       id="contact"
       className="bg-slate-50 max-w-screen-2xl w-full mx-auto  selection:bg-indigo-800 selection:text-white"
     >
@@ -25,21 +33,36 @@ const Contact = () => {
         contactFormFields={contactFormFields}
         contactSchema={contactSchema}
         submit={submit}
+        formRef={formRef}
+        usePreloadOnScroll={usePreloadOnScroll}
       />
     </section>
   );
 };
 
-const ContactForm = ({ contactFormFields, contactSchema, submit }: any) => {
+const ContactForm = ({
+  contactFormFields,
+  contactSchema,
+  submit,
+  formRef,
+  usePreloadOnScroll,
+}: any) => {
+  const isPreloaded = usePreloadOnScroll(formRef, preloadForm);
   return (
     <div className="flex flex-col gap-6  px-6 pb-20 pt-10 md:px-4 md:mx-20">
-      <Form
-        fields={contactFormFields}
-        schema={contactSchema}
-        googleAuth={false}
-        buttonLabel="Submit"
-        onSubmit={submit}
-      />
+      {isPreloaded && (
+        <LazyLoader
+          fallback={() => <FormSkeleton fields={contactFormFields} />}
+        >
+          <Form
+            fields={contactFormFields}
+            schema={contactSchema}
+            googleAuth={false}
+            buttonLabel="Submit"
+            onSubmit={submit}
+          />
+        </LazyLoader>
+      )}
     </div>
   );
 };

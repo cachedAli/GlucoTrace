@@ -1,10 +1,10 @@
-import Router from "./components/router/Router";
+import Router from "./router/Router";
 
 function App() {
   return (
-      <div className="antialiased">
-        <Router />
-      </div>
+    <div className="antialiased">
+      <Router />
+    </div>
   );
 }
 

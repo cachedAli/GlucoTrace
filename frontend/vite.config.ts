@@ -10,6 +10,9 @@ export default defineConfig({
     filename: 'bundle-analysis.html',
   }),
   ],
+  // optimizeDeps: {
+  //   exclude: ["lucide-react"], 
+  // },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),

@@ -1,4 +1,4 @@
-import { FormField } from "@/components/types/formTypes";
+import { FormField } from "@/types/formTypes";
 
 export const signInFields: FormField[] = [
     { name: "email", type: "email", label: "Email" },

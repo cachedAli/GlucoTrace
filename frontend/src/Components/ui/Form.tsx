@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { ZodSchema } from "zod";
 
-import { FormField } from "../types/formTypes";
+import { FormField } from "../../types/formTypes";
 import InputField from "./InputField";
 import Button from "./Button";
 

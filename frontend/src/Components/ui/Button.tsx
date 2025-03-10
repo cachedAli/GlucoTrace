@@ -1,5 +1,5 @@
-import { clsx } from "clsx";
 import React from "react";
+import { cn } from "@/libs/utils";
 
 type buttonProps = {
   children: React.ReactNode;
@@ -17,13 +17,14 @@ const Button = ({
   disabled = false,
   className = "",
   onClick,
+  ...props
 }: buttonProps) => {
   return (
     <button
       type={type}
       disabled={disabled}
       onClick={onClick}
-      className={clsx(
+      className={cn(
         "relative text-lg overflow-hidden rounded-xl w-full h-12 group transition-all duration-300 ease-in-out",
         {
           "border-2 border-gray-300 text-blue-700 hover:border-none hover:text-white":
@@ -34,6 +35,7 @@ const Button = ({
         },
         className
       )}
+      {...props}
     >
       {variant === "transparent" && (
         <div className="absolute bottom-0 left-0 w-full h-full bg-blue-700 origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out" />

@@ -4,9 +4,8 @@ import clsx from "clsx";
 import { Menu, X } from "lucide-react";
 import { Link } from "react-router-dom";
 
-// import { preloadSignIn } from "../router/LazyRoutes";
 import glucoTrace from "/homepage/GlucoTrace.webp";
-import { preloadSignIn, SignUp } from "../router/LazyRoutes";
+import { preloadForm } from "@/router/preloadRoutes";
 
 type HeaderProps = {
   headerRef?: React.RefObject<HTMLElement>;
@@ -166,7 +165,7 @@ const AuthSection = ({
     ) : (
       <Link
         to="/signin"
-        onMouseEnter={preloadSignIn}
+        onMouseEnter={preloadForm}
         className="text-indigo-500 tracking-wide hover:opacity-85 hover:transition-all hover:duration-300 text-lg max-sm:text-sm font-semibold p-1"
       >
         Sign In

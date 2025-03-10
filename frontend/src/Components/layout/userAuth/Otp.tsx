@@ -1,9 +1,12 @@
-import { OtpField } from "@/components/utils/constants/authPage/formFields";
-import { OtpSchema } from "@/components/utils/validations/authSchema";
-import AuthLayout from "@/components/layout/userAuth/AuthLayout";
-import { EmailSent } from "@/components/router/LazyRoutes";
-import Form from "@/components/ui/Form";
 import { useState } from "react";
+
+import { OtpField } from "@/libs/constants/authPage/formFields";
+import AuthLayout from "@/components/layout/userAuth/AuthLayout";
+import FormSkeleton from "@/components/ui/skeleton/FormSkeleton";
+import { OtpSchema } from "@/libs/validations/authSchema";
+import LazyLoader from "@/libs/LazyLoader";
+import { Form } from "@/router/LazyRoutes";
+import EmailSent from "./EmailSent";
 
 type Data = {
   otp: string;
@@ -35,16 +38,22 @@ const Otp = ({ otpLength = 4, currentPage = "Forgot Password" }: OtpProps) => {
       formDescription={description}
       resetPage={true}
     >
-      <Form
-        resendOtp
-        fields={OtpField}
-        onSubmit={onSubmit}
-        schema={OtpSchema(otpLength)}
-        buttonLabel="Confirm Code"
-        googleAuth={false}
-        otpLength={otpLength}
-        className="!flex-row items-center justify-center mb-2 max-sm:mb-1"
-      />
+      <LazyLoader
+        fallback={() => (
+          <FormSkeleton fields={OtpField} otpLength={otpLength} />
+        )}
+      >
+        <Form
+          resendOtp
+          fields={OtpField}
+          onSubmit={onSubmit}
+          schema={OtpSchema(otpLength)}
+          buttonLabel="Confirm Code"
+          googleAuth={false}
+          otpLength={otpLength}
+          className="!flex-row items-center justify-center mb-2 max-sm:mb-1"
+        />
+      </LazyLoader>
     </AuthLayout>
   ) : (
     <EmailSent />

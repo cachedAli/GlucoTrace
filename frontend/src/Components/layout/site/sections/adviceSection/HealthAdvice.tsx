@@ -1,34 +1,42 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { motion } from "framer-motion";
 
-import { healthAdvice } from "../../../../utils/constants/homepage";
+import { healthAdvice } from "@/libs/constants/homepage";
+import { useInView } from "react-intersection-observer";
 
 const HealthAdvice = () => {
+  const { ref, inView } = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+    rootMargin: "10%",
+  });
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
-  const handleImageLoad = () => {
-    setIsImageLoaded(true);
-  };
+  useEffect(() => {
+    if (inView) {
+      const img = new Image();
+      img.src = "/homepage/diabeticBG.webp";
+      img.onload = () => {
+        setIsImageLoaded(true);
+      };
+      img.onerror = () => {
+        setIsImageLoaded(false);
+      };
+    }
+  }, [inView]);
 
   return (
     <section
+      ref={ref}
       className="h-screen mx-2 rounded-bl-2xl rounded-br-2xl bg-cover bg-center bg-no-repeat bg-fixed flex items-center justify-center relative"
       style={{
-        backgroundImage: isImageLoaded
-          ? "url('/homepage/diabeticBG.webp')"
-          : "url('/homepage/blurBG.png')",
+        backgroundImage: `url('/homepage/${
+          inView && isImageLoaded ? "diabeticBG.webp" : "blurBG.png"
+        }')`,
         transition: "background-image 0.5s ease-out",
-        backgroundColor: "#f0f0f0",
       }}
     >
-      <img
-        src="/homepage/diabeticBG.webp"
-        alt="Background"
-        className="hidden"
-        onLoad={handleImageLoad}
-      />
-
       <motion.div
         initial={{ scale: 0.5 }}
         whileInView={{ scale: 1 }}

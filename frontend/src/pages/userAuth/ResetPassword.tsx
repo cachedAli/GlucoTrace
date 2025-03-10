@@ -3,10 +3,12 @@ import clsx from "clsx";
 
 import { useNavigate } from "react-router-dom";
 
-import { resetPasswordFields } from "@/components/utils/constants/authPage/formFields";
-import { resetPasswordSchema } from "@/components/utils/validations/authSchema";
+import { resetPasswordFields } from "@/libs/constants/authPage/formFields";
+import { resetPasswordSchema } from "@/libs/validations/authSchema";
 import AuthLayout from "@/components/layout/userAuth/AuthLayout";
-import Form from "@/components/ui/Form";
+import FormSkeleton from "@/components/ui/skeleton/FormSkeleton";
+import LazyLoader from "@/libs/LazyLoader";
+import { Form } from "@/router/LazyRoutes";
 
 type Data = {
   password: string;
@@ -41,14 +43,18 @@ const ResetPassword = () => {
       isSignIn={false}
       resetPage={true}
     >
-      <Form
-        fields={resetPasswordFields}
-        schema={resetPasswordSchema}
-        onSubmit={submitForm}
-        buttonLabel="Reset Password"
-        googleAuth={false}
-        disabled={isRedirecting}
-      ></Form>
+      <LazyLoader
+        fallback={() => <FormSkeleton fields={resetPasswordFields} />}
+      >
+        <Form
+          fields={resetPasswordFields}
+          schema={resetPasswordSchema}
+          onSubmit={submitForm}
+          buttonLabel="Reset Password"
+          googleAuth={false}
+          disabled={isRedirecting}
+        />
+      </LazyLoader>
 
       <RedirectMessage countdown={countdown} message={message} />
     </AuthLayout>

@@ -2,8 +2,8 @@ import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
-import { preloadSignUp } from "@/components/router/LazyRoutes";
-import { Hero } from "../../../utils/constants/homepage";
+import { preloadForm } from "@/router/preloadRoutes";
+import { Hero } from "@/libs/constants/homepage";
 import mockup from "/homepage/MockLaptop.png";
 
 const HeroSection = () => {
@@ -63,7 +63,7 @@ const AnimatedButton = () => {
 
       <Link
         to="/signup"
-        onMouseEnter={preloadSignUp}
+        onMouseEnter={preloadForm}
         className="relative px-2 py-2 w-full h-full z-10 font-semibold inline-flex items-center justify-center gap-2"
       >
         <h2 className="text-base">Get Started</h2>

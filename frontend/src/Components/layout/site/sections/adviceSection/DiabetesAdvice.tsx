@@ -1,34 +1,43 @@
-import { useState } from "react";
-
 import { motion } from "framer-motion";
 
-import { complications } from "../../../../utils/constants/homepage";
+import { complications } from "@/libs/constants/homepage";
+import { useInView } from "react-intersection-observer";
+import { useEffect, useState } from "react";
 
 const DiabetesAdvice = () => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
-  const handleImageLoad = () => {
-    setIsImageLoaded(true);
-  };
+  const { ref, inView } = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+    rootMargin: "10%",
+  });
+
+  useEffect(() => {
+    if (inView) {
+      const img = new Image();
+      img.src = "/homepage/diabeticBG2.webp";
+      img.onload = () => {
+        setIsImageLoaded(true);
+      };
+      img.onerror = () => {
+        setIsImageLoaded(false);
+      };
+    }
+  }, [inView]);
 
   return (
     <section
+      ref={ref}
       className="h-screen mx-2 rounded-tl-2xl rounded-tr-2xl bg-cover bg-center bg-no-repeat bg-fixed flex items-center justify-center"
       style={{
-        backgroundImage: isImageLoaded
-          ? "url('/homepage/diabeticBG2.webp')"
-          : "url('/homepage/blurBG2.png')",
+        backgroundImage: `url('/homepage/${
+          inView && isImageLoaded ? "diabeticBG2.webp" : "blurBG2.png"
+        }')`,
         transition: "background-image 0.5s ease-out",
         backgroundColor: "#f0f0f0",
       }}
     >
-      <img
-        src="/homepage/diabeticBG2.webp"
-        alt="Background"
-        className="hidden"
-        onLoad={handleImageLoad}
-      />
-
       <motion.div
         initial={{ scale: 0.5 }}
         whileInView={{ scale: 1 }}

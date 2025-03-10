@@ -8,7 +8,7 @@ const LazyLoader = ({
   fallback?: React.ElementType;
 }) => {
   return (
-    <Suspense fallback={FallbackComponent ? <FallbackComponent /> : null}>
+    <Suspense fallback={FallbackComponent ? <FallbackComponent /> : <div>loading</div>}>
       {children}
     </Suspense>
   );

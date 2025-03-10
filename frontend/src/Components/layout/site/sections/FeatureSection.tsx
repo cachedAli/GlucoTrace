@@ -1,6 +1,7 @@
+import { useInView } from "react-intersection-observer";
 import Highlighter from "react-highlight-words";
 
-import { features, Main } from "../../../utils/constants/homepage";
+import { features, Main } from "@/libs/constants/homepage";
 import { motion } from "framer-motion";
 
 const FeatureSection = () => {
@@ -83,11 +84,16 @@ const FeatureCards = ({ wordsToBold }: { wordsToBold: string[] }) => {
     <section className="flex flex-col gap-16 px-4 md:px-12 py-12 mx-auto max-w-6xl overflow-x-hidden">
       {features.map((feature, index) => {
         const isEven = index % 2 === 0;
+        const { ref, inView } = useInView({
+          triggerOnce: true,
+          threshold: 0.3,
+        });
 
         return (
           <motion.div
+            ref={ref}
             initial={{ opacity: 0, x: isEven ? -50 : 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            animate={inView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.6, ease: "easeOut" }}
             viewport={{ once: true, amount: 0.1 }}
             key={index}
@@ -97,10 +103,10 @@ const FeatureCards = ({ wordsToBold }: { wordsToBold: string[] }) => {
           >
             <motion.img
               initial={{ opacity: 0, x: isEven ? -20 : 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              animate={inView ? { opacity: 1, x: 0 } : {}}
               transition={{ duration: 0.6, ease: "easeOut" }}
               viewport={{ once: true }}
-              src={feature.img}
+              src={inView ? feature.img : ""}
               alt=""
               className="w-64 md:w-80 h-auto rounded-xl shadow-lg max-w-full"
             />
