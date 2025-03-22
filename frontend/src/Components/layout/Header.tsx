@@ -25,7 +25,7 @@ const Header = ({
   return (
     <header
       ref={headerRef}
-      className="bg-transparent max-w-screen-2xl mx-auto w-full h-[88px] flex font-roboto md:selection:bg-indigo-800 md:selection:text-white"
+      className="bg-transparent max-w-screen-2xl mx-auto w-full h-[88px] flex md:selection:bg-indigo-800 md:selection:text-white"
     >
       <div className="w-full flex px-8 max-sm:px-4 items-center justify-between">
         <MobileMenuButton
@@ -85,7 +85,7 @@ const MobileMenu = ({ menuOpen, setMenuOpen }: MobileMenuProps) => (
     </button>
 
     <nav className="p-6 mt-4">
-      <ul className="flex flex-col items-start text-slate-700 text-lg font-medium space-y-6">
+      <ul className="flex flex-col items-start text-slate-700 text-lg font-semibold space-y-6">
         <NavItem to="/" label="Home" />
         <NavItem href="#features" label="Features" />
         <NavItem href="#contact" label="Contact" />
@@ -122,11 +122,7 @@ const LogoLink = ({ authPage }: LogoLinkProps) => (
       "transition-all duration-300"
     )}
   >
-    <img
-      src={glucoTrace}
-      alt="GlucoTrace"
-      className="w-48 md:w-56 max-sm:w-40"
-    />
+    <img src={glucoTrace} alt="GlucoTrace" className="max-h-[80px] w-auto" />
   </Link>
 );
 
@@ -137,7 +133,7 @@ type DesktopNavigationProps = {
 const DesktopNavigation = ({ authPage }: DesktopNavigationProps) => (
   <div className="order-3 md:order-2">
     {!authPage && (
-      <nav className="hidden md:flex md:space-x-12 space-y-6 md:space-y-0 md:relative md:flex-row flex-col md:items-center md:text-gray-700 text-slate-700 text-lg p-6 font-medium">
+      <nav className="hidden md:flex md:space-x-12 space-y-6 md:space-y-0 md:relative md:flex-row flex-col md:items-center md:text-gray-700 text-slate-700 text-lg p-6 font-semibold">
         <ul className="flex space-x-12">
           <NavItem to="/" label="Home" />
           <NavItem href="#features" label="Features" />
@@ -159,14 +155,14 @@ const AuthSection = ({
   isSignInPage,
   resetPage,
 }: AuthSectionProps) => (
-  <div className="order-4 md:order-3 font-lora">
+  <div className="order-4 md:order-3">
     {authPage ? (
       <AuthPageButtons isSignInPage={isSignInPage} resetPage={resetPage} />
     ) : (
       <Link
         to="/signin"
         onMouseEnter={preloadForm}
-        className="text-indigo-500 tracking-wide hover:opacity-85 hover:transition-all hover:duration-300 text-lg max-sm:text-sm font-semibold p-1"
+        className="text-indigo-500 font-nunito tracking-wide hover:opacity-85 hover:transition-all hover:duration-300 text-lg max-sm:text-sm font-bold p-1"
       >
         Sign In
       </Link>
@@ -184,7 +180,7 @@ const AuthPageButtons = ({ isSignInPage, resetPage }: AuthPageButtonsProps) => {
     return (
       <Link
         to="/signin"
-        className="text-indigo-500 tracking-wide hover:opacity-85 hover:transition-all hover:duration-300 text-lg max-sm:text-sm font-semibold p-1"
+        className="text-indigo-500 font-nunito tracking-wide hover:opacity-85 hover:transition-all hover:duration-300 text-lg max-sm:text-sm font-bold p-1"
       >
         Sign In
       </Link>
@@ -212,7 +208,7 @@ const SignInPrompt = () => (
     <Link
       to="/signin"
       className={clsx(
-        "text-indigo-500 text-center tracking-wide hover:opacity-85 hover:transition-all hover:duration-300 text-lg  font-semibold p-1",
+        "text-indigo-500 text-center tracking-wide hover:opacity-85 hover:transition-all hover:duration-300 text-lg font-nunito  font-bold p-1",
         " max-sm:text-xs"
       )}
     >
@@ -238,7 +234,7 @@ const SignUpPrompt = () => (
     </p>
     <Link
       to="/signup"
-      className="text-indigo-500 tracking-wide hover:opacity-85 hover:transition-all hover:duration-300 text-lg max-sm:text-xs font-semibold p-1"
+      className="text-indigo-500 tracking-wide hover:opacity-85 hover:transition-all hover:duration-300 text-lg max-sm:text-xs font-nunito font-bold p-1"
     >
       Sign Up
     </Link>

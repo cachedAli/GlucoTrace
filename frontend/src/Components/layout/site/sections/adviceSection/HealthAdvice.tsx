@@ -44,10 +44,10 @@ const HealthAdvice = () => {
         viewport={{ once: true, amount: 0.3 }}
         className="bg-black text-white max-w-screen-2xl w-full text-center flex flex-col justify-center items-center bg-opacity-80 px-8 py-8 rounded-xl gap-4 lg:mx-40 md:mx-20 mx-8"
       >
-        <h1 className="md:text-4xl text-2xl font-lora font-semibold">
+        <h1 className="md:text-4xl text-2xl font-nunito font-semibold">
           {healthAdvice.heading}
         </h1>
-        <p className="font-roboto text-sm md:text-lg md:text-justify text-center">
+        <p className=" text-sm md:text-lg md:text-justify text-center">
           {
             healthAdvice.description.split(
               "monitor your blood glucose levels regularly"

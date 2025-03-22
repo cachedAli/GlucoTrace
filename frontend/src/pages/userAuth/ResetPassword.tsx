@@ -76,7 +76,7 @@ const RedirectMessage = ({ message, countdown }: RedirectMessageProps) => {
           )}
         >
           {message && (
-            <p className="text-gray-500 font-roboto">
+            <p className="text-gray-500">
               {message}
               <span className="text-blue-600">{countdown}</span>
             </p>

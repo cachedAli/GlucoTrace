@@ -50,12 +50,12 @@ const FeatureHeader = ({
         whileInView={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
         viewport={{ once: true }}
-        className="font-lora text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#193798] to-blue-600 text-transparent bg-clip-text drop-shadow-md"
+        className="font-nunito text-3xl md:text-4xl font-bold bg-gradient-to-r from-headingMain to-blue-600 text-transparent bg-clip-text drop-shadow-md"
       >
         {Main.heading}
       </motion.h1>
 
-      <p className="text-gray-800 text-base md:text-lg leading-relaxed font-medium font-roboto">
+      <p className="text-gray-800 text-base md:text-lg leading-relaxed font-medium ">
         {Main.description
           .split(/(GlucoTrace|smarter choices)/g)
           .map((part, index) =>
@@ -112,10 +112,10 @@ const FeatureCards = ({ wordsToBold }: { wordsToBold: string[] }) => {
             />
 
             <div className="flex-1 flex flex-col gap-4 md:items-start items-center">
-              <h1 className="font-lora text-2xl md:text-3xl font-bold text-[#1A389C]">
+              <h1 className="font-nunito text-2xl md:text-3xl font-bold text-headingSub">
                 {feature.heading}
               </h1>
-              <p className="font-roboto text-base text-center md:text-start md:text-lg text-zinc-800 selection:text-white leading-relaxed">
+              <p className=" text-base text-center md:text-start md:text-lg text-zinc-800 selection:text-white leading-relaxed">
                 <Highlighter
                   highlightStyle={{ backgroundColor: "transparent" }}
                   highlightClassName="font-bold"

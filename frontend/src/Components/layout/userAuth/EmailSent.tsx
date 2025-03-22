@@ -15,7 +15,7 @@ const EmailSent = () => {
 
       <p
         className={clsx(
-          "text-gray-500 text-base text-center font-roboto",
+          "text-gray-500 text-base text-center",
           "max-sm:text-sm"
         )}
       >

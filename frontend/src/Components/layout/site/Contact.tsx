@@ -70,16 +70,16 @@ const ContactForm = ({
 const ContactDetails = () => {
   return (
     <div className="flex flex-col items-start gap-2 md:px-4 px-6  pt-20 md:mx-20 whitespace-normal">
-      <h1 className="md:text-4xl text-3xl font-bold font-lora mb-2 text-[#193798]">
+      <h1 className="md:text-4xl text-3xl font-bold font-nunito mb-2 text-headingMain">
         {contact.heading}
       </h1>
-      <p className="font-roboto md:text-lg mb-4 selection:bg-indigo-800 selection:text-white">
+      <p className=" md:text-lg mb-4 selection:bg-indigo-800 selection:text-white">
         {contact.description1}
       </p>
-      <p className="font-roboto md:text-lg selection:bg-indigo-800 selection:text-white">
+      <p className=" md:text-lg selection:bg-indigo-800 selection:text-white">
         {contact.description2}
       </p>
-      <p className="font-roboto md:text-lg mb-2 selection:bg-indigo-800 selection:text-white">
+      <p className=" md:text-lg mb-2 selection:bg-indigo-800 selection:text-white">
         <strong className="selection:bg-indigo-800 selection:text-white">
           Email us at:{" "}
         </strong>
@@ -87,7 +87,7 @@ const ContactDetails = () => {
           contact.monkebytes@gmail.com
         </span>
       </p>
-      <p className="font-roboto md:text-base italic text-sm selection:bg-indigo-800 selection:text-white">
+      <p className=" md:text-base italic text-sm selection:bg-indigo-800 selection:text-white">
         {contact.required}
       </p>
     </div>

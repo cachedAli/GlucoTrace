@@ -28,14 +28,15 @@ const AuthLayout = ({
       <Header authPage={true} resetPage={resetPage} isSignInPage={isSignIn} />
       <div
         className={clsx(
-          "relative min-h-[150vh] overflow-hidden mb-2 mx-3 rounded-2xl flex flex-col items-center justify-center gap-10 px-4"
+          "relative min-h-[150vh] overflow-hidden mb-2 mx-3 rounded-2xl flex flex-col items-center justify-center gap-10 px-4",
+          "max-sm:min-h-[90vh]"
         )}
       >
         <AuthPageBackground />
 
         <h1
           className={clsx(
-            "text-white text-5xl font-bold font-lora z-10",
+            "text-white text-5xl font-bold font-nunito z-10",
             "max-lg:text-4xl",
             "max-sm:text-3xl"
           )}
@@ -86,7 +87,7 @@ const AuthFormHeader = ({
     <div className="flex flex-col gap-2 mb-6 items-center justify-center w-full max-w-xs text-center">
       <h1
         className={clsx(
-          "text-zinc-800 text-2xl font-lora tracking-wide",
+          "text-zinc-800 text-2xl font-nunito font-semibold tracking-wide",
           "max-sm:text-xl"
         )}
       >
@@ -95,7 +96,7 @@ const AuthFormHeader = ({
       {formDescription && (
         <p
           className={clsx(
-            "text-gray-500 text-base text-center font-roboto",
+            "text-gray-500 text-base text-center",
             "max-sm:text-sm"
           )}
         >
@@ -110,8 +111,8 @@ const AuthPageBackground = () => {
   return (
     <div
       className={clsx(
-        "absolute h-full inset-0 bg-gradient-to-r from-[#1a237e] to-[#283593]",
-        "max-sm:bg-gradient-to-b from-[#1a237e] to-[#283593]"
+        "absolute h-full inset-0 bg-gradient-to-r from-primary to-secondary",
+        "max-sm:bg-gradient-to-b from-primary to-secondary"
       )}
     >
       <div className="absolute inset-0 bg-[url('/userAuth/authPageBackground.webp')] bg-bottom bg-no-repeat opacity-40 mix-blend-overlay bg-cover"></div>

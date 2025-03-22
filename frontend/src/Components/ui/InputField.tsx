@@ -50,6 +50,9 @@ const InputField = ({
         "&:not(.MuiInputBase-multiline)": {
           height: "56px",
         },
+        "& .MuiInputBase-input": {
+          fontFamily: "Inter, sans-serif",
+        },
       },
     }),
     []

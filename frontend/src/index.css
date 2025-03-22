@@ -6,8 +6,17 @@ body {
   margin: 0;
   padding: 0;
   background-color: #f8fafc;
+  font-family: "Inter", sans-serif;
 }
 html {
   scroll-behavior: smooth;
 }
+.hide-scrollbar {
+  overflow: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
 
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}

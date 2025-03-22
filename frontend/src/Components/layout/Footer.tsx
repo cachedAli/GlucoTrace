@@ -20,7 +20,7 @@ const Footer = () => {
       <div className="flex flex-wrap justify-center lg:flex-row lg:justify-around items-start gap-8">
         {/* Navigation */}
         <div className="text-center sm:text-left">
-          <h1 className="font-bold text-lg mb-2">Navigation</h1>
+          <h1 className="font-bold text-lg font-nunito mb-2">Navigation</h1>
           <ul className="space-y-2">
             <li>
               <Link to="/" className="hover:underline">
@@ -42,7 +42,7 @@ const Footer = () => {
 
         {/* Stay Connected */}
         <div className="text-center sm:text-left">
-          <h1 className="font-bold text-lg mb-2">Stay Connected</h1>
+          <h1 className="font-bold text-lg font-nunito mb-2">Stay Connected</h1>
           <ul className="space-y-2 max-sm:justify-center max-sm:items-center max-sm:flex max-sm:flex-col">
             <li className="flex items-center gap-2">
               <Mail className="text-lg" />
@@ -80,7 +80,7 @@ const Footer = () => {
 
         {/* Disclaimer */}
         <div className="text-center sm:text-left max-w-sm w-full sm:w-auto sm:mt-4">
-          <h1 className="font-bold text-lg mb-2">Disclaimer</h1>
+          <h1 className="font-bold text-lg font-nunito mb-2">Disclaimer</h1>
           <p className="text-sm">
             This website is for informational purposes only and is not a
             substitute for professional medical advice. Please consult your

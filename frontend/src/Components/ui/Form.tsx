@@ -203,7 +203,7 @@ const ResendOtp = () => {
         "max-sm:text-sm"
       )}
     >
-      <p className="text-gray-500 font-roboto">
+      <p className="text-gray-500">
         Didn't receive the code?{" "}
         {!canResend ? (
           <span className="text-blue-600">{formatTime(timeLeft)}</span>
