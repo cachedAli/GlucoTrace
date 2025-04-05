@@ -1,7 +1,7 @@
 import clsx from "clsx";
 
 import { capitalizeFirstLetter } from "@/libs/utils";
-import { useUserState } from "@/store/useUserStore";
+import { useUserStore } from "@/store/useUserStore";
 
 type PageTitleProps = {
   title?: string;
@@ -14,7 +14,7 @@ const PageTitle = ({
   subTitle,
   isDashboard = false,
 }: PageTitleProps) => {
-  const user = useUserState((state) => state.user);
+  const user = useUserStore((state) => state.user);
   return (
     <div className={clsx("flex items-center font-montserrat")}>
       {isDashboard ? (
@@ -23,7 +23,8 @@ const PageTitle = ({
             className={clsx(
               "text-headingMain font-bold text-3xl",
               "max-lg:text-2xl",
-              "max-sm:text-xl"
+              "max-sm:text-xl",
+              "dark:text-headingMain-dark"
             )}
           >
             Welcome Back, {capitalizeFirstLetter(user?.firstName || "")}{" "}
@@ -45,7 +46,8 @@ const PageTitle = ({
             className={clsx(
               "text-headingMain font-bold text-2xl",
               "max-lg:text-xl",
-              "max-sm:text-lg"
+              "max-sm:text-lg",
+              "dark:text-headingMain-dark"
             )}
           >
             {title}
@@ -53,9 +55,10 @@ const PageTitle = ({
 
           <h2
             className={clsx(
-              "text-headingSub font-medium",
+              "text-headingSub font-medium font-inter",
               "max-lg:text-sm",
-              "max-sm:text-xs"
+              "max-sm:text-xs",
+              "dark:text-headingSub-dark"
             )}
           >
             {subTitle}

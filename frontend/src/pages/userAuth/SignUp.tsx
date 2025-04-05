@@ -4,17 +4,18 @@ import { signUpFields } from "@/libs/constants/authPage/formFields";
 import AuthLayout from "@/components/layout/userAuth/AuthLayout";
 import FormSkeleton from "@/components/ui/skeleton/FormSkeleton";
 import { signUpSchema } from "@/libs/validations/authSchema";
-import { useUserState } from "@/store/useUserStore";
+import { useUserStore } from "@/store/useUserStore";
 import { SignUpData } from "@/types/authTypes";
 import LazyLoader from "@/libs/LazyLoader";
 import { Form } from "@/router/LazyRoutes";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const SignUp = () => {
   const navigate = useNavigate();
-  const { user, signup } = useUserState();
-  console.log("First render", user);
+  const user = useUserStore();
+  const signup = useAuthStore().signup;
+
   const onSubmit = (data: SignUpData) => {
-    console.log("Form Data:", data);
     signup(data);
     console.log(user);
     navigate("/verify-email");

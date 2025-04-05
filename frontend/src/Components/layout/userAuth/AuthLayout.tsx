@@ -28,8 +28,11 @@ const AuthLayout = ({
       <Header authPage={true} resetPage={resetPage} isSignInPage={isSignIn} />
       <div
         className={clsx(
-          "relative min-h-[150vh] overflow-hidden mb-2 mx-3 rounded-2xl flex flex-col items-center justify-center gap-10 px-4",
-          "max-sm:min-h-[90vh]"
+          "relative min-h-[130vh] overflow-hidden mb-2 mx-3 rounded-2xl flex flex-col items-center justify-center gap-10 px-4",
+          "max-sm:min-h-[90vh]",
+          "max-[390px]:min-h-[100vh]",
+          "max-[360px]:min-h-[105vh]",
+          "max-[330px]:min-h-[140vh]"
         )}
       >
         <AuthPageBackground />

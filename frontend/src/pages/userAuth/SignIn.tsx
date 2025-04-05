@@ -3,17 +3,19 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 import { signInFields } from "@/libs/constants/authPage/formFields";
-import { SignInSchema } from "@/libs/validations/authSchema";
 import FormSkeleton from "@/components/ui/skeleton/FormSkeleton";
 import AuthLayout from "@/components/layout/userAuth/AuthLayout";
-import { useUserState } from "@/store/useUserStore";
+import { SignInSchema } from "@/libs/validations/authSchema";
+import { useUserStore } from "@/store/useUserStore";
+import { useAuthStore } from "@/store/useAuthStore";
 import { SignInData } from "@/types/authTypes";
 import LazyLoader from "@/libs/LazyLoader";
 import { Form } from "@/router/LazyRoutes";
 
 const SignIn = () => {
   const navigate = useNavigate();
-  const { user, signin } = useUserState();
+  const user = useUserStore();
+  const signin = useAuthStore().signin;
 
   const onSubmit = (data: SignInData) => {
     console.log("Form Data:", data);

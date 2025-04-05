@@ -1,10 +1,10 @@
 import clsx from "clsx";
 
 import { capitalizeFirstLetter } from "@/libs/utils";
-import { useUserState } from "@/store/useUserStore";
+import { useUserStore } from "@/store/useUserStore";
 
 const UserProfile = () => {
-  const user = useUserState((state) => state.user);
+  const user = useUserStore((state) => state.user);
 
   return (
     <div className={clsx("flex items-center gap-2 font-montserrat")}>
@@ -15,12 +15,17 @@ const UserProfile = () => {
       />
 
       <div className="flex flex-col">
-        <h2 className="text-sm text-zinc-800 font-semibold">
+        <h2
+          className={clsx(
+            "text-sm text-zinc-800 font-semibold",
+            "dark:text-gray-100"
+          )}
+        >
           {capitalizeFirstLetter(user?.firstName || "")}{" "}
           {capitalizeFirstLetter(user?.lastName || "")}
         </h2>
 
-        <h3 className="text-xs text-gray-500">
+        <h3 className={clsx("text-xs text-gray-500", "dark:text-gray-300")}>
           {user?.medicalProfile?.diabetesType
             ? `${user?.medicalProfile?.diabetesType} Diabetic`
             : "Not Specified"}

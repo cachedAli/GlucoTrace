@@ -1,39 +1,63 @@
+import { useUserStore } from "./useUserStore";
 import { create } from "zustand";
-import { useUserState } from "./useUserStore";
-// import { useUserState } from "@/store/userState";
 
 type ThemeState = {
+    isDarkMode: boolean;
+    darkMode: boolean;
     applyDarkMode: () => void;
     toggleDarkMode: () => void;
 };
 
-// Create Theme Store
 export const useThemeStore = create<ThemeState>((set) => ({
-    // Function to apply dark mode on page load
+    // Sidebar state
+    isDarkMode: false,
+
+    // Global state
+    darkMode: false,
+
     applyDarkMode: () => {
-        const { user } = useUserState.getState();
+        const user = useUserStore.getState().user;
+        const darkClass = "dark";
+
         if (user?.darkMode) {
-            document.documentElement.classList.add("dark");
+            document.documentElement.classList.add(darkClass);
+            set({ isDarkMode: true });
+            set({ darkMode: true });
+
+            setTimeout(() => {
+                set({ isDarkMode: false });
+            }, 300);
+
+
         } else {
-            document.documentElement.classList.remove("dark");
+            document.documentElement.classList.remove(darkClass);
+            set({ darkMode: false });
+
+            setTimeout(() => {
+                set({ isDarkMode: false });
+            }, 300);
+
         }
     },
 
-    // Function to toggle dark mode
     toggleDarkMode: () => {
-        const { user } = useUserState.getState();
-        if (!user) return;
+        useUserStore.setState((state) => {
+            if (!state.user) return state;
 
-        // Toggle dark mode state
-        const updatedUser = { ...user, darkMode: !user.darkMode };
+            const updatedUser = {
+                ...state.user,
+                darkMode: !state.user.darkMode,
+            };
 
-        // Save to localStorage
-        localStorage.setItem("user", JSON.stringify(updatedUser));
+            localStorage.setItem("user", JSON.stringify(updatedUser));
 
-        // Update Zustand state
-        useUserState.setState({ user: updatedUser });
+            set({ isDarkMode: true });
+            set({ darkMode: false });
 
-        // Apply the dark mode changes
+
+            return { user: updatedUser };
+        });
         useThemeStore.getState().applyDarkMode();
     },
 }));
+useThemeStore.getState().applyDarkMode();

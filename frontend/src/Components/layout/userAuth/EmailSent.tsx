@@ -3,7 +3,7 @@ import clsx from "clsx";
 import { useNavigate } from "react-router-dom";
 import { MailOpen } from "lucide-react";
 
-import Button from "@/components/ui/Button";
+import Button from "@/components/ui/common/Button";
 import AuthLayout from "./AuthLayout";
 
 const EmailSent = () => {

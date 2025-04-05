@@ -7,7 +7,7 @@ import HomePage from "@/pages/site/HomePage";
 import SignIn from "@/pages/userAuth/SignIn";
 import SignUp from "@/pages/userAuth/SignUp";
 import DashboardLayout from "@/components/layout/dashboard/DashboardLayout";
-import Home from "@/pages/dashboard/Home";
+import Overview from "@/pages/dashboard/Overview";
 import AddGlucose from "@/pages/dashboard/AddReading";
 import AddReading from "@/pages/dashboard/AddReading";
 import Report from "@/pages/dashboard/Report";
@@ -31,7 +31,7 @@ const Router = () => {
 
       {/* Dashboard */}
       <Route path="/dashboard" element={<DashboardLayout />}>
-        <Route index element={<Home />} />
+        <Route index element={<Overview />} />
         <Route path="/dashboard/add-reading" element={<AddReading />} />
         <Route path="/dashboard/trends" element={<Trends />} />
         <Route path="/dashboard/history" element={<History />} />

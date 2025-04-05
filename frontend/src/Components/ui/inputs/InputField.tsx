@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import clsx from "clsx";
 
 import { Controller, Control, ControllerRenderProps } from "react-hook-form";
@@ -9,15 +9,25 @@ import TextField from "@mui/material/TextField";
 import { Eye, EyeClosed } from "lucide-react";
 import { Link } from "react-router-dom";
 
-interface CommonInputProps {
-  label: string;
-  field: ControllerRenderProps<any, string>;
-  error?: string;
-  inputStyles?: object;
-}
+import {
+  DateInput,
+  GlucoseInput,
+  MealTimingInput,
+  TimeInput,
+} from "./AddReadingPageInputs";
+import { CommonInputProps } from "@/types/formTypes";
 
 interface InputProps {
-  type?: "text" | "email" | "password" | "textarea" | "otp";
+  type?:
+    | "text"
+    | "email"
+    | "password"
+    | "textarea"
+    | "otp"
+    | "glucose"
+    | "mealTiming"
+    | "date"
+    | "time";
   control: Control<any>;
   name: string;
   isSignIn?: boolean;
@@ -25,6 +35,7 @@ interface InputProps {
   label: string;
   otpLength?: 4 | 6;
   className?: string;
+  darkMode?: boolean;
 }
 
 const InputField = ({
@@ -36,27 +47,9 @@ const InputField = ({
   isSignIn,
   otpLength = 4,
   className,
+  darkMode,
 }: InputProps) => {
   const [showPassword, setShowPassword] = useState(false);
-
-  const inputStyles = useMemo(
-    () => ({
-      "& .MuiOutlinedInput-root": {
-        borderRadius: "14px",
-        "& fieldset": { borderColor: "#d1d5db" },
-        "&:hover fieldset": { borderColor: "#2563eb" },
-        "&.Mui-focused fieldset": { borderColor: "#2563eb" },
-        "&.Mui-error fieldset": { borderColor: "#ef4444" },
-        "&:not(.MuiInputBase-multiline)": {
-          height: "56px",
-        },
-        "& .MuiInputBase-input": {
-          fontFamily: "Inter, sans-serif",
-        },
-      },
-    }),
-    []
-  );
 
   return (
     <div className={clsx("flex flex-col", className)}>
@@ -64,7 +57,7 @@ const InputField = ({
         name={name}
         control={control}
         render={({ field }) => {
-          const commonProps = { label, field, error, inputStyles };
+          const commonProps = { label, field, error };
           switch (type) {
             case "textarea":
               return <TextAreaInput {...commonProps} />;
@@ -77,6 +70,21 @@ const InputField = ({
               );
             case "otp":
               return <OtpInput {...{ field, error, otpLength }} />;
+
+            case "glucose":
+              return (
+                <GlucoseInput {...{ ...commonProps }} darkMode={darkMode} />
+              );
+
+            case "mealTiming":
+              return <MealTimingInput {...{ ...commonProps }} />;
+
+            case "date":
+              return <DateInput {...{ ...commonProps }} darkMode={darkMode} />;
+
+            case "time":
+              return <TimeInput {...{ ...commonProps }} darkMode={darkMode} />;
+
             default:
               return <BaseInput {...commonProps} type={type} />;
           }
@@ -90,7 +98,6 @@ const BaseInput = ({
   label,
   field,
   error,
-  inputStyles,
   type,
 }: CommonInputProps & { type: string }) => (
   <TextField
@@ -102,16 +109,10 @@ const BaseInput = ({
     error={!!error}
     helperText={error}
     value={field.value || ""}
-    sx={inputStyles}
   />
 );
 
-const TextAreaInput = ({
-  label,
-  field,
-  error,
-  inputStyles,
-}: CommonInputProps) => (
+const TextAreaInput = ({ label, field, error }: CommonInputProps) => (
   <TextField
     label={label}
     {...field}
@@ -122,7 +123,6 @@ const TextAreaInput = ({
     error={!!error}
     helperText={error}
     value={field.value || ""}
-    sx={inputStyles}
   />
 );
 
@@ -132,7 +132,6 @@ const PasswordInput = ({
   showPassword,
   error,
   isSignIn,
-  inputStyles,
   setShowPassword,
 }: CommonInputProps & {
   showPassword: boolean;
@@ -151,7 +150,6 @@ const PasswordInput = ({
         error={!!error}
         helperText={error}
         value={field.value || ""}
-        sx={inputStyles}
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">

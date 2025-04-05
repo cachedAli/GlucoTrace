@@ -7,6 +7,7 @@ type buttonProps = {
   type?: "button" | "submit" | "reset";
   disabled?: boolean;
   className?: string;
+  hoverExpandBg?: string;
   onClick?: () => void;
 };
 
@@ -16,6 +17,7 @@ const Button = ({
   type = "button",
   disabled = false,
   className = "",
+  hoverExpandBg = "",
   onClick,
   ...props
 }: buttonProps) => {
@@ -27,9 +29,9 @@ const Button = ({
       className={cn(
         "relative text-lg overflow-hidden rounded-xl w-full h-12 group transition-all duration-300 ease-in-out",
         {
-          "border-2 border-gray-300 text-blue-700 hover:border-none hover:text-white":
+          "border-2 border-gray-300 text-blue-700 lg:hover:border-none lg:hover:text-white dark:border-gray-600 dark:text-headingMain-dark":
             variant === "transparent",
-          "bg-blue-700 text-white hover:bg-opacity-95 hover:scale-[1.02]":
+          "bg-blue-700 text-white lg:hover:bg-opacity-95 lg:hover:scale-[1.02] ":
             variant === "fill",
           "opacity-50 cursor-not-allowed pointer-events-none": disabled,
         },
@@ -38,7 +40,12 @@ const Button = ({
       {...props}
     >
       {variant === "transparent" && (
-        <div className="absolute bottom-0 left-0 w-full h-full bg-blue-700 origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out" />
+        <div
+          className={cn(
+            "absolute bottom-0 left-0 w-full h-full bg-blue-700 origin-left scale-x-0 lg:group-hover:scale-x-100 transition-transform duration-300 ease-in-out",
+            hoverExpandBg
+          )}
+        />
       )}
 
       <span className="relative z-10 font-semibold flex items-center justify-center w-full h-full gap-2  ">

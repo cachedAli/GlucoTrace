@@ -2,13 +2,16 @@ import React, { useEffect, useState } from "react";
 import clsx from "clsx";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ThemeProvider } from "@emotion/react";
 import { FcGoogle } from "react-icons/fc";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { ZodSchema } from "zod";
 
-import { FormField } from "../../types/formTypes";
-import InputField from "./InputField";
+import { useThemeStore } from "@/store/useThemeStore";
+import { FormField } from "@/types/formTypes";
+import inputTheme from "../inputs/inputTheme";
+import InputField from "../inputs/InputField";
 import Button from "./Button";
 
 type FormProps = {
@@ -22,6 +25,8 @@ type FormProps = {
   otpLength?: 4 | 6;
   disabled?: boolean;
   className?: string;
+  buttonClassName?: string;
+  buttonAlignment?: "center" | "end";
 };
 
 const Form = ({
@@ -35,6 +40,8 @@ const Form = ({
   otpLength,
   disabled,
   className,
+  buttonClassName,
+  buttonAlignment = "center",
 }: FormProps) => {
   const {
     handleSubmit,
@@ -45,6 +52,8 @@ const Form = ({
     mode: "onSubmit",
     resolver: zodResolver(schema),
   });
+
+  const darkMode = useThemeStore((state) => state.darkMode);
 
   const onFormSubmit = (data: Record<string, any>) => {
     onSubmit(data);
@@ -62,27 +71,41 @@ const Form = ({
             <div
               className={clsx(
                 "flex flex-col",
-                field.colSpan === 1 ? "col-span-1" : "col-span-2"
+                field.colSpan === 1 ? "col-span-1" : "col-span-2",
+                field.smColSpan && "max-sm:col-span-2"
               )}
             >
-              <InputField
-                name={field.name}
-                control={control}
-                label={field.label}
-                error={errors[field.name]?.message as string}
-                type={field.type}
-                isSignIn={buttonLabel === "Sign in"}
-                otpLength={otpLength}
-                className={className}
-              />
+              <ThemeProvider theme={inputTheme(darkMode)}>
+                <InputField
+                  name={field.name}
+                  control={control}
+                  label={field.label}
+                  error={errors[field.name]?.message as string}
+                  type={field.type}
+                  isSignIn={buttonLabel === "Sign in"}
+                  otpLength={otpLength}
+                  className={className}
+                  darkMode={darkMode}
+                />
+              </ThemeProvider>
             </div>
           </React.Fragment>
         ))}
-        <FormButtons
-          backButtonLabel={backButtonLabel}
-          buttonLabel={buttonLabel}
-          disabled={disabled}
-        />
+        <div
+          className={clsx(
+            "col-span-2 flex gap-4 w-full",
+            buttonAlignment === "end"
+              ? " justify-end "
+              : "justify-center flex-col "
+          )}
+        >
+          <FormButtons
+            backButtonLabel={backButtonLabel}
+            buttonLabel={buttonLabel}
+            disabled={disabled}
+            buttonClassName={buttonClassName}
+          />
+        </div>
       </form>
       {resendOtp && <ResendOtp />}
       <GoogleAuthButton disabled={disabled} googleAuth={googleAuth} />
@@ -94,11 +117,13 @@ type FormButtonProps = {
   buttonLabel: string;
   backButtonLabel?: string;
   disabled?: boolean;
+  buttonClassName?: string;
 };
 const FormButtons = ({
   buttonLabel,
   backButtonLabel,
   disabled,
+  buttonClassName,
 }: FormButtonProps) => {
   return (
     <>
@@ -108,7 +133,8 @@ const FormButtons = ({
         disabled={disabled}
         className={clsx(
           "col-span-2 !h-14 rounded-[14px]",
-          "max-sm:text-base max-sm:!h-12"
+          "max-sm:text-base max-sm:!h-12",
+          buttonClassName
         )}
       >
         {buttonLabel}

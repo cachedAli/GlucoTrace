@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   mode: "jit",
+  darkMode: "class",
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
@@ -12,8 +13,15 @@ export default {
       colors: {
         primary: "#1a237e",
         secondary: "#283593",
-        headingMain: "#193798",
-        headingSub: "#1A389C",
+        headingMain: {
+          DEFAULT: "#193798",
+          dark: "#668CFF",
+        },
+        headingSub: {
+          DEFAULT: "#1A389C",
+          dark: "#B2CFFF",
+        },
+        cardsSub: "#dbeafe",
         accent: "#7FFFD4",
       },
     },
