@@ -48,7 +48,7 @@ const Button = ({
         />
       )}
 
-      <span className="relative z-10 font-semibold flex items-center justify-center w-full h-full gap-2  ">
+      <span className="relative font-semibold flex items-center justify-center w-full h-full gap-2  ">
         {children}
       </span>
     </button>

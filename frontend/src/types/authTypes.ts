@@ -1,3 +1,4 @@
+import { MedicalProfile } from "./userTypes";
 
 
 export type SignInData = {
@@ -11,5 +12,6 @@ export type SignUpData = {
     email: string;
     password: string;
     profilePic?: string;
+    medicalProfile?: MedicalProfile;
 };
 

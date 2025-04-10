@@ -1,9 +1,9 @@
 import PageTitle from "@/components/layout/dashboard/mainContent/PageTitle";
-import { overviewStats } from "@/libs/constants/dashboard/statFields";
 import QuickStats from "@/components/ui/dashboard/stats/QuickStats";
-
+import StatFields from "@/libs/constants/dashboard/statFields";
 
 const Overview = () => {
+  const { overviewStats } = StatFields();
   return (
     <>
       <PageTitle isDashboard />

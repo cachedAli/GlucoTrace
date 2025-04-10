@@ -20,7 +20,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 
 import { CommonInputProps } from "@/types/formTypes";
 import { useUserStore } from "@/store/useUserStore";
@@ -195,19 +195,30 @@ export const DateInput = ({
   const [focused, setFocused] = useState(false);
 
   const anchorRef = useRef<HTMLDivElement | null>(null);
+
+  const handleDateChange = (newValue: Dayjs | null) => {
+    if (newValue) {
+      const today = dayjs().endOf("day");
+      const isValidDate = newValue.isValid() && !newValue.isAfter(today);
+
+      field.onChange(isValidDate ? newValue : today);
+    } else {
+      field.onChange(null);
+    }
+  };
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DatePicker
         label={label}
         open={open}
         value={field.value || null}
-        onChange={(newValue) => {
-          field.onChange(newValue);
-        }}
+        onChange={handleDateChange}
+        shouldDisableDate={(date) => date.isAfter(dayjs(), "day")}
         format="DD.MM.YYYY"
         onClose={() => setOpen(false)}
         onOpen={() => setOpen(true)}
         orientation="portrait"
+        maxDate={dayjs()}
         slots={{
           openPickerIcon: () => null,
         }}
@@ -216,6 +227,7 @@ export const DateInput = ({
             fullWidth: true,
             error: !!error,
             helperText: error,
+
             inputRef: anchorRef,
             onFocus: () => setFocused(true),
             onBlur: () => setFocused(false),

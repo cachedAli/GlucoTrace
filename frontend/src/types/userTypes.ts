@@ -7,15 +7,7 @@ export type User = {
     profilePic?: string;
     darkMode: boolean;
 
-    medicalProfile?: {
-        diabetesType: "Type 1" | "Type 2" | "Pre-diabetes";
-        bloodSugarUnit: "mg/dL" | "mmol/L";
-        weight: number;
-        height: number;
-        insulinDependent: boolean;
-        conditions: string[];
-        targetBloodSugarRange: { min: number; max: number };
-    }
+    medicalProfile?: MedicalProfile
 }
 
 export type Reading = {
@@ -25,4 +17,14 @@ export type Reading = {
     mealTiming: "Before Meal" | "After Meal" | "Fasting" | { custom: string };
     note?: string;
     userId: string;
+}
+
+export type MedicalProfile ={
+    diabetesType: "Type 1" | "Type 2" | "Pre-diabetes";
+    bloodSugarUnit: "mg/dL" | "mmol/L";
+    weight?: number;
+    height?: number;
+    insulinDependent?: boolean;
+    conditions?: string[];
+    targetBloodSugarRange: { min: number; max: number };
 }

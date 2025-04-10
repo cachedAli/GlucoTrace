@@ -17,7 +17,7 @@ const SignUp = () => {
 
   const onSubmit = (data: SignUpData) => {
     signup(data);
-    console.log(user);
+    console.log(data);
     navigate("/verify-email");
   };
   return (

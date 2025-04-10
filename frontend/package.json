@@ -23,6 +23,7 @@
     "blurhash": "^2.0.5",
     "clsx": "^2.1.1",
     "compression": "^1.7.5",
+    "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
     "framer-motion": "^11.15.0",
     "lucide-react": "^0.475.0",

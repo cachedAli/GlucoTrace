@@ -1,13 +1,12 @@
 import PageTitle from "@/components/layout/dashboard/mainContent/PageTitle";
-import { addReadingStats } from "@/libs/constants/dashboard/statFields";
 import QuickStats from "@/components/ui/dashboard/stats/QuickStats";
 import Form from "@/components/ui/common/Form";
 import { addReadingFields } from "@/libs/constants/dashboard";
 import { addReadingSchema } from "@/libs/validations/dashboardSchema";
 import { useUserStore } from "@/store/useUserStore";
-import { User } from "@/types/userTypes";
 import { useReadingStore } from "@/store/useReadingStore";
 import { useEffect } from "react";
+import StatFields from "@/libs/constants/dashboard/statFields";
 
 type Data = {
   glucose: number;
@@ -17,12 +16,10 @@ type Data = {
   note: string;
 };
 const AddReading = () => {
-  const { setUser, user } = useUserStore();
+  const { user } = useUserStore();
   const { setReadings, readings } = useReadingStore();
+  const { addReadingStats } = StatFields();
 
-  useEffect(() => {
-    console.log(readings);
-  }, [readings]);
 
   const handleSubmit = (data: Data) => {
     if (!user) return;
