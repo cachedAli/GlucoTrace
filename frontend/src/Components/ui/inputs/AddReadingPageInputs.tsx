@@ -9,14 +9,8 @@ import {
   MobileTimePicker,
 } from "@mui/x-date-pickers";
 import {
-  FormControl,
-  FormHelperText,
   IconButton,
   InputAdornment,
-  InputLabel,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
   TextField,
   Typography,
 } from "@mui/material";
@@ -92,98 +86,98 @@ export const GlucoseInput = ({
   );
 };
 
-export const MealTimingInput = ({ label, field, error }: CommonInputProps) => {
-  const [customMeal, setCustomMeal] = useState("");
-  const [remountKey, setRemountKey] = useState(0);
-  const [isCustom, setIsCustom] = useState(false);
+// export const MealTimingInput = ({ label, field, error }: CommonInputProps) => {
+//   const [customMeal, setCustomMeal] = useState("");
+//   const [remountKey, setRemountKey] = useState(0);
+//   const [isCustom, setIsCustom] = useState(false);
 
-  const handleChange = (e: SelectChangeEvent) => {
-    const value = e.target.value;
-    if (value === "Custom") {
-      setIsCustom(true);
-      field.onChange({ custom: "" });
-      setRemountKey((prev) => prev + 1);
-    } else {
-      setIsCustom(false);
-      setRemountKey((prev) => prev + 1);
+//   const handleChange = (e: SelectChangeEvent) => {
+//     const value = e.target.value;
+//     if (value === "Custom") {
+//       setIsCustom(true);
+//       field.onChange({ custom: "" });
+//       setRemountKey((prev) => prev + 1);
+//     } else {
+//       setIsCustom(false);
+//       setRemountKey((prev) => prev + 1);
 
-      field.onChange(value);
-    }
-    setCustomMeal("");
-  };
+//       field.onChange(value);
+//     }
+//     setCustomMeal("");
+//   };
 
-  const handleCustomChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setCustomMeal(value);
-    field.onChange({ custom: value });
-  };
+//   const handleCustomChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+//     const value = e.target.value;
+//     setCustomMeal(value);
+//     field.onChange({ custom: value });
+//   };
 
-  const handleCloseCustom = () => {
-    setCustomMeal("");
-    field.onChange(undefined);
-    setRemountKey((prev) => prev + 1);
-    setIsCustom(false);
-  };
+//   const handleCloseCustom = () => {
+//     setCustomMeal("");
+//     field.onChange(undefined);
+//     setRemountKey((prev) => prev + 1);
+//     setIsCustom(false);
+//   };
 
-  return (
-    <FormControl error={!!error} fullWidth key={remountKey}>
-      {typeof field.value === "object" && isCustom ? (
-        <TextField
-          label="Custom Meal Timing"
-          variant="outlined"
-          fullWidth
-          onChange={handleCustomChange}
-          error={!!error || customMeal.length > 25}
-          helperText={
-            error || (customMeal.length > 25 && "Maximum 25 characters")
-          }
-          value={customMeal}
-          autoFocus
-          required
-          InputLabelProps={{
-            required: true,
-          }}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <X
-                  onClick={handleCloseCustom}
-                  className="cursor-pointer hover:text-indigo-800 dark:hover:text-accent transition-all"
-                />
-              </InputAdornment>
-            ),
-          }}
-        />
-      ) : (
-        <>
-          <InputLabel>{label}</InputLabel>
-          <Select
-            {...field}
-            value={field.value || ""}
-            error={!!error}
-            label={label}
-            variant="outlined"
-            onChange={handleChange}
-            MenuProps={{
-              PaperProps: {
-                sx: {
-                  borderRadius: "16px",
-                  marginTop: "4px",
-                },
-              },
-            }}
-          >
-            <MenuItem value="Before Meal">Before Meal</MenuItem>
-            <MenuItem value="After Meal">After Meal</MenuItem>
-            <MenuItem value="Fasting">Fasting</MenuItem>
-            <MenuItem value="Custom">Custom</MenuItem>
-          </Select>
-          <FormHelperText>{error}</FormHelperText>
-        </>
-      )}
-    </FormControl>
-  );
-};
+//   return (
+//     <FormControl error={!!error} fullWidth key={remountKey}>
+//       {typeof field.value === "object" && isCustom ? (
+//         <TextField
+//           label="Custom Meal Timing"
+//           variant="outlined"
+//           fullWidth
+//           onChange={handleCustomChange}
+//           error={!!error || customMeal.length > 25}
+//           helperText={
+//             error || (customMeal.length > 25 && "Maximum 25 characters")
+//           }
+//           value={customMeal}
+//           autoFocus
+//           required
+//           InputLabelProps={{
+//             required: true,
+//           }}
+//           InputProps={{
+//             endAdornment: (
+//               <InputAdornment position="end">
+//                 <X
+//                   onClick={handleCloseCustom}
+//                   className="cursor-pointer hover:text-indigo-800 dark:hover:text-accent transition-all"
+//                 />
+//               </InputAdornment>
+//             ),
+//           }}
+//         />
+//       ) : (
+//         <>
+//           <InputLabel>{label}</InputLabel>
+//           <Select
+//             {...field}
+//             value={field.value || ""}
+//             error={!!error}
+//             label={label}
+//             variant="outlined"
+//             onChange={handleChange}
+//             MenuProps={{
+//               PaperProps: {
+//                 sx: {
+//                   borderRadius: "16px",
+//                   marginTop: "4px",
+//                 },
+//               },
+//             }}
+//           >
+//             <MenuItem value="Before Meal">Before Meal</MenuItem>
+//             <MenuItem value="After Meal">After Meal</MenuItem>
+//             <MenuItem value="Fasting">Fasting</MenuItem>
+//             <MenuItem value="Custom">Custom</MenuItem>
+//           </Select>
+//           <FormHelperText>{error}</FormHelperText>
+//         </>
+//       )}
+//     </FormControl>
+//   );
+// };
 
 export const DateInput = ({
   label,

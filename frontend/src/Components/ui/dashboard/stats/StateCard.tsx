@@ -1,4 +1,4 @@
-import { TrendingUp } from "lucide-react";
+import { TrendingDown, TrendingUp } from "lucide-react";
 import clsx from "clsx";
 
 import { StateProps } from "@/types/dashboardTypes";
@@ -73,8 +73,12 @@ const StateCardContent = ({
   bgIcon: BgIcon,
   trend,
   index,
+  isSplitStat,
+  secondValue,
+  splitStat1,
+  splitStat2,
 }: StateProps & { index: number }) => {
-  const textColor = index !== 0 ? "text-black" : "text-white";
+  const textColor = index !== 0 ? "text-gray-800" : "text-white";
 
   return (
     <div className={clsx("flex flex-col gap-1", textColor)}>
@@ -85,6 +89,7 @@ const StateCardContent = ({
         <>
           <h1 className="text-xs font-semibold">{title}</h1>
           <h2 className="font-semibold text-2xl">{value}</h2>
+
           <p className={clsx("text-xs", textColor)}>{timeFrame}</p>
         </>
       ) : (
@@ -98,7 +103,16 @@ const StateCardContent = ({
             {timeFrame}
           </p>
           <div className="flex items-center w-full justify-between">
-            <h2 className="font-semibold text-2xl">{value}</h2>
+            {isSplitStat ? (
+              <h2 className="font-semibold text-base">
+                {splitStat1}:{" "}
+                <span className="font-semibold text-2xl">{value}</span> /{" "}
+                {splitStat2}:{" "}
+                <span className="font-semibold text-2xl">{secondValue}</span>
+              </h2>
+            ) : (
+              <h2 className="font-semibold text-2xl">{value}</h2>
+            )}
             {trend && <TrendIndicator trend={trend} index={index} />}
           </div>
           <p
@@ -140,16 +154,30 @@ const TrendIndicator = ({
 }: {
   trend: string | number;
   index: number;
-}) => (
-  <div
-    className={clsx(
-      "flex items-center gap-2 px-2 py-0.5 rounded-2xl border border-green-500",
-      index !== 0 ? "bg-green-400 text-gray-800 " : "bg-green-300 text-gray-800"
-    )}
-  >
-    <TrendingUp className="size-4" />
-    <h2 className="text-[10px] font-semibold">{trend}</h2>
-  </div>
-);
+}) => {
+  const isNegative = typeof trend === "string" && trend.includes("-");
+
+  return (
+    <div
+      className={clsx(
+        "flex items-center gap-2 px-2 py-0.5 rounded-2xl border",
+        index !== 0
+          ? !isNegative
+            ? "bg-green-400 border-green-500 text-gray-800"
+            : "bg-red-500/90 border-red-600 text-gray-100"
+          : !isNegative
+          ? "bg-green-300 border-green-500 text-gray-800"
+          : "bg-red-400 border-red-500 text-gray-800"
+      )}
+    >
+      {isNegative ? (
+        <TrendingDown className="size-4" />
+      ) : (
+        <TrendingUp className="size-4" />
+      )}
+      <h2 className="text-[10px] font-semibold">{trend}</h2>
+    </div>
+  );
+};
 
 export default StateCard;

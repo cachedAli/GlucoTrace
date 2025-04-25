@@ -5,34 +5,25 @@ import { Controller, Control, ControllerRenderProps } from "react-hook-form";
 import { MantineProvider, PinInput } from "@mantine/core";
 import InputAdornment from "@mui/material/InputAdornment";
 import IconButton from "@mui/material/IconButton";
+import { Eye, EyeClosed, X } from "lucide-react";
 import TextField from "@mui/material/TextField";
-import { Eye, EyeClosed } from "lucide-react";
 import { Link } from "react-router-dom";
 
+import { DateInput, GlucoseInput, TimeInput } from "./AddReadingPageInputs";
+import { BaseProps, CommonInputProps } from "@/types/formTypes";
 import {
-  DateInput,
-  GlucoseInput,
-  MealTimingInput,
-  TimeInput,
-} from "./AddReadingPageInputs";
-import { CommonInputProps } from "@/types/formTypes";
+  FormControl,
+  FormHelperText,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+} from "@mui/material";
 
-interface InputProps {
-  type?:
-    | "text"
-    | "email"
-    | "password"
-    | "textarea"
-    | "otp"
-    | "glucose"
-    | "mealTiming"
-    | "date"
-    | "time";
+interface InputProps extends BaseProps {
   control: Control<any>;
   name: string;
   isSignIn?: boolean;
-  error?: string;
-  label: string;
   otpLength?: 4 | 6;
   className?: string;
   darkMode?: boolean;
@@ -48,6 +39,12 @@ const InputField = ({
   otpLength = 4,
   className,
   darkMode,
+  options,
+  enableCustom,
+  customLabel,
+  maxCustomLength,
+  useDefault,
+  defaultValue,
 }: InputProps) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -76,8 +73,20 @@ const InputField = ({
                 <GlucoseInput {...{ ...commonProps }} darkMode={darkMode} />
               );
 
-            case "mealTiming":
-              return <MealTimingInput {...{ ...commonProps }} />;
+            case "select":
+              return (
+                <BaseSelectInput
+                  {...{ ...commonProps }}
+                  {...{
+                    customLabel,
+                    enableCustom,
+                    maxCustomLength,
+                    options,
+                    useDefault,
+                    defaultValue,
+                  }}
+                />
+              );
 
             case "date":
               return <DateInput {...{ ...commonProps }} darkMode={darkMode} />;
@@ -226,3 +235,117 @@ const OtpInput = ({
 };
 
 export default InputField;
+
+interface BaseSelectProps extends BaseProps {
+  field: ControllerRenderProps<any, string>;
+}
+
+export const BaseSelectInput = ({
+  label,
+  options,
+  field,
+  error,
+  enableCustom = false,
+  customLabel = "Custom",
+  useDefault = false,
+  defaultValue = "",
+}: BaseSelectProps) => {
+  const [customMeal, setCustomMeal] = useState("");
+  const [remountKey, setRemountKey] = useState(0);
+  const [isCustom, setIsCustom] = useState(false);
+
+  const handleChange = (e: SelectChangeEvent) => {
+    const value = e.target.value;
+    if (value === "Custom") {
+      setIsCustom(true);
+      field.onChange({ custom: "" });
+      setRemountKey((prev) => prev + 1);
+    } else {
+      setIsCustom(false);
+      setRemountKey((prev) => prev + 1);
+
+      field.onChange(value);
+    }
+    setCustomMeal("");
+  };
+
+  const handleCustomChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setCustomMeal(value);
+    field.onChange({ custom: value });
+  };
+
+  const handleCloseCustom = () => {
+    setCustomMeal("");
+    field.onChange(undefined);
+    setRemountKey((prev) => prev + 1);
+    setIsCustom(false);
+  };
+
+  return (
+    <FormControl error={!!error} fullWidth key={remountKey}>
+      {typeof field.value === "object" && isCustom ? (
+        <TextField
+          label="Custom Meal Timing"
+          variant="outlined"
+          fullWidth
+          onChange={handleCustomChange}
+          error={!!error || customMeal.length > 25}
+          helperText={
+            error || (customMeal.length > 25 && "Maximum 25 characters")
+          }
+          value={customMeal}
+          autoFocus
+          required
+          InputLabelProps={{
+            required: true,
+          }}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <X
+                  onClick={handleCloseCustom}
+                  className="cursor-pointer hover:text-indigo-800 dark:hover:text-accent transition-all"
+                />
+              </InputAdornment>
+            ),
+          }}
+        />
+      ) : (
+        <>
+          <InputLabel>{label}</InputLabel>
+          <Select
+            {...field}
+            value={
+              typeof field.value === "object"
+                ? ""
+                : field.value || (useDefault ? defaultValue : "")
+            }
+            error={!!error}
+            label={label}
+            variant="outlined"
+            onChange={handleChange}
+            MenuProps={{
+              PaperProps: {
+                sx: {
+                  borderRadius: "16px",
+                  marginTop: "4px",
+                },
+              },
+            }}
+          >
+            {options?.map((option) => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+            {enableCustom && (
+              <MenuItem value={customLabel}>{customLabel}</MenuItem>
+            )}
+          </Select>
+          <FormHelperText>{error}</FormHelperText>
+        </>
+      )}
+    </FormControl>
+  );
+};

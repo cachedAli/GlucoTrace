@@ -1,9 +1,28 @@
 import { ControllerRenderProps } from "react-hook-form";
 
-export type FormField = {
-    name: string;
-    type: "text" | "email" | "password" | "textarea" | "otp" | "glucose" | "mealTiming" | "date" | "time";
+export interface BaseProps {
+    type?:
+    | "text"
+    | "email"
+    | "password"
+    | "textarea"
+    | "otp"
+    | "glucose"
+    | "select"
+    | "date"
+    | "time";
+    error?: string;
     label: string;
+    options?: string[];
+    enableCustom?: boolean;
+    customLabel?: string;
+    maxCustomLength?: number;
+    useDefault?: boolean;
+    defaultValue?: string;
+}
+
+export interface FormField extends BaseProps {
+    name: string;
     colSpan?: number;
     smColSpan?: boolean;
 };

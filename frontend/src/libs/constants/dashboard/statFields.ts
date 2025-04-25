@@ -5,15 +5,16 @@ import { PiForkKnifeFill, PiSunHorizonFill } from "react-icons/pi";
 import { IoCalendarOutline, IoBarChart } from "react-icons/io5";
 import { FaDroplet, FaClock } from "react-icons/fa6";
 import { BsHourglassSplit } from "react-icons/bs";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, isSameDay, startOfWeek } from "date-fns";
 import { GiCorkedTube } from "react-icons/gi";
 import { FaShieldAlt } from "react-icons/fa";
 import { TiWarning } from "react-icons/ti";
 import { FiTarget } from "react-icons/fi";
 
-import { convertToMmol, getMealImpact, getReadingStatus, getUpdatedInRangeStats } from "@/libs/glucoseUtils";
+import { convertToMmol, getBestReadingDay, getMealImpact, getPreviousStat, getReadingStatus, getThisWeekReadings, getThisWeekReadingsDescription, getTodayStats, getUpdatedHighLowStats, saveStat } from "@/libs/glucoseUtils";
 import { useReadingStore } from "@/store/useReadingStore";
 import { useUserStore } from "@/store/useUserStore";
+import { StoredStat } from "@/types/dashboardTypes";
 
 
 const StatFields = () => {
@@ -21,12 +22,91 @@ const StatFields = () => {
     const user = useUserStore((state) => state.user);
     const readings = useReadingStore((state) => state.readings);
     const targetRange = user?.medicalProfile?.targetBloodSugarRange;
-    const previousStats = JSON.parse(localStorage.getItem("previousStats") || "null");
-    const targetRangeStats = getUpdatedInRangeStats(readings, previousStats, targetRange);
+
+    const previousTargetRangeStats = getPreviousStat('targetRange');
+    const targetRangeStats = getTodayStats(readings, previousTargetRangeStats, targetRange);
+    const thisWeekReadings = getThisWeekReadings(readings);
 
     useEffect(() => {
-        if (targetRangeStats) localStorage.setItem("previousStats", JSON.stringify(targetRangeStats));
+        const checkAndArchiveStats = () => {
+            const allStats: Record<string, StoredStat> = JSON.parse(localStorage.getItem("healthStats") || "{}");
+            const now = new Date();
+
+            Object.entries(allStats).forEach(([statName, statData]) => {
+                if (!statData.current?.lastUpdated) return;
+                const lastDate = new Date(statData.current.lastUpdated);
+
+                // 1. Handle daily stats (targetRange)
+                if (statName === 'targetRange') {
+                    if (!isSameDay(lastDate, now)) {
+                        if (statData.current.value !== "--") {
+                            allStats[statName] = {
+                                previous: statData.current,
+                                current: {
+                                    value: "--",
+                                    description: "no readings available.",
+                                    lastUpdated: now.toISOString()
+                                }
+                            };
+                        }
+                    }
+                }
+
+                // 2. Handle weekly stats (highLow)
+                else if (statName === 'highLow') {
+                    const lastWeekStart = startOfWeek(lastDate, { weekStartsOn: 1 });
+                    const currentWeekStart = startOfWeek(now, { weekStartsOn: 1 });
+
+                    if (lastWeekStart < currentWeekStart) {
+                        allStats[statName] = {
+                            previous: statData.current,
+                            current: {
+                                value: "0",
+                                high: 0,
+                                low: 0,
+                                description: "no readings available.",
+                                lastUpdated: currentWeekStart.toISOString()
+                            }
+                        };
+                    }
+                }
+            });
+
+            localStorage.setItem("healthStats", JSON.stringify(allStats));
+        };
+
+
+
+        // Initial check
+        checkAndArchiveStats();
+
+        // Set up midnight check
+        const now = new Date();
+        const midnight = new Date(now);
+        midnight.setHours(24, 0, 0, 0);
+        const timeUntilMidnight = midnight.getTime() - now.getTime();
+
+        const timer = setTimeout(() => {
+            checkAndArchiveStats();
+            // Repeat daily
+            setInterval(checkAndArchiveStats, 86400000);
+        }, timeUntilMidnight);
+
+        return () => clearTimeout(timer);
+    }, []);
+
+
+
+    // Add this useEffect
+
+
+
+    useEffect(() => {
+        if (targetRangeStats.value !== "--") {
+            saveStat('targetRange', targetRangeStats);
+        }
     }, [targetRangeStats]);
+
 
     const lastReading = readings[readings.length - 1];
     const lastReadingTimeStamp = lastReading?.timestamp;
@@ -35,7 +115,16 @@ const StatFields = () => {
     const unit = user?.medicalProfile?.bloodSugarUnit ?? "mg/dL";
     const { mealImpactValue, mealImpactTimeFrame, mealImpactDescription } = getMealImpact(readings, unit);
     const { message } = getReadingStatus(reading, unit, targetRange);
+    const previousHighLowStats = getPreviousStat('highLowEpisodes');
+    const highLowStats = getUpdatedHighLowStats(readings, previousHighLowStats, unit);
+    const bestDayStats = getBestReadingDay(readings)
 
+
+    useEffect(() => {
+        if (highLowStats.value !== "--") {
+            saveStat('highLow', highLowStats);
+        }
+    }, [highLowStats]);
 
     const overviewStats = [
         {
@@ -100,26 +189,31 @@ const StatFields = () => {
     const readingsHistoryStats = [
         {
             title: "Readings This Week",
-            value: "28 entries",
+            value: `${thisWeekReadings.length} entries`,
             icon: IoCalendarOutline,
-            timeFrame: "since last week",
             isOverview: false,
+            description: getThisWeekReadingsDescription(thisWeekReadings.length),
+
         },
         {
             title: " High/Low Episodes",
-            value: "5 highs",
+            value: highLowStats.high ?? 0,
             icon: TiWarning,
-            timeFrame: "Today",
-            description: "Highs are higher than last week. Check your meals!",
-            trend: "20%",
+            timeFrame: highLowStats.value === "0" ? "No time data" : "This week",
+            description: highLowStats.description,
+            trend: highLowStats.trend,
             isOverview: false,
+            isSplitStat: true,
+            splitStat1: "Highs",
+            splitStat2: "Lows",
+            secondValue: highLowStats.low ?? 0
         },
         {
             title: "Best Day for Readings",
-            value: "Monday",
+            value: bestDayStats.value,
             icon: FaClock,
-            timeFrame: "since last week",
-            description: "Try tracking every day for a full picture!",
+            timeFrame: bestDayStats.value === "--" ? "No time data" : "This week",
+            description: bestDayStats.description,
             isOverview: false,
         },
     ]

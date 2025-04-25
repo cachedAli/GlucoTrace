@@ -86,6 +86,14 @@ const Form = ({
                   otpLength={otpLength}
                   className={className}
                   darkMode={darkMode}
+                  {...(field.type === "select" && {
+                    customLabel: field.customLabel,
+                    enableCustom: field.enableCustom,
+                    maxCustomLength: field.maxCustomLength,
+                    options: field.options,
+                    defaultValue: field.defaultValue,
+                    useDefault: field.useDefault,
+                  })}
                 />
               </ThemeProvider>
             </div>

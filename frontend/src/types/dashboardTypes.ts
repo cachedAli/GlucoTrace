@@ -9,4 +9,22 @@ export type StateProps = {
     trend?: number | string;
     timeFrame?: string;
     isOverview: boolean
+    isSplitStat?: boolean;
+    secondValue?: boolean;
+    splitStat1?: string;
+    splitStat2?: string;
+};
+
+export type StoredStat = {
+    previous: Stats | null;
+    current: Stats;
+};
+
+export type Stats = {
+    value: string;
+    high?: number;
+    low?: number;
+    trend?: string;
+    lastUpdated: string;
+    description: string;
 };

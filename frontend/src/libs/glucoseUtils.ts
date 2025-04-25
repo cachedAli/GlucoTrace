@@ -1,5 +1,6 @@
-import { formatDistanceToNow } from "date-fns";
+import { differenceInDays, format, formatDistanceToNow, isSameDay, isWithinInterval, startOfWeek } from "date-fns";
 import { Reading } from "@/types/userTypes";
+import { Stats, StoredStat } from "@/types/dashboardTypes";
 
 type Unit = "mg/dL" | "mmol/L";
 
@@ -8,13 +9,24 @@ type TargetRange = {
     max: number;
 };
 
-type Stats = {
-    value: string;
-    trend?: string;
-    lastUpdated: string;
-    description: string;
+// Retrieves the previous value of a specific health stat from localStorage.
+export const getPreviousStat = (statName: string): Stats | null => {
+    const allStats: Record<string, StoredStat> = JSON.parse(localStorage.getItem("healthStats") || "{}");
+    return allStats[statName]?.previous || null;
 };
 
+// Saves or updates a specific health stat in localStorage.
+export const saveStat = (statName: string, newData: Stats) => {
+    const allStats: Record<string, StoredStat> = JSON.parse(localStorage.getItem("healthStats") || "{}");
+
+    if (!allStats[statName]) {
+        allStats[statName] = { previous: null, current: newData };
+    } else {
+        allStats[statName].current = newData;
+    }
+
+    localStorage.setItem("healthStats", JSON.stringify(allStats));
+};
 // Converts mg/dL to mmol/L or vice versa, rounded to 1 decimal, with optional unit string
 export function convertToMmol(value: number, unit: Unit, addString: boolean = true) {
     if (unit === "mmol/L") return addString ? `${(value / 18).toFixed(1)} mmol/L` : (value / 18).toFixed(1);
@@ -121,7 +133,7 @@ const getMealImpactDescription = (impact: string, unit: Unit) => {
 };
 
 // Calculates the percentage of readings within the target range
-export const calculatePercentageInRange = (
+const calculatePercentageInRange = (
     readings: Reading[],
     targetRange: TargetRange = { min: 70, max: 180 }
 ) => {
@@ -132,7 +144,7 @@ export const calculatePercentageInRange = (
 };
 
 // Returns updated stats including percentage in range, trend, and description based on current readings and previous stats
-export const getUpdatedInRangeStats = (
+const getUpdatedInRangeStats = (
     readings: Reading[],
     previousStats: Stats | null,
     targetRange: TargetRange = { min: 70, max: 180 }
@@ -187,10 +199,21 @@ export const getUpdatedInRangeStats = (
     );
 
     let trend = undefined;
-    if (isNewDay) {
-        const prevValue = parseInt(previousStats.value.replace('%', ''));
-        const change = currentPercentage - prevValue;
-        trend = change !== 0 ? `${change > 0 ? '+' : ''}${change}%` : undefined;
+    if (previousStats) {
+        const prevValueStr = previousStats.value.replace('%', '');
+        const prevValue = parseInt(prevValueStr, 10);
+
+        if (!isNaN(prevValue)) {
+            const daysBetween = differenceInDays(
+                new Date(currentISO),
+                new Date(previousStats.lastUpdated)
+            );
+
+            if (daysBetween <= 7) {
+                const change = currentPercentage - prevValue;
+                trend = change !== 0 ? `${change > 0 ? '+' : ''}${change}%` : undefined;
+            }
+        }
     }
 
     return {
@@ -201,3 +224,136 @@ export const getUpdatedInRangeStats = (
     };
 };
 
+export const getTodayStats = (
+    readings: Reading[],
+    previousStats: Stats | null,
+    targetRange: TargetRange = { min: 70, max: 180 }
+): Stats => {
+    const today = new Date();
+    const todayReadings = readings.filter(r => isSameDay(new Date(r.timestamp), today));
+    return getUpdatedInRangeStats(todayReadings, previousStats, targetRange);
+};
+
+export const getThisWeekReadings = (readings: Reading[]) => {
+    const now = new Date();
+    const weekStart = startOfWeek(now, { weekStartsOn: 1 });
+
+    return readings.filter((r) =>
+        isWithinInterval(new Date(r.timestamp), {
+            start: weekStart,
+            end: now
+        })
+    )
+}
+
+// Returns a short weekly summary message based on how many readings were logged.
+export const getThisWeekReadingsDescription = (count: number) => {
+    if (count === 0) return "No readings logged yet this week.";
+    if (count < 5) return "Only a few entries this week. Try to log more regularly.";
+    return "You're doing great — consistent tracking this week!";
+}
+
+// Counts the number of high and low readings based on unit thresholds
+const getHighAndLowReadings = (readings: Reading[], unit: Unit) => {
+    let high = 0;
+    let low = 0;
+    readings.forEach((reading) => {
+        const value = Number(convertToMmol(reading.value, unit, false));
+        const lowUnitValue = unit === "mg/dL" ? 70 : 3.9;
+        const highUnitValue = unit === "mg/dL" ? 180 : 10;
+
+        if (value < lowUnitValue) low++
+        else if (value > highUnitValue) high++
+    })
+    return { high, low }
+}
+
+// Calculates updated high/low stats with trend and description based on previous data
+export const getUpdatedHighLowStats = (
+    readings: Reading[],
+    previousStats: Stats | null,
+    unit: Unit
+): Stats => {
+    const { high, low } = getHighAndLowReadings(readings, unit);
+    const currentISO = new Date().toISOString();
+
+    let description = "Track your readings to see patterns!";
+    let trend: string | undefined;
+
+    if (previousStats) {
+        // Extract previous counts from value string "X highs/Y lows"
+        const [prevHighStr, prevLowStr] = previousStats.value.split('/');
+        const prevHigh = parseInt(prevHighStr) || 0;
+        const prevLow = parseInt(prevLowStr) || 0;
+
+        const daysBetween = differenceInDays(new Date(currentISO), new Date(previousStats.lastUpdated));
+
+
+        // Calculate trend
+        const totalChange = (high + low) - (prevHigh + prevLow);
+        trend = totalChange !== 0 ? `${totalChange > 0 ? '+' : ''}${totalChange}` : undefined;
+
+        // Build description
+        if (high > prevHigh && low > prevLow) {
+            description = "You had more highs and lows this week — stay alert and keep tracking.";
+        } else if (high > prevHigh) {
+            description = "More highs than last week — review your meals and activities.";
+        } else if (low > prevLow) {
+            description = "More lows this week — stay balanced and watch your snacks.";
+        } else {
+            description = "Great job! Fewer highs and lows this week.";
+        }
+    } else {
+        description = "Track your readings to see patterns!";
+    }
+
+    return {
+        value: `${high + low}`,
+        high,
+        low,
+        lastUpdated: currentISO,
+        description,
+        trend
+    };
+};
+
+export const getBestReadingDay = (readings: Reading[]): Stats => {
+    const now = new Date();
+    const weekStart = startOfWeek(now, { weekStartsOn: 1 });
+
+    // Get readings for current week only
+    const weeklyReadings = readings.filter(r =>
+        isWithinInterval(new Date(r.timestamp), {
+            start: weekStart,
+            end: now
+        })
+    );
+
+    // Count readings per day
+    const dayCounts: Record<string, number> = {
+        Monday: 0, Tuesday: 0, Wednesday: 0,
+        Thursday: 0, Friday: 0, Saturday: 0, Sunday: 0
+    };
+
+    weeklyReadings.forEach(reading => {
+        const day = format(new Date(reading.timestamp), 'EEEE');
+        dayCounts[day]++;
+    });
+
+    // Find day with max readings
+    const maxCount = Math.max(...Object.values(dayCounts));
+    const [bestDay] = Object.entries(dayCounts).find(([_, count]) => count === maxCount) || ["--"];
+
+    return {
+        value: maxCount > 0 ? bestDay : "--",
+        lastUpdated: weekStart.toISOString(),
+        description: getBestDayDescription(maxCount),
+
+    };
+};
+
+const getBestDayDescription = (count: number) => {
+    if (count === 0) return "No readings this week yet. Start tracking!";
+    if (count <= 2) return "You're starting to build a habit. Keep going!";
+    return `This was your most consistent day with ${count} readings.`;
+};
