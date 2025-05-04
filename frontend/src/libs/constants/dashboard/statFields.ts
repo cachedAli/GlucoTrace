@@ -5,16 +5,17 @@ import { PiForkKnifeFill, PiSunHorizonFill } from "react-icons/pi";
 import { IoCalendarOutline, IoBarChart } from "react-icons/io5";
 import { FaDroplet, FaClock } from "react-icons/fa6";
 import { BsHourglassSplit } from "react-icons/bs";
-import { formatDistanceToNow, isSameDay, startOfWeek } from "date-fns";
+import { formatDistanceToNow, startOfWeek } from "date-fns";
 import { GiCorkedTube } from "react-icons/gi";
 import { FaShieldAlt } from "react-icons/fa";
 import { TiWarning } from "react-icons/ti";
 import { FiTarget } from "react-icons/fi";
 
-import { convertToMmol, getBestReadingDay, getMealImpact, getPreviousStat, getReadingStatus, getThisWeekReadings, getThisWeekReadingsDescription, getTodayStats, getUpdatedHighLowStats, saveStat } from "@/libs/glucoseUtils";
+import { getBestReadingDay, getMealImpact, getPreviousStat, getReadingStatus, getThisWeekReadings, getThisWeekReadingsDescription, getUpdatedHighLowStats, getWeeklyStats, saveStat } from "@/libs/utils/statFieldUtils";
 import { useReadingStore } from "@/store/useReadingStore";
 import { useUserStore } from "@/store/useUserStore";
 import { StoredStat } from "@/types/dashboardTypes";
+import { convertToMmol } from "@/libs/utils/utils";
 
 
 const StatFields = () => {
@@ -24,7 +25,7 @@ const StatFields = () => {
     const targetRange = user?.medicalProfile?.targetBloodSugarRange;
 
     const previousTargetRangeStats = getPreviousStat('targetRange');
-    const targetRangeStats = getTodayStats(readings, previousTargetRangeStats, targetRange);
+    const targetRangeStats = getWeeklyStats(readings, previousTargetRangeStats, targetRange);
     const thisWeekReadings = getThisWeekReadings(readings);
 
     useEffect(() => {
@@ -38,13 +39,16 @@ const StatFields = () => {
 
                 // 1. Handle daily stats (targetRange)
                 if (statName === 'targetRange') {
-                    if (!isSameDay(lastDate, now)) {
+                    const lastWeekStart = startOfWeek(lastDate, { weekStartsOn: 1 });
+                    const currentWeekStart = startOfWeek(now, { weekStartsOn: 1 });
+
+                    if (lastWeekStart < currentWeekStart) {
                         if (statData.current.value !== "--") {
                             allStats[statName] = {
                                 previous: statData.current,
                                 current: {
                                     value: "--",
-                                    description: "no readings available.",
+                                    description: "No readings available.",
                                     lastUpdated: now.toISOString()
                                 }
                             };
@@ -82,17 +86,27 @@ const StatFields = () => {
 
         // Set up midnight check
         const now = new Date();
-        const midnight = new Date(now);
-        midnight.setHours(24, 0, 0, 0);
-        const timeUntilMidnight = midnight.getTime() - now.getTime();
+        let nextMonday = startOfWeek(now, { weekStartsOn: 1 });
 
-        const timer = setTimeout(() => {
+        // If current time is after the start of this week, schedule for next Monday
+        if (now > nextMonday) {
+            nextMonday = new Date(nextMonday.getTime() + 7 * 24 * 60 * 60 * 1000);
+        }
+
+        const timeUntilMonday = nextMonday.getTime() - now.getTime();
+
+        let intervalId: NodeJS.Timeout;
+        const timerId = setTimeout(() => {
             checkAndArchiveStats();
-            // Repeat daily
-            setInterval(checkAndArchiveStats, 86400000);
-        }, timeUntilMidnight);
+            // Set weekly interval after initial timeout
+            intervalId = setInterval(checkAndArchiveStats, 604800000); // 7 days
+        }, timeUntilMonday);
 
-        return () => clearTimeout(timer);
+        // Cleanup function to clear both timeout and interval
+        return () => {
+            clearTimeout(timerId);
+            clearInterval(intervalId);
+        };
     }, []);
 
 
@@ -108,6 +122,7 @@ const StatFields = () => {
     }, [targetRangeStats]);
 
 
+
     const lastReading = readings[readings.length - 1];
     const lastReadingTimeStamp = lastReading?.timestamp;
     const relativeTime = lastReadingTimeStamp && formatDistanceToNow(new Date(lastReadingTimeStamp), { addSuffix: true });
@@ -115,10 +130,9 @@ const StatFields = () => {
     const unit = user?.medicalProfile?.bloodSugarUnit ?? "mg/dL";
     const { mealImpactValue, mealImpactTimeFrame, mealImpactDescription } = getMealImpact(readings, unit);
     const { message } = getReadingStatus(reading, unit, targetRange);
-    const previousHighLowStats = getPreviousStat('highLowEpisodes');
+    const previousHighLowStats = getPreviousStat('highLow');
     const highLowStats = getUpdatedHighLowStats(readings, previousHighLowStats, unit);
     const bestDayStats = getBestReadingDay(readings)
-
 
     useEffect(() => {
         if (highLowStats.value !== "--") {

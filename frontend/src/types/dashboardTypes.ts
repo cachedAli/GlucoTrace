@@ -10,7 +10,7 @@ export type StateProps = {
     timeFrame?: string;
     isOverview: boolean
     isSplitStat?: boolean;
-    secondValue?: boolean;
+    secondValue?: boolean | number;
     splitStat1?: string;
     splitStat2?: string;
 };
@@ -28,3 +28,5 @@ export type Stats = {
     lastUpdated: string;
     description: string;
 };
+
+export type Unit = "mg/dL" | "mmol/L";

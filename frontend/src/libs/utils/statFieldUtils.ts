@@ -1,8 +1,9 @@
-import { differenceInDays, format, formatDistanceToNow, isSameDay, isWithinInterval, startOfWeek } from "date-fns";
+import { differenceInDays, format, formatDistanceToNow, isWithinInterval, startOfWeek } from "date-fns";
+import { Stats, StoredStat, Unit } from "@/types/dashboardTypes";
+import { convertToMmol } from "@/libs/utils/utils";
 import { Reading } from "@/types/userTypes";
-import { Stats, StoredStat } from "@/types/dashboardTypes";
 
-type Unit = "mg/dL" | "mmol/L";
+
 
 type TargetRange = {
     min: number;
@@ -27,24 +28,23 @@ export const saveStat = (statName: string, newData: Stats) => {
 
     localStorage.setItem("healthStats", JSON.stringify(allStats));
 };
-// Converts mg/dL to mmol/L or vice versa, rounded to 1 decimal, with optional unit string
-export function convertToMmol(value: number, unit: Unit, addString: boolean = true) {
-    if (unit === "mmol/L") return addString ? `${(value / 18).toFixed(1)} mmol/L` : (value / 18).toFixed(1);
-    return addString ? `${value} mg/dL` : value;
-}
+
 
 // Returns glucose reading status and message based on the target range and unit
 export const getReadingStatus = (value: number, unit: Unit, targetRange: TargetRange = { min: 70, max: 180 }) => {
     const reading = unit === "mmol/L" ? value * 18 : value;
-    const min = targetRange?.min ?? 70;
-    const max = targetRange?.max ?? 180;
+    const min = unit === "mmol/L" ? (targetRange.min ?? 3.9) * 18 : targetRange.min ?? 70;
+    const max = unit === "mmol/L" ? (targetRange.max ?? 10) * 18 : targetRange.max ?? 180;
+
+    const veryLow = unit === "mmol/L" ? 3.0 : 54;
+    const veryHigh = unit === "mmol/L" ? 13.9 : 250;
 
     if (reading === undefined || reading === null) {
         return {
             status: "no reading",
             message: "No reading available yet. Please make sure to take a reading.",
         };
-    } else if (reading < 54) {
+    } else if (reading < veryLow) {
         return {
             status: "very low",
             message: "Your glucose is critically low! Please take immediate action and consult your doctor.",
@@ -54,15 +54,15 @@ export const getReadingStatus = (value: number, unit: Unit, targetRange: TargetR
             status: "low",
             message: "Your glucose is a bit low. Consider having a quick snack to bring it up.",
         };
+    } else if (reading > veryHigh) {
+        return {
+            status: "very high",
+            message: "Your glucose is very high! Please monitor closely and consider seeking medical advice.",
+        };
     } else if (reading > max) {
         return {
             status: "high",
             message: "Your glucose level is high. You might want to review your meals or insulin dosage.",
-        };
-    } else if (reading > 250) {
-        return {
-            status: "very high",
-            message: "Your glucose is very high! Please monitor closely and consider seeking medical advice.",
         };
     } else {
         return {
@@ -224,14 +224,20 @@ const getUpdatedInRangeStats = (
     };
 };
 
-export const getTodayStats = (
+export const getWeeklyStats = (
     readings: Reading[],
     previousStats: Stats | null,
     targetRange: TargetRange = { min: 70, max: 180 }
 ): Stats => {
-    const today = new Date();
-    const todayReadings = readings.filter(r => isSameDay(new Date(r.timestamp), today));
-    return getUpdatedInRangeStats(todayReadings, previousStats, targetRange);
+    const now = new Date();
+    const weekStart = startOfWeek(now, { weekStartsOn: 1 });
+    const weeklyReadings = readings.filter(r =>
+        isWithinInterval(new Date(r.timestamp), {
+            start: weekStart,
+            end: now
+        })
+    );
+    return getUpdatedInRangeStats(weeklyReadings, previousStats, targetRange);
 };
 
 export const getThisWeekReadings = (readings: Reading[]) => {
@@ -274,26 +280,29 @@ export const getUpdatedHighLowStats = (
     previousStats: Stats | null,
     unit: Unit
 ): Stats => {
-    const { high, low } = getHighAndLowReadings(readings, unit);
-    const currentISO = new Date().toISOString();
+
+    const now = new Date();
+    const weekStart = startOfWeek(now, { weekStartsOn: 1 });
+    // Filter readings to current week only
+    const currentWeekReadings = readings.filter(r =>
+        isWithinInterval(new Date(r.timestamp), { start: weekStart, end: now })
+    );
+    const { high, low } = getHighAndLowReadings(currentWeekReadings, unit);
+    const currentISO = now.toISOString();
 
     let description = "Track your readings to see patterns!";
     let trend: string | undefined;
 
     if (previousStats) {
-        // Extract previous counts from value string "X highs/Y lows"
-        const [prevHighStr, prevLowStr] = previousStats.value.split('/');
-        const prevHigh = parseInt(prevHighStr) || 0;
-        const prevLow = parseInt(prevLowStr) || 0;
-
-        const daysBetween = differenceInDays(new Date(currentISO), new Date(previousStats.lastUpdated));
-
+        // DIRECTLY ACCESS STORED HIGH/LOW COUNTS
+        const prevHigh = previousStats.high || 0;
+        const prevLow = previousStats.low || 0;
 
         // Calculate trend
         const totalChange = (high + low) - (prevHigh + prevLow);
         trend = totalChange !== 0 ? `${totalChange > 0 ? '+' : ''}${totalChange}` : undefined;
 
-        // Build description
+        // Build description using ACTUAL COUNTS
         if (high > prevHigh && low > prevLow) {
             description = "You had more highs and lows this week — stay alert and keep tracking.";
         } else if (high > prevHigh) {
@@ -303,8 +312,6 @@ export const getUpdatedHighLowStats = (
         } else {
             description = "Great job! Fewer highs and lows this week.";
         }
-    } else {
-        description = "Track your readings to see patterns!";
     }
 
     return {

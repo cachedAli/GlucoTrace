@@ -20,7 +20,6 @@ const AddReading = () => {
   const { setReadings, readings } = useReadingStore();
   const { addReadingStats } = StatFields();
 
-
   const handleSubmit = (data: Data) => {
     if (!user) return;
 

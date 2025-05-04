@@ -3,21 +3,37 @@ import clsx from "clsx";
 import glucoTraceDark from "/homepage/GlucoTraceDark.webp";
 import { useUserStore } from "@/store/useUserStore";
 import glucoTrace from "/homepage/GlucoTrace.webp";
+import { useLocation } from "react-router-dom";
+import SearchBar from "./searchBar/SearchBar";
 import UserProfile from "./UserProfile";
 
 const Header = () => {
+  const location = useLocation();
+  const isHistory = location.pathname === "/dashboard/history";
   return (
     <header
       className={clsx(
-        "sticky z-10 top-0 items-center bg-slate-50 h-20 w-full  flex md:selection:bg-indigo-800 md:selection:text-white",
-        "dark:bg-gray-900"
+        "sticky z-10 top-0 bg-slate-50 dark:bg-gray-900 h-auto w-full",
+        "flex flex-col md:selection:bg-indigo-800 md:selection:text-white"
       )}
     >
-      <div className="w-full flex px-8 max-sm:px-4 items-center justify-between">
+      <div className="w-full flex px-8 gap-28 max-sm:px-4 items-center justify-between h-20">
         <Logo />
+
+        {isHistory && (
+          <div className="flex-1 hidden lg:flex justify-center">
+            <SearchBar />
+          </div>
+        )}
 
         <UserProfile />
       </div>
+
+      {isHistory && (
+        <div className="block lg:hidden px-8 max-sm:px-4 pb-2">
+          <SearchBar />
+        </div>
+      )}
     </header>
   );
 };

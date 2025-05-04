@@ -6,10 +6,23 @@ type DashboardState = {
     handleNavModal: (e: React.MouseEvent) => void;
     showLogoutModal: boolean;
     setShowLogoutModal: (value: boolean) => void;
+    showDeleteReading: boolean;
+    setShowDeleteReading: (value: boolean) => void;
+    readingToDelete: string;
+    setReadingToDelete: (value: string) => void;
+    selectedSortOption: string | undefined;
+    setSelectedSortOption: (value: string | undefined) => void;
+    selectedFilterOption: string | undefined;
+    setSelectedFilterOption: (value: string | undefined) => void
 }
 export const useDashboardStore = create<DashboardState>((set) => ({
     showNavModal: false,
     setShowNavModal: (value) => set({ showNavModal: value }),
+
+    showDeleteReading: false,
+    setShowDeleteReading: (value) => set({ showDeleteReading: value }),
+    readingToDelete: "",
+    setReadingToDelete: (value) => set({ readingToDelete: value }),
 
     handleNavModal: (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -17,6 +30,13 @@ export const useDashboardStore = create<DashboardState>((set) => ({
     },
 
     showLogoutModal: false,
-    setShowLogoutModal: (value) => set({ showLogoutModal: value })
+    setShowLogoutModal: (value) => set({ showLogoutModal: value }),
+
+    selectedSortOption: undefined,
+    setSelectedSortOption: (value) => set({ selectedSortOption: value }),
+
+    selectedFilterOption: undefined,
+    setSelectedFilterOption: (value) => set({ selectedFilterOption: value })
+
 
 }))

@@ -52,7 +52,7 @@ const StateCardTopRow = ({
       {!isOverview && (
         <h1
           className={clsx(
-            "text-sm  ",
+            "text-sm  font-montserrat",
             index !== 0 ? "text-black font-semibold" : "text-white font-medium"
           )}
         >

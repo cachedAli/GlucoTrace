@@ -13,7 +13,7 @@ import AddReading from "@/pages/dashboard/AddReading";
 import Report from "@/pages/dashboard/Report";
 import Settings from "@/pages/dashboard/Settings";
 import Profile from "@/pages/dashboard/Profile";
-import History from "@/pages/dashboard/History";
+import History from "@/pages/dashboard/history/History";
 import Trends from "@/pages/dashboard/Trends";
 
 const Router = () => {
