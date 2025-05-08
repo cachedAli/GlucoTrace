@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import clsx from "clsx";
 
 import {
@@ -12,7 +12,7 @@ import {
   Tooltip,
 } from "@mui/material";
 import { Check, Pencil, Trash2, X } from "lucide-react";
-import { compareDesc, format } from "date-fns";
+import { format } from "date-fns";
 
 import { getReadingStatus } from "@/libs/utils/statFieldUtils";
 import { capitalizeFirstLetter, getStatusColorClass } from "@/libs/utils/utils";
@@ -104,7 +104,7 @@ const TableBodyContent = () => {
   };
   const unit = user?.medicalProfile?.bloodSugarUnit ?? "mg/dL";
 
-  const { filteredReadings, setFilteredReadings } = useReadingStore();
+  const { filteredReadings } = useReadingStore();
   const [editId, setEditId] = useState<string | null>(null);
   const [editedReading, setEditedReading] = useState<{
     value: string;
@@ -118,11 +118,6 @@ const TableBodyContent = () => {
     time: "",
     note: "",
     mealTiming: "Before Meal",
-  });
-
-  // Sort readings based on when they were added (newest first)
-  const sortedReadings = [...filteredReadings].sort((a, b) => {
-    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
 
   const globalInputStyles =
@@ -139,42 +134,45 @@ const TableBodyContent = () => {
         },
       }}
     >
-      {sortedReadings.map((reading, index) => {
-        const sharedProps = {
-          editedReading,
-          editId,
-          globalInputStyles,
-          reading,
-          setEditedReading,
-        };
+      {filteredReadings.length > 0 ? (
+        filteredReadings.map((reading) => {
+          const sharedProps = {
+            editedReading,
+            editId,
+            globalInputStyles,
+            reading,
+            setEditedReading,
+          };
 
-        return (
-          <TableRow key={index}>
-            {/* ID */}
-            <TableCell>{reading.id}</TableCell>
-
-            {/* Date */}
-            <TableDate {...sharedProps} />
-
-            {/* Time */}
-            <TableTime {...sharedProps} />
-
-            {/* Value */}
-            <TableValue {...sharedProps} unit={unit} />
-
-            {/* Status */}
-            <TableStatus {...sharedProps} range={range} unit={unit} />
-
-            {/* Meal Timing */}
-            <TableMealTiming {...sharedProps} />
-            {/* Note */}
-            <TableNote {...sharedProps} />
-
-            {/* Action buttons */}
-            <TableActionButtons {...sharedProps} setEditId={setEditId} />
-          </TableRow>
-        );
-      })}
+          return (
+            <TableRow key={reading.id}>
+              <TableCell>{reading.id}</TableCell>
+              <TableDate {...sharedProps} />
+              <TableTime {...sharedProps} />
+              <TableValue {...sharedProps} unit={unit} />
+              <TableStatus {...sharedProps} range={range} unit={unit} />
+              <TableMealTiming {...sharedProps} />
+              <TableNote {...sharedProps} />
+              <TableActionButtons {...sharedProps} setEditId={setEditId} />
+            </TableRow>
+          );
+        })
+      ) : (
+        <TableRow>
+          <TableCell
+            colSpan={8}
+            align="center"
+            sx={{
+              fontSize: "20px",
+              borderBottom: "none",
+              color: "#6B7280",
+              py: 3,
+            }}
+          >
+            Your readings will show up here once added.
+          </TableCell>
+        </TableRow>
+      )}
     </TableBody>
   );
 };
@@ -485,7 +483,6 @@ const TableActionButtons = ({
       !editedReading.value ||
       !editedReading.date ||
       !editedReading.time ||
-      !editedReading.note ||
       mealTiming
     )
       return;

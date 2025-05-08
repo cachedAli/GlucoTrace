@@ -22,17 +22,17 @@ export function convertToMmol(value: number, unit: Unit, addString: boolean = tr
 }
 
 // takes a status string as input and returns a corresponding CSS class based on the status level.
-export const getStatusColorClass = (status: string) => {
+export const getStatusColorClass = (status: string, hex: boolean = false) => {
     switch (status.toLowerCase()) {
         case "very low":
-            return "bg-red-700 "
+            return !hex ? "bg-orange-700 " : "#c2410c"
         case "low":
-            return "bg-orange-500"
+            return !hex ? "bg-orange-500" : "#f97316"
         case "normal":
-            return "bg-green-500"
+            return !hex ? "bg-green-500" : "#3B82F6"
         case "high":
-            return "bg-red-500"
+            return !hex ? "bg-red-500" : "#ef4444"
         case "very high":
-            return "bg-red-700"
+            return !hex ? "bg-red-700 " : "#b91c1c"
     }
 }

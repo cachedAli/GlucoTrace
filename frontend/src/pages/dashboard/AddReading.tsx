@@ -1,12 +1,11 @@
 import PageTitle from "@/components/layout/dashboard/mainContent/PageTitle";
-import QuickStats from "@/components/ui/dashboard/stats/QuickStats";
-import Form from "@/components/ui/common/Form";
-import { addReadingFields } from "@/libs/constants/dashboard";
 import { addReadingSchema } from "@/libs/validations/dashboardSchema";
-import { useUserStore } from "@/store/useUserStore";
-import { useReadingStore } from "@/store/useReadingStore";
-import { useEffect } from "react";
+import QuickStats from "@/components/ui/dashboard/stats/QuickStats";
 import StatFields from "@/libs/constants/dashboard/statFields";
+import { addReadingFields } from "@/libs/constants/dashboard";
+import { useReadingStore } from "@/store/useReadingStore";
+import { useUserStore } from "@/store/useUserStore";
+import Form from "@/components/ui/common/Form";
 
 type Data = {
   glucose: number;
@@ -17,7 +16,7 @@ type Data = {
 };
 const AddReading = () => {
   const { user } = useUserStore();
-  const { setReadings, readings } = useReadingStore();
+  const { setReadings } = useReadingStore();
   const { addReadingStats } = StatFields();
 
   const handleSubmit = (data: Data) => {
@@ -33,12 +32,14 @@ const AddReading = () => {
       timestamp,
       note,
       userId: user.id,
+      createdAt: new Date().toISOString(),
     };
 
     setReadings(newReading);
 
     console.log(data);
   };
+  console.log("Date now:", Date.now(), "Date new:", new Date().toISOString());
 
   const mergeDateAndTime = (date: string, time: string) => {
     const dateObj = new Date(date);

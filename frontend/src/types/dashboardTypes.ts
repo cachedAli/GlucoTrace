@@ -24,6 +24,8 @@ export type Stats = {
     value: string;
     high?: number;
     low?: number;
+    morning?: number | null;
+    evening?: number | null;
     trend?: string;
     lastUpdated: string;
     description: string;

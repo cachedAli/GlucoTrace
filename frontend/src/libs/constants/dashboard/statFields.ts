@@ -11,7 +11,7 @@ import { FaShieldAlt } from "react-icons/fa";
 import { TiWarning } from "react-icons/ti";
 import { FiTarget } from "react-icons/fi";
 
-import { getBestReadingDay, getMealImpact, getPreviousStat, getReadingStatus, getThisWeekReadings, getThisWeekReadingsDescription, getUpdatedHighLowStats, getWeeklyStats, saveStat } from "@/libs/utils/statFieldUtils";
+import { estimateHba1c, getBestReadingDay, getMealImpact, getMonthChange, getPreviousStat, getReadingStatus, getThisWeekReadings, getThisWeekReadingsDescription, getUpdatedHighLowStats, getUpdatedMorningEveningStats, getWeeklyStats, saveStat } from "@/libs/utils/statFieldUtils";
 import { useReadingStore } from "@/store/useReadingStore";
 import { useUserStore } from "@/store/useUserStore";
 import { StoredStat } from "@/types/dashboardTypes";
@@ -27,6 +27,7 @@ const StatFields = () => {
     const previousTargetRangeStats = getPreviousStat('targetRange');
     const targetRangeStats = getWeeklyStats(readings, previousTargetRangeStats, targetRange);
     const thisWeekReadings = getThisWeekReadings(readings);
+
 
     useEffect(() => {
         const checkAndArchiveStats = () => {
@@ -74,7 +75,41 @@ const StatFields = () => {
                         };
                     }
                 }
+                else if (statName === 'morningEvening') {
+                    const lastWeekStart = startOfWeek(lastDate, { weekStartsOn: 1 });
+                    const currentWeekStart = startOfWeek(now, { weekStartsOn: 1 });
+
+                    if (lastWeekStart < currentWeekStart) {
+                        allStats[statName] = {
+                            previous: statData.current,
+                            current: {
+                                value: "--",
+                                morning: null,
+                                evening: null,
+                                description: "no readings available.",
+                                lastUpdated: currentWeekStart.toISOString()
+                            }
+                        };
+                    }
+                }
+                else if (statName === 'monthlyChange') {
+                    const lastDate = new Date(statData.current?.lastUpdated || 0);
+                    const lastMonth = lastDate.getMonth();
+                    const currentMonth = now.getMonth();
+
+                    if (lastMonth !== currentMonth) {
+                        allStats[statName] = {
+                            previous: statData.current,
+                            current: {
+                                value: "--",
+                                description: "New month - tracking in progress",
+                                lastUpdated: now.toISOString()
+                            }
+                        };
+                    }
+                }
             });
+
 
             localStorage.setItem("healthStats", JSON.stringify(allStats));
         };
@@ -121,9 +156,7 @@ const StatFields = () => {
         }
     }, [targetRangeStats]);
 
-
-
-    const lastReading = readings[readings.length - 1];
+    const lastReading = readings[0];
     const lastReadingTimeStamp = lastReading?.timestamp;
     const relativeTime = lastReadingTimeStamp && formatDistanceToNow(new Date(lastReadingTimeStamp), { addSuffix: true });
     const reading = lastReading?.value;
@@ -132,13 +165,30 @@ const StatFields = () => {
     const { message } = getReadingStatus(reading, unit, targetRange);
     const previousHighLowStats = getPreviousStat('highLow');
     const highLowStats = getUpdatedHighLowStats(readings, previousHighLowStats, unit);
+    const previousMorningEveningStats = getPreviousStat('morningEvening');
+    const morningEveningStats = getUpdatedMorningEveningStats(readings, previousMorningEveningStats, unit)
     const bestDayStats = getBestReadingDay(readings)
+    const previousMonthlyChange = getPreviousStat('monthlyChange');
+    const monthlyChangeStats = getMonthChange(readings, previousMonthlyChange, unit);
+    const hba1cStats = estimateHba1c(readings,unit)
 
     useEffect(() => {
         if (highLowStats.value !== "--") {
             saveStat('highLow', highLowStats);
         }
     }, [highLowStats]);
+
+    useEffect(() => {
+        if (morningEveningStats.value !== "--") {
+            saveStat('morningEvening', morningEveningStats);
+        }
+    }, [morningEveningStats]);
+
+    useEffect(() => {
+        if (monthlyChangeStats.value !== "--") {
+            saveStat('monthlyChange', monthlyChangeStats);
+        }
+    }, [monthlyChangeStats]);
 
     const overviewStats = [
         {
@@ -234,27 +284,33 @@ const StatFields = () => {
 
     const trendStats = [
         {
-            title: "1-Month Change",
-            value: "3% decrease",
+            title: "Monthly Avg. Glucose Change",
+            value: monthlyChangeStats.value,
             icon: LuRefreshCw,
-            timeFrame: "since last month",
+            timeFrame: monthlyChangeStats.value !== "--"
+                ? "Compared to last month" : "No time data",
+            description: monthlyChangeStats.description,
             isOverview: false,
         },
         {
             title: " Morning vs. Evening Averages",
-            value: "112 mg/dl",
+            value: morningEveningStats.morning ?? 0,
             icon: PiSunHorizonFill,
-            timeFrame: "Today",
-            description: "Highs are higher than last week. Check your meals!",
-            trend: "20%",
+            timeFrame: morningEveningStats.value === "0" ? "No time data" : "This week",
+            description: morningEveningStats.description,
+            trend: morningEveningStats.trend,
             isOverview: false,
+            isSplitStat: true,
+            splitStat1: "M",
+            splitStat2: "E",
+            secondValue: morningEveningStats.evening ?? 0
         },
         {
             title: "Estimated HbA1c",
-            value: "11.2",
+            value: hba1cStats.value,
             icon: GiCorkedTube,
-            timeFrame: "since last month",
-            description: "Try tracking every day for a full picture!",
+            timeFrame: hba1cStats.timeFrame,
+            description: hba1cStats.description,
             isOverview: false,
         },
     ]

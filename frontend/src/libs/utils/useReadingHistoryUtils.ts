@@ -86,6 +86,7 @@ export const useReadingHistoryUtils = () => {
       const dateA = new Date(a.timestamp)
       const dateB = new Date(b.timestamp)
       return compareDesc(dateA, dateB)
+
     })
     setFilteredReadings(result)
   }

@@ -1,4 +1,4 @@
-import { differenceInDays, format, formatDistanceToNow, isWithinInterval, startOfWeek } from "date-fns";
+import { differenceInDays, endOfMonth, format, formatDistanceToNow, isThisMonth, isWithinInterval, startOfMonth, startOfWeek, subDays, subMonths } from "date-fns";
 import { Stats, StoredStat, Unit } from "@/types/dashboardTypes";
 import { convertToMmol } from "@/libs/utils/utils";
 import { Reading } from "@/types/userTypes";
@@ -224,6 +224,7 @@ const getUpdatedInRangeStats = (
     };
 };
 
+// Calculates weekly in-range glucose stats compared to previous stats
 export const getWeeklyStats = (
     readings: Reading[],
     previousStats: Stats | null,
@@ -240,6 +241,8 @@ export const getWeeklyStats = (
     return getUpdatedInRangeStats(weeklyReadings, previousStats, targetRange);
 };
 
+
+// Returns all glucose readings from the current week
 export const getThisWeekReadings = (readings: Reading[]) => {
     const now = new Date();
     const weekStart = startOfWeek(now, { weekStartsOn: 1 });
@@ -324,6 +327,7 @@ export const getUpdatedHighLowStats = (
     };
 };
 
+// Identifies the weekday with the highest number of readings this week
 export const getBestReadingDay = (readings: Reading[]): Stats => {
     const now = new Date();
     const weekStart = startOfWeek(now, { weekStartsOn: 1 });
@@ -359,8 +363,242 @@ export const getBestReadingDay = (readings: Reading[]): Stats => {
     };
 };
 
+// Returns a description message based on number of readings that day
 const getBestDayDescription = (count: number) => {
     if (count === 0) return "No readings this week yet. Start tracking!";
     if (count <= 2) return "You're starting to build a habit. Keep going!";
     return `This was your most consistent day with ${count} readings.`;
+};
+
+export const getMonthChange = (
+    readings: Reading[],
+    previousStats: Stats | null,
+    unit: Unit
+): Stats => {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+
+    // 1. Parse ACTUAL previous average from description
+    let previousAverage: number | null = null;
+    if (previousStats?.description) {
+        const matches = previousStats.description.match(/From ([\d.]+) to [\d.]+/);
+        if (matches) previousAverage = parseFloat(matches[1]);
+    }
+
+    // 2. Get current month readings
+    const currentReadings = readings
+        .filter(r => {
+            const date = new Date(r.timestamp);
+            return date.getMonth() === currentMonth &&
+                date.getFullYear() === currentYear;
+        })
+        .map(r => convertToMmol(r.value, unit, false) as number);
+
+    // 3. Calculate current average if enough data
+    const currentAvg = currentReadings.length >= 5
+        ? currentReadings.reduce((a, b) => a + b, 0) / currentReadings.length
+        : null;
+
+    // 4. Valid comparison possible
+    if (previousAverage && currentAvg) {
+        const percentageChangeNum = ((currentAvg - previousAverage) / previousAverage * 100);
+        const arrow = percentageChangeNum >= 0 ? '↑' : '↓';
+        const percentageChange = Math.abs(percentageChangeNum).toFixed(1);
+        return {
+            value: `${arrow} ${percentageChange}%`,
+            description: `From ${previousAverage.toFixed(1)} to ${currentAvg.toFixed(1)} ${unit}`,
+            lastUpdated: now.toISOString(),
+            trend: percentageChange
+        };
+    }
+
+    // 5. Fallback to direct month comparison
+    const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+    const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+
+    const lastMonthReadings = readings
+        .filter(r => {
+            const date = new Date(r.timestamp);
+            return date.getMonth() === lastMonth &&
+                date.getFullYear() === lastMonthYear;
+        })
+        .map(r => convertToMmol(r.value, unit, false) as number);
+
+    // 6. Final calculation
+    const baseStats: Stats = {
+        value: "--",
+        description: "Not enough data available for comparison",
+        lastUpdated: now.toISOString()
+    };
+
+    if (currentReadings.length < 5 || lastMonthReadings.length < 5) return baseStats;
+    if (now.getDate() < 7) return baseStats;
+
+    const currentFallbackAvg = currentReadings.reduce((a, b) => a + b, 0) / currentReadings.length;
+    const lastFallbackAvg = lastMonthReadings.reduce((a, b) => a + b, 0) / lastMonthReadings.length;
+    const percentageNum = ((currentFallbackAvg - lastFallbackAvg) / lastFallbackAvg * 100);
+    const arrow = percentageNum >= 0 ? '↑' : '↓';
+    const percentage = Math.abs(percentageNum).toFixed(1);
+
+
+    return {
+        value: `${arrow} ${percentage}%`,
+        description: `From ${lastFallbackAvg.toFixed(1)} to ${currentFallbackAvg.toFixed(1)} ${unit}`,
+        lastUpdated: now.toISOString(),
+        trend: percentage
+    };
+};
+
+// Counts morning and evening averages based on time of day
+const getMorningEveningAverages = (readings: Reading[], unit: Unit) => {
+    let morningTotal = 0, morningCount = 0;
+    let eveningTotal = 0, eveningCount = 0;
+
+    readings.forEach((reading) => {
+        const date = new Date(reading.timestamp);
+        const hours = date.getHours();
+        const value = Number(convertToMmol(reading.value, unit, false));
+
+        // Morning: 5AM - 11:59AM
+        if (hours >= 5 && hours < 12) {
+            morningTotal += value;
+            morningCount++;
+        }
+        // Evening: 5PM - 10:59PM
+        else if (hours >= 17 && hours < 23) {
+            eveningTotal += value;
+            eveningCount++;
+        }
+    });
+
+    return {
+        morning: morningCount > 0 ? Number((morningTotal / morningCount).toFixed(1)) : null,
+        evening: eveningCount > 0 ? Number((eveningTotal / eveningCount).toFixed(1)) : null,
+    };
+};
+
+// Calculates updated morning/evening stats with trend and description
+export const getUpdatedMorningEveningStats = (
+    readings: Reading[],
+    previousStats: Stats | null,
+    unit: Unit
+): Stats => {
+    const now = new Date();
+    const weekStart = startOfWeek(now, { weekStartsOn: 1 });
+    const currentWeekReadings = readings.filter(r =>
+        isWithinInterval(new Date(r.timestamp), { start: weekStart, end: now })
+    );
+
+    const { morning, evening } = getMorningEveningAverages(currentWeekReadings, unit);
+    const currentISO = now.toISOString();
+
+    // Unit-specific validation threshold (70 mg/dL = 3.9 mmol/L)
+    const VALID_THRESHOLD = unit === 'mg/dL' ? 70 : 3.9;
+
+    // Format values with units
+    const formatValue = (val: number | null) =>
+        val !== null ? `${val.toFixed(1)} ${unit}` : "--";
+
+    const morningDisplay = formatValue(morning);
+    const eveningDisplay = formatValue(evening);
+
+    let description = "Track your morning/evening patterns!";
+    let trend: string | undefined;
+
+    if (previousStats) {
+        const prevMorning = previousStats.morning ?? null;
+        const prevEvening = previousStats.evening ?? null;
+
+        // Calculate totals safely
+        const currentTotal = (morning ?? 0) + (evening ?? 0);
+        const previousTotal = (prevMorning ?? 0) + (prevEvening ?? 0);
+
+        // Validation checks
+        const isCurrentValid =
+            (morning ?? 0) >= VALID_THRESHOLD &&
+            (evening ?? 0) >= VALID_THRESHOLD;
+
+        const isPreviousValid = previousTotal > 0;
+
+        if (isCurrentValid && isPreviousValid) {
+            const percentageChange = ((currentTotal - previousTotal) / previousTotal) * 100;
+            const rounded = Math.round(percentageChange);
+
+            if (!isNaN(rounded)) {
+                trend = `${rounded >= 0 ? '+' : ''}${rounded}%`;
+                description = percentageChange > 0
+                    ? "Your averages increased this week. Review daily habits."
+                    : "Your averages improved this week. Keep it up!";
+            }
+        }
+    }
+
+    return {
+        value: `${morningDisplay} | ${eveningDisplay}`,
+        morning: morning,
+        evening: evening,
+        lastUpdated: currentISO,
+        description,
+        trend
+    };
+};
+
+export const estimateHba1c = (
+    readings: Reading[],
+    unit: Unit
+): { value: string; description: string; timeFrame: string } => {
+    const DEFAULT_VALUE = "--";
+    const DEFAULT_DESCRIPTION = "Track consistently for HbA1c estimation";
+
+    const now = new Date();
+    const currentMonthStart = startOfMonth(now);
+    const currentMonthEnd = endOfMonth(now);
+
+    // 1. Filter current month's readings (until today)
+    const relevantReadings = readings.filter(reading => {
+        const readingDate = new Date(reading.timestamp);
+        return isThisMonth(readingDate) && readingDate <= now;
+    });
+
+    // No current month data case
+    if (relevantReadings.length === 0) {
+        return {
+            value: DEFAULT_VALUE,
+            description: "Start tracking to estimate HbA1c",
+            timeFrame: currentMonthStart.toLocaleString('default', { month: 'long' })
+
+        };
+    }
+
+    // 2. Check coverage within current month
+    const sortedTimestamps = relevantReadings
+        .map(r => new Date(r.timestamp).getTime())
+        .sort((a, b) => a - b);
+
+    const earliestDate = new Date(sortedTimestamps[0]);
+    const daysTracked = differenceInDays(now, earliestDate) + 1; // +1 to include start day
+
+    if (daysTracked < 7) {
+        return {
+            value: DEFAULT_VALUE,
+            description: DEFAULT_DESCRIPTION,
+            timeFrame: `${currentMonthStart.toLocaleString('default', { month: 'long' })} (${7 - daysTracked} ${daysTracked >= 1 ? "day" : "days"} needed)`
+        };
+    }
+
+    // 3. Calculate HbA1c
+    const average = relevantReadings.reduce((sum, r) => sum + r.value, 0)
+        / relevantReadings.length;
+
+    const hba1c = unit === 'mg/dL'
+        ? (average + 46.7) / 28.7
+        : (average + 2.59) / 1.59;
+
+    return {
+        value: `${hba1c.toFixed(1)}%`,
+        description: `Based on ${relevantReadings.length} readings (${daysTracked}/${new Date().getDate()} days)`,
+        timeFrame: currentMonthStart.toLocaleString('default', { month: 'long' })
+
+    };
 };

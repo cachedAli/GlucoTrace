@@ -13,15 +13,13 @@ type ReadingState = {
     updateReadings: (id: string, updatedReading: Reading) => void
 }
 export const useReadingStore = create<ReadingState>((set) => ({
+    
     readings: JSON.parse(localStorage.getItem("readings") || "[]"),
     filteredReadings: JSON.parse(localStorage.getItem("readings") || "[]"),
 
     setReadings: (newReading) => set((state) => {
-        const readingWithTimestamp = {
-            ...newReading,
-            createdAt: new Date()
-        };
-        const updatedReadings = [readingWithTimestamp, ...state.readings];
+ 
+        const updatedReadings = [newReading, ...state.readings];
         localStorage.setItem("readings", JSON.stringify(updatedReadings));
         return { readings: updatedReadings, filteredReadings: updatedReadings }
     }),
@@ -46,9 +44,12 @@ export const useReadingStore = create<ReadingState>((set) => ({
         set((state) => {
             const updatedReadings = state.readings.filter((reading) => reading.id !== id);
             localStorage.setItem("readings", JSON.stringify(updatedReadings));
+            const updatedFilteredReadings = state.filteredReadings.filter(
+                (reading) => reading.id !== id
+            );
             return {
                 readings: updatedReadings,
-                filteredReadings: updatedReadings,
+                filteredReadings: updatedFilteredReadings,
             };
         }),
 
@@ -56,10 +57,12 @@ export const useReadingStore = create<ReadingState>((set) => ({
         set((state) => {
             const updatedReadings = state.readings.map(reading => reading.id === id ? { ...reading, ...updatedReading } : reading)
 
-            state.setFilteredReadings(updatedReadings)
+            const updatedFilteredReadings = state.filteredReadings.map(reading =>
+                reading.id === id ? { ...reading, ...updatedReading } : reading
+            );
 
             localStorage.setItem("readings", JSON.stringify(updatedReadings))
 
-            return { readings: updatedReadings };
+            return { readings: updatedReadings, filteredReadings: updatedFilteredReadings };
         })
 }))

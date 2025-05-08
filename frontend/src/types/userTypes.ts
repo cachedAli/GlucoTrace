@@ -17,7 +17,7 @@ export type Reading = {
     mealTiming: "Before Meal" | "After Meal" | "Fasting" | { custom: string };
     note?: string;
     userId: string;
-    createdAt: Date;
+    createdAt: string | Date;
 }
 
 export type MedicalProfile ={
