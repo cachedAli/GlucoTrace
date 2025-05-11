@@ -46,13 +46,13 @@ const Logo = () => {
         <img
           src={glucoTraceDark}
           alt="GlucoTrace"
-          className="max-w-[173px] w-auto mb-2"
+          className="max-w-[173px] w-auto mb-2 max-sm:max-w-[120px]"
         />
       ) : (
         <img
           src={glucoTrace}
           alt="GlucoTrace"
-          className="max-h-[80px] w-auto text-blue-500"
+          className="max-h-[80px] w-auto text-blue-500 max-sm:max-h-[52px]"
         />
       )}
     </div>

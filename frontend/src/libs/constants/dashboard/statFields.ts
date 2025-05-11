@@ -1,33 +1,59 @@
 import { useEffect } from "react";
 
-import { LuRuler, LuNotepadText, LuRefreshCw } from "react-icons/lu";
+import { differenceInDays, formatDistanceToNow, startOfWeek } from "date-fns";
 import { PiForkKnifeFill, PiSunHorizonFill } from "react-icons/pi";
 import { IoCalendarOutline, IoBarChart } from "react-icons/io5";
+import { LuNotepadText, LuRefreshCw } from "react-icons/lu";
+import { BsHourglassSplit, BsStars } from "react-icons/bs";
+import { GiCorkedTube, GiTrophy } from "react-icons/gi";
 import { FaDroplet, FaClock } from "react-icons/fa6";
-import { BsHourglassSplit } from "react-icons/bs";
-import { formatDistanceToNow, startOfWeek } from "date-fns";
-import { GiCorkedTube } from "react-icons/gi";
 import { FaShieldAlt } from "react-icons/fa";
 import { TiWarning } from "react-icons/ti";
-import { FiTarget } from "react-icons/fi";
 
-import { estimateHba1c, getBestReadingDay, getMealImpact, getMonthChange, getPreviousStat, getReadingStatus, getThisWeekReadings, getThisWeekReadingsDescription, getUpdatedHighLowStats, getUpdatedMorningEveningStats, getWeeklyStats, saveStat } from "@/libs/utils/statFieldUtils";
+import { estimateHba1c, get7DayAverage, getBestReadingDay, getMealImpact, getMonthChange, getPreviousStat, getStableGlucose, getThisWeekReadings, getThisWeekReadingsDescription, getUpdatedHighLowStats, getUpdatedMorningEveningStats, getWeeklyLoggingSummary, getWeeklyStats, saveStat } from "@/libs/utils/statFieldUtils";
+import { convertToMmol, getReadingStatus } from "@/libs/utils/utils";
 import { useReadingStore } from "@/store/useReadingStore";
 import { useUserStore } from "@/store/useUserStore";
 import { StoredStat } from "@/types/dashboardTypes";
-import { convertToMmol } from "@/libs/utils/utils";
 
 
 const StatFields = () => {
 
     const user = useUserStore((state) => state.user);
-    const readings = useReadingStore((state) => state.readings);
+    const unit = user?.medicalProfile?.bloodSugarUnit ?? "mg/dL";
     const targetRange = user?.medicalProfile?.targetBloodSugarRange;
+    const readings = useReadingStore((state) => state.readings);
 
+    // * Previous Stats
+    const previous7DayStats = getPreviousStat('sevenDayAverage');
     const previousTargetRangeStats = getPreviousStat('targetRange');
-    const targetRangeStats = getWeeklyStats(readings, previousTargetRangeStats, targetRange);
-    const thisWeekReadings = getThisWeekReadings(readings);
+    const previousHighLowStats = getPreviousStat('highLow');
+    const previousMonthlyChange = getPreviousStat('monthlyChange');
+    const previousMorningEveningStats = getPreviousStat('morningEvening');
 
+    // * Overview Stats
+    const stableGlucoseStats = getStableGlucose(readings, unit, targetRange)
+    const sevenDaysAverageStats = get7DayAverage(readings, unit, previous7DayStats);
+    const WeeklyLoggingSummaryStats = getWeeklyLoggingSummary(readings)
+
+    // * Add Reading Stats
+    const lastReading = readings[0];
+    const { mealImpactValue, mealImpactTimeFrame, mealImpactDescription } = getMealImpact(readings, unit);
+    const targetRangeStats = getWeeklyStats(readings, previousTargetRangeStats, targetRange);
+    const lastReadingTimeStamp = lastReading?.timestamp;
+    const relativeTime = lastReadingTimeStamp && formatDistanceToNow(new Date(lastReadingTimeStamp), { addSuffix: true });
+    const reading = lastReading?.value;
+    const { message } = getReadingStatus(reading, unit, targetRange);
+
+    // * Reading History Stats
+    const thisWeekReadings = getThisWeekReadings(readings);
+    const highLowStats = getUpdatedHighLowStats(readings, previousHighLowStats, unit);
+    const bestDayStats = getBestReadingDay(readings)
+
+    // * Trend Stats
+    const monthlyChangeStats = getMonthChange(readings, previousMonthlyChange, unit);
+    const morningEveningStats = getUpdatedMorningEveningStats(readings, previousMorningEveningStats, unit)
+    const hba1cStats = estimateHba1c(readings, unit)
 
     useEffect(() => {
         const checkAndArchiveStats = () => {
@@ -56,7 +82,6 @@ const StatFields = () => {
                         }
                     }
                 }
-
                 // 2. Handle weekly stats (highLow)
                 else if (statName === 'highLow') {
                     const lastWeekStart = startOfWeek(lastDate, { weekStartsOn: 1 });
@@ -92,6 +117,21 @@ const StatFields = () => {
                         };
                     }
                 }
+                else if (statName === 'sevenDayAverage') {
+                    const lastDate = new Date(statData.current.lastUpdated);
+                    const daysSinceUpdate = differenceInDays(now, lastDate);
+
+                    if (daysSinceUpdate >= 7) {
+                        allStats[statName] = {
+                            previous: statData.current,
+                            current: {
+                                value: "--",
+                                description: "no readings available.",
+                                lastUpdated: now.toISOString()
+                            }
+                        };
+                    }
+                }
                 else if (statName === 'monthlyChange') {
                     const lastDate = new Date(statData.current?.lastUpdated || 0);
                     const lastMonth = lastDate.getMonth();
@@ -110,11 +150,8 @@ const StatFields = () => {
                 }
             });
 
-
             localStorage.setItem("healthStats", JSON.stringify(allStats));
         };
-
-
 
         // Initial check
         checkAndArchiveStats();
@@ -144,33 +181,11 @@ const StatFields = () => {
         };
     }, []);
 
-
-
-    // Add this useEffect
-
-
-
     useEffect(() => {
         if (targetRangeStats.value !== "--") {
             saveStat('targetRange', targetRangeStats);
         }
     }, [targetRangeStats]);
-
-    const lastReading = readings[0];
-    const lastReadingTimeStamp = lastReading?.timestamp;
-    const relativeTime = lastReadingTimeStamp && formatDistanceToNow(new Date(lastReadingTimeStamp), { addSuffix: true });
-    const reading = lastReading?.value;
-    const unit = user?.medicalProfile?.bloodSugarUnit ?? "mg/dL";
-    const { mealImpactValue, mealImpactTimeFrame, mealImpactDescription } = getMealImpact(readings, unit);
-    const { message } = getReadingStatus(reading, unit, targetRange);
-    const previousHighLowStats = getPreviousStat('highLow');
-    const highLowStats = getUpdatedHighLowStats(readings, previousHighLowStats, unit);
-    const previousMorningEveningStats = getPreviousStat('morningEvening');
-    const morningEveningStats = getUpdatedMorningEveningStats(readings, previousMorningEveningStats, unit)
-    const bestDayStats = getBestReadingDay(readings)
-    const previousMonthlyChange = getPreviousStat('monthlyChange');
-    const monthlyChangeStats = getMonthChange(readings, previousMonthlyChange, unit);
-    const hba1cStats = estimateHba1c(readings,unit)
 
     useEffect(() => {
         if (highLowStats.value !== "--") {
@@ -190,32 +205,36 @@ const StatFields = () => {
         }
     }, [monthlyChangeStats]);
 
+    useEffect(() => {
+        if (sevenDaysAverageStats.value !== "--") {
+            saveStat('sevenDayAverage', sevenDaysAverageStats);
+        }
+    }, [sevenDaysAverageStats]);
+
     const overviewStats = [
         {
-            title: "Current value",
-            value: "120mg/dl",
+            title: "Weekly Check-ins",
+            value: WeeklyLoggingSummaryStats.value,
+            icon: BsStars,
+            bgIcon: GiTrophy,
+            timeFrame: WeeklyLoggingSummaryStats.description,
+            isOverview: true,
+        },
+        {
+            title: "Stable Glucose Time",
+            value: stableGlucoseStats.value,
             icon: FaDroplet,
             bgIcon: BsHourglassSplit,
-            trend: "+12%",
-            timeFrame: "Last 30 days",
+            timeFrame: stableGlucoseStats.timeframe,
             isOverview: true,
         },
         {
             title: "7-Day Average",
-            value: "120mg/dl",
+            value: `${sevenDaysAverageStats.value} ${unit}`,
             icon: IoBarChart,
             bgIcon: IoCalendarOutline,
-            trend: "+12%",
-            timeFrame: "Your average blood sugar this week",
-            isOverview: true,
-        },
-        {
-            title: "Time in Range",
-            value: "85%",
-            icon: LuRuler,
-            bgIcon: FiTarget,
-            trend: "+1%",
-            timeFrame: "3% from yesterday",
+            trend: sevenDaysAverageStats.trend,
+            timeFrame: sevenDaysAverageStats.description,
             isOverview: true,
         },
     ]

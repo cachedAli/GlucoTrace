@@ -7,7 +7,7 @@ import HomePage from "@/pages/site/HomePage";
 import SignIn from "@/pages/userAuth/SignIn";
 import SignUp from "@/pages/userAuth/SignUp";
 import DashboardLayout from "@/components/layout/dashboard/DashboardLayout";
-import Overview from "@/pages/dashboard/Overview";
+import Overview from "@/pages/dashboard/overview/Overview";
 import AddGlucose from "@/pages/dashboard/AddReading";
 import AddReading from "@/pages/dashboard/AddReading";
 import Report from "@/pages/dashboard/Report";

@@ -39,7 +39,6 @@ const AddReading = () => {
 
     console.log(data);
   };
-  console.log("Date now:", Date.now(), "Date new:", new Date().toISOString());
 
   const mergeDateAndTime = (date: string, time: string) => {
     const dateObj = new Date(date);

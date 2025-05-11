@@ -14,8 +14,11 @@ import {
 import { Check, Pencil, Trash2, X } from "lucide-react";
 import { format } from "date-fns";
 
-import { getReadingStatus } from "@/libs/utils/statFieldUtils";
-import { capitalizeFirstLetter, getStatusColorClass } from "@/libs/utils/utils";
+import {
+  capitalizeFirstLetter,
+  getStatusColorClass,
+  getReadingStatus,
+} from "@/libs/utils/utils";
 import { useDashboardStore } from "@/store/useDashboardStore";
 import { useReadingStore } from "@/store/useReadingStore";
 import { useThemeStore } from "@/store/useThemeStore";

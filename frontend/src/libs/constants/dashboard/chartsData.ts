@@ -1,5 +1,4 @@
-import { convertToMmol, getStatusColorClass } from "@/libs/utils/utils";
-import { getReadingStatus } from "@/libs/utils/statFieldUtils";
+import { convertToMmol, getReadingStatus, getStatusColorClass } from "@/libs/utils/utils";
 import { useReadingStore } from "@/store/useReadingStore";
 import { Unit } from "@/types/dashboardTypes";
 import {

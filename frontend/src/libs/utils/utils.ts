@@ -1,7 +1,7 @@
 import { twMerge } from "tailwind-merge"
 import clsx, { ClassValue } from "clsx"
 
-import { Unit } from "@/types/dashboardTypes";
+import { TargetRange, Unit } from "@/types/dashboardTypes";
 
 
 // Combines class names using clsx and merges Tailwind classes
@@ -22,17 +22,59 @@ export function convertToMmol(value: number, unit: Unit, addString: boolean = tr
 }
 
 // takes a status string as input and returns a corresponding CSS class based on the status level.
-export const getStatusColorClass = (status: string, hex: boolean = false) => {
+export const getStatusColorClass = (status: string, hex: boolean = false, textColor: boolean = false) => {
     switch (status.toLowerCase()) {
         case "very low":
-            return !hex ? "bg-orange-700 " : "#c2410c"
+            return !hex ? textColor ? "text-orange-700" : "bg-orange-700" : "#c2410c"
         case "low":
-            return !hex ? "bg-orange-500" : "#f97316"
+            return !hex ? textColor ? "text-orange-500" : "bg-orange-500" : "#f97316"
         case "normal":
-            return !hex ? "bg-green-500" : "#3B82F6"
+            return !hex ? textColor ? "text-green-500" : "bg-green-500" : "#3B82F6"
         case "high":
-            return !hex ? "bg-red-500" : "#ef4444"
+            return !hex ? textColor ? "text-red-500" : "bg-red-500" : "#ef4444"
         case "very high":
-            return !hex ? "bg-red-700 " : "#b91c1c"
+            return !hex ? textColor ? "text-red-700" : "bg-red-700 " : "#b91c1c"
+    }
+}
+
+// Returns glucose reading status and message based on the target range and unit
+export const getReadingStatus = (value: number, unit: Unit, targetRange: TargetRange = { min: 70, max: 180 }) => {
+    const reading = unit === "mmol/L" ? value * 18 : value;
+    const min = unit === "mmol/L" ? (targetRange.min ?? 3.9) * 18 : targetRange.min ?? 70;
+    const max = unit === "mmol/L" ? (targetRange.max ?? 10) * 18 : targetRange.max ?? 180;
+
+    const veryLow = unit === "mmol/L" ? 3.0 : 54;
+    const veryHigh = unit === "mmol/L" ? 13.9 : 250;
+
+    if (reading === undefined || reading === null) {
+        return {
+            status: "no reading",
+            message: "No reading available yet. Please make sure to take a reading.",
+        };
+    } else if (reading < veryLow) {
+        return {
+            status: "very low",
+            message: "Your glucose is critically low! Please take immediate action and consult your doctor.",
+        };
+    } else if (reading < min) {
+        return {
+            status: "low",
+            message: "Your glucose is a bit low. Consider having a quick snack to bring it up.",
+        };
+    } else if (reading > veryHigh) {
+        return {
+            status: "very high",
+            message: "Your glucose is very high! Please monitor closely and consider seeking medical advice.",
+        };
+    } else if (reading > max) {
+        return {
+            status: "high",
+            message: "Your glucose level is high. You might want to review your meals or insulin dosage.",
+        };
+    } else {
+        return {
+            status: "normal",
+            message: "Your glucose is within a healthy range. Keep up the great work!",
+        };
     }
 }

@@ -1,14 +1,10 @@
-import { differenceInDays, endOfMonth, format, formatDistanceToNow, isThisMonth, isWithinInterval, startOfMonth, startOfWeek, subDays, subMonths } from "date-fns";
-import { Stats, StoredStat, Unit } from "@/types/dashboardTypes";
+import { compareAsc, differenceInDays, differenceInMinutes, endOfDay, endOfMonth, endOfWeek, format, formatDistanceToNow, isThisMonth, isWithinInterval, startOfDay, startOfMonth, startOfWeek, subDays } from "date-fns";
+import { Stats, StoredStat, TargetRange, Unit } from "@/types/dashboardTypes";
 import { convertToMmol } from "@/libs/utils/utils";
 import { Reading } from "@/types/userTypes";
 
 
-
-type TargetRange = {
-    min: number;
-    max: number;
-};
+// * Save to localeStorage Functions
 
 // Retrieves the previous value of a specific health stat from localStorage.
 export const getPreviousStat = (statName: string): Stats | null => {
@@ -29,48 +25,195 @@ export const saveStat = (statName: string, newData: Stats) => {
     localStorage.setItem("healthStats", JSON.stringify(allStats));
 };
 
+// * Overview Page Functions
 
-// Returns glucose reading status and message based on the target range and unit
-export const getReadingStatus = (value: number, unit: Unit, targetRange: TargetRange = { min: 70, max: 180 }) => {
-    const reading = unit === "mmol/L" ? value * 18 : value;
-    const min = unit === "mmol/L" ? (targetRange.min ?? 3.9) * 18 : targetRange.min ?? 70;
-    const max = unit === "mmol/L" ? (targetRange.max ?? 10) * 18 : targetRange.max ?? 180;
+// Calculates the longest continuous period today where glucose was in the target range.
+export const getStableGlucose = (
+    readings: Reading[],
+    unit: Unit,
+    targetRange: TargetRange = { min: 70, max: 180 }
+) => {
+    const now = Date.now();
+    const startDate = startOfDay(now);
+    const endDate = endOfDay(now);
 
-    const veryLow = unit === "mmol/L" ? 3.0 : 54;
-    const veryHigh = unit === "mmol/L" ? 13.9 : 250;
+    const todayReadings = readings.filter(reading =>
+        isWithinInterval(reading.timestamp, { start: startDate, end: endDate })
+    );
+    const sortedReadings = todayReadings.sort((a, b) =>
+        compareAsc(a.timestamp, b.timestamp)
+    );
 
-    if (reading === undefined || reading === null) {
+    let currentStable: Reading[] = [];
+    let lastTimestamp = null;
+    let longestStable: Reading[] = [];
+
+    for (let i = 0; i < sortedReadings.length; i++) {
+        const reading = sortedReadings[i];
+        const unitValue = Number(convertToMmol(reading.value, unit, false))
+        const inRange =
+            unitValue <= targetRange.max && unitValue >= targetRange.min;
+
+        if (!inRange) {
+            if (currentStable.length > longestStable.length) {
+                longestStable = [...currentStable];
+            }
+            currentStable = [];
+            lastTimestamp = null;
+            continue;
+        }
+
+        if (
+            lastTimestamp &&
+            differenceInMinutes(reading.timestamp, lastTimestamp) > 180
+        ) {
+            if (currentStable.length > longestStable.length) {
+                longestStable = [...currentStable];
+            }
+            currentStable = [];
+        }
+
+        currentStable.push(reading);
+        lastTimestamp = reading.timestamp;
+    }
+
+    if (currentStable.length > longestStable.length) {
+        longestStable = [...currentStable];
+    }
+
+    if (longestStable.length === 0) {
         return {
-            status: "no reading",
-            message: "No reading available yet. Please make sure to take a reading.",
-        };
-    } else if (reading < veryLow) {
-        return {
-            status: "very low",
-            message: "Your glucose is critically low! Please take immediate action and consult your doctor.",
-        };
-    } else if (reading < min) {
-        return {
-            status: "low",
-            message: "Your glucose is a bit low. Consider having a quick snack to bring it up.",
-        };
-    } else if (reading > veryHigh) {
-        return {
-            status: "very high",
-            message: "Your glucose is very high! Please monitor closely and consider seeking medical advice.",
-        };
-    } else if (reading > max) {
-        return {
-            status: "high",
-            message: "Your glucose level is high. You might want to review your meals or insulin dosage.",
-        };
-    } else {
-        return {
-            status: "normal",
-            message: "Your glucose is within a healthy range. Keep up the great work!",
+            value: "0 hrs 0 mins",
+            timeframe: "No stable periods today"
         };
     }
+
+    const start = longestStable[0].timestamp;
+    const end = longestStable[longestStable.length - 1].timestamp;
+    const durationMinutes = differenceInMinutes(end, start);
+
+    const hours = Math.floor(durationMinutes / 60);
+    const minutes = durationMinutes % 60;
+
+    const fromTime = new Date(start).toLocaleTimeString([], {
+        hour: 'numeric',
+        minute: '2-digit',
+    });
+    const toTime = new Date(end).toLocaleTimeString([], {
+        hour: 'numeric',
+        minute: '2-digit',
+    });
+
+    return {
+        value: `${hours} hrs ${minutes} mins`,
+        timeframe: `From ${fromTime} to ${toTime}`,
+    };
+};
+
+// Computes the 7-day average glucose and provides insights and trend compared to previous value.
+export const get7DayAverage = (readings: Reading[], unit: Unit, previousStats: Stats | null): Stats => {
+    const now = Date.now();
+    const sevenDaysAgo = subDays(now, 7)
+
+    const conversion = (value: number) => {
+        return Number(convertToMmol(value, unit, false));
+    }
+
+    const last7DaysReadings = readings.filter((reading) => {
+        return isWithinInterval(reading.timestamp, { start: sevenDaysAgo, end: now })
+    })
+
+    if (last7DaysReadings.length === 0) {
+        return {
+            value: "--",
+            description: "No readings in the last 7 days",
+            lastUpdated: new Date().toISOString(),
+        }
+    };
+
+    let total = 0;
+    for (let i = 0; i < last7DaysReadings.length; i++) {
+        let unitBasedValue = Number(conversion(readings[i].value))
+        total += unitBasedValue;
+    }
+
+    const avg = total / last7DaysReadings.length
+
+
+    const lowerThreshold = conversion(70);
+    const upperThreshold = conversion(180);
+
+    let description = "";
+    if (avg < lowerThreshold) {
+        description = "Glucose is low. Check your levels.";
+    } else if (avg >= lowerThreshold && avg <= upperThreshold) {
+        description = "Good control! Keep it up.";
+    } else {
+        description = "High levels. Consult your doctor.";
+    }
+
+    // Trend calculation
+    let trend: string | undefined;
+    if (previousStats?.value && previousStats.value !== "--") {
+        const prevValue = parseFloat(previousStats.value);
+        if (!isNaN(prevValue)) {
+            const change = avg - prevValue;
+            const percentageChange = ((change / prevValue) * 100).toFixed(1);
+            trend = `${change >= 0 ? '+' : ''}${percentageChange}%`;
+        }
+    }
+
+    return {
+        value: unit === "mg/dL"
+            ? `${Math.round(avg)}`
+            : `${Number(avg.toFixed(1))}`,
+        description: description,
+        lastUpdated: new Date().toISOString(),
+        trend,
+    }
 }
+
+// Returns how many days in the current week (Mon–Sun) had logged glucose readings
+export const getWeeklyLoggingSummary = (readings: Reading[]) => {
+    const now = new Date();
+    const weekStart = startOfWeek(now, { weekStartsOn: 1 }); // Monday
+    const weekEnd = endOfWeek(now, { weekStartsOn: 1 });     // Sunday
+
+    // Filter readings within this week
+    const currentWeekReadings = readings.filter((reading) =>
+        isWithinInterval(reading.timestamp, { start: weekStart, end: weekEnd })
+    );
+
+    // Count unique days that had at least one reading
+    const loggedDays = new Set<string>();
+    for (const reading of currentWeekReadings) {
+        const day = new Date(reading.timestamp).toDateString();
+        loggedDays.add(day);
+    }
+
+    const daysLogged = loggedDays.size;
+
+    // Friendly message
+    let message = "";
+    if (daysLogged === 7) {
+        message = `You logged all 7 days. Amazing streak! 🎉`;
+    } else if (daysLogged >= 5) {
+        message = `You logged ${daysLogged} days. Great consistency!`;
+    } else if (daysLogged >= 3) {
+        message = `You logged ${daysLogged} days. You're getting there!`;
+    } else if (daysLogged >= 1) {
+        message = `You logged ${daysLogged} day${daysLogged > 1 ? "s" : ""}. Let’s try to log more!`;
+    } else {
+        message = `No readings this week yet. Start logging to stay on track!`;
+    }
+
+    return {
+        value: `${daysLogged} of 7 days`,
+        description: message,
+    };
+};
+
+//* Add Reading Page Functions
 
 // Calculates the meal impact based on before and after meal readings, and returns impact description
 export const getMealImpact = (readings: Reading[], unit: Unit) => {
@@ -144,7 +287,7 @@ const calculatePercentageInRange = (
 };
 
 // Returns updated stats including percentage in range, trend, and description based on current readings and previous stats
-const getUpdatedInRangeStats = (
+export const getUpdatedInRangeStats = (
     readings: Reading[],
     previousStats: Stats | null,
     targetRange: TargetRange = { min: 70, max: 180 }
@@ -241,6 +384,23 @@ export const getWeeklyStats = (
     return getUpdatedInRangeStats(weeklyReadings, previousStats, targetRange);
 };
 
+export const getMonthlyStats = (
+    readings: Reading[],
+    previousStats: Stats | null,
+    targetRange: TargetRange = { min: 70, max: 180 }
+): Stats => {
+    const now = new Date();
+    const monthStart = startOfMonth(now);
+    const monthlyReadings = readings.filter((r) =>
+        isWithinInterval(new Date(r.timestamp), {
+            start: monthStart,
+            end: now,
+        })
+    );
+    return getUpdatedInRangeStats(monthlyReadings, previousStats, targetRange);
+};
+
+//* Reading History Page Functions
 
 // Returns all glucose readings from the current week
 export const getThisWeekReadings = (readings: Reading[]) => {
@@ -370,6 +530,10 @@ const getBestDayDescription = (count: number) => {
     return `This was your most consistent day with ${count} readings.`;
 };
 
+
+// * Trend Page Functions
+
+// Calculates the percentage change in blood sugar readings for the current month compared to the previous month or the last available data.
 export const getMonthChange = (
     readings: Reading[],
     previousStats: Stats | null,
@@ -444,7 +608,7 @@ export const getMonthChange = (
 
     return {
         value: `${arrow} ${percentage}%`,
-        description: `From ${lastFallbackAvg.toFixed(1)} to ${currentFallbackAvg.toFixed(1)} ${unit}`,
+        description: `From ${lastFallbackAvg.toFixed(1)} ${unit} to ${currentFallbackAvg.toFixed(1)} ${unit}`,
         lastUpdated: now.toISOString(),
         trend: percentage
     };
@@ -544,6 +708,7 @@ export const getUpdatedMorningEveningStats = (
     };
 };
 
+// Estimates HbA1c based on glucose readings from the current month.
 export const estimateHba1c = (
     readings: Reading[],
     unit: Unit

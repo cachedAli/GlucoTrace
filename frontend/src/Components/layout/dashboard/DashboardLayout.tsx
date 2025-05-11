@@ -27,8 +27,7 @@ const DashboardLayout = () => {
         <div
           className={clsx(
             "flex-1 px-12 ml-20 flex flex-col gap-3 mb-6",
-            "max-lg:ml-0 max-lg:px-0",
-            "max-sm:mb-32"
+            "max-lg:ml-0 max-lg:px-0 max-lg:mb-28"
           )}
         >
           <Outlet />

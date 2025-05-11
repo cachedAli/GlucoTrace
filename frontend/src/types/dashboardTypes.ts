@@ -32,3 +32,8 @@ export type Stats = {
 };
 
 export type Unit = "mg/dL" | "mmol/L";
+
+export type TargetRange = {
+    min: number;
+    max: number;
+};
