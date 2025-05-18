@@ -9,6 +9,7 @@ import { useReadingStore } from "@/store/useReadingStore";
 import { useThemeStore } from "@/store/useThemeStore";
 import { useUserStore } from "@/store/useUserStore";
 import { Reading } from "@/types/userTypes";
+import { convertToMmol } from "@/libs/utils/utils";
 
 const formatDate = (timestamp: string | number | Date) => {
   const dateObj = new Date(timestamp);
@@ -27,6 +28,7 @@ const formatDate = (timestamp: string | number | Date) => {
 const SearchBar = () => {
   const darkMode = useThemeStore((state) => state.darkMode);
   const user = useUserStore((state) => state.user);
+  const unit = user?.medicalProfile?.bloodSugarUnit || "mg/dL";
   const { readings, setFilteredReadings, resetFilteredReadings } =
     useReadingStore();
   const [isFocus, setIsFocus] = useState(false);
@@ -42,7 +44,10 @@ const SearchBar = () => {
 
       const date = new Date(option.timestamp).toLocaleString().toLowerCase();
       const note = option.note?.toLowerCase() || "";
-      const value = option.value.toString();
+      const rawValue =
+        unit === "mmol/L"
+          ? convertToMmol(option.value, unit, false).toString()
+          : option.value.toString();
       const mealTiming =
         typeof option.mealTiming === "object"
           ? option.mealTiming.custom.toLowerCase()
@@ -51,7 +56,7 @@ const SearchBar = () => {
       return (
         date.includes(searchTerm) ||
         note.includes(searchTerm) ||
-        value.includes(searchTerm) ||
+        rawValue.includes(searchTerm) ||
         mealTiming.includes(searchTerm)
       );
     });
@@ -94,7 +99,10 @@ const SearchBar = () => {
                 ? option.mealTiming.custom
                 : option.mealTiming;
             const formattedDateTime = formatDate(option.timestamp);
-            return `${option.value} mg/dL • ${mealTiming} • ${formattedDateTime}`;
+            return `${convertToMmol(
+              option.value,
+              unit
+            )} • ${mealTiming} • ${formattedDateTime}`;
           }}
           sx={{
             width: "100%",
@@ -145,8 +153,8 @@ const SearchBar = () => {
                 )}
               >
                 <div className="font-medium">
-                  {option.value} {user?.medicalProfile?.bloodSugarUnit} •{" "}
-                  {mealTiming} • {formattedDateTime}
+                  {convertToMmol(option.value, unit)} • {mealTiming} •{" "}
+                  {formattedDateTime}
                 </div>
                 {option.note && (
                   <div className="text-sm text-gray-500 dark:text-gray-400 truncate">

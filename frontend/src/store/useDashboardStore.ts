@@ -1,6 +1,9 @@
+import { Dayjs } from "dayjs";
 import { create } from "zustand";
 
 type DashboardState = {
+    showSetupModal: boolean;
+    setShowSetupModal: (value: boolean) => void;
     showNavModal: boolean;
     setShowNavModal: (value: boolean) => void;
     handleNavModal: (e: React.MouseEvent) => void;
@@ -14,8 +17,20 @@ type DashboardState = {
     setSelectedSortOption: (value: string | undefined) => void;
     selectedFilterOption: string | undefined;
     setSelectedFilterOption: (value: string | undefined) => void
+    timeRange: "last7Days" | "thisMonth" | "custom";
+    setTimeRange: (value: "last7Days" | "thisMonth" | "custom") => void
+    startDate: Dayjs | null;
+    setStartDate: (value: Dayjs | null) => void;
+    endDate: Dayjs | null;
+    setEndDate: (value: Dayjs | null) => void;
+    showDeleteAccountModal: boolean;
+    setShowDeleteAccountModal: (value: boolean) => void;
 }
 export const useDashboardStore = create<DashboardState>((set) => ({
+
+    showSetupModal: false,
+    setShowSetupModal: (value) => set({ showSetupModal: value }),
+
     showNavModal: false,
     setShowNavModal: (value) => set({ showNavModal: value }),
 
@@ -36,7 +51,17 @@ export const useDashboardStore = create<DashboardState>((set) => ({
     setSelectedSortOption: (value) => set({ selectedSortOption: value }),
 
     selectedFilterOption: undefined,
-    setSelectedFilterOption: (value) => set({ selectedFilterOption: value })
+    setSelectedFilterOption: (value) => set({ selectedFilterOption: value }),
 
+    timeRange: "last7Days",
+    setTimeRange: (value) => set({ timeRange: value }),
 
+    startDate: null,
+    setStartDate: (value) => set({ startDate: value }),
+
+    endDate: null,
+    setEndDate: (value) => set({ endDate: value }),
+
+    showDeleteAccountModal: false,
+    setShowDeleteAccountModal: (value) => set({ showDeleteAccountModal: value }),
 }))

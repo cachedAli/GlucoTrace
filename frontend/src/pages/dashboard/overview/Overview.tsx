@@ -2,7 +2,7 @@ import PageTitle from "@/components/layout/dashboard/mainContent/PageTitle";
 import QuickStats from "@/components/ui/dashboard/stats/QuickStats";
 import LineChart from "@/components/ui/dashboard/charts/LineChart";
 import StatFields from "@/libs/constants/dashboard/statFields";
-import QuickAccessCards from "./QuickAccessCards";
+import QuickAccessCards from "./components/QuickAccessCards";
 
 const Overview = () => {
   const { overviewStats } = StatFields();

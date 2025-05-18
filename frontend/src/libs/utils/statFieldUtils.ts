@@ -36,6 +36,12 @@ export const getStableGlucose = (
     const now = Date.now();
     const startDate = startOfDay(now);
     const endDate = endOfDay(now);
+    const range = unit === "mmol/L"
+        ? {
+            min: Number((targetRange.min / 18.0182).toFixed(1)),
+            max: Number((targetRange.max / 18.0182).toFixed(1)),
+        }
+        : targetRange;
 
     const todayReadings = readings.filter(reading =>
         isWithinInterval(reading.timestamp, { start: startDate, end: endDate })
@@ -51,8 +57,8 @@ export const getStableGlucose = (
     for (let i = 0; i < sortedReadings.length; i++) {
         const reading = sortedReadings[i];
         const unitValue = Number(convertToMmol(reading.value, unit, false))
-        const inRange =
-            unitValue <= targetRange.max && unitValue >= targetRange.min;
+        const inRange = unitValue >= range.min && unitValue <= range.max;
+
 
         if (!inRange) {
             if (currentStable.length > longestStable.length) {
@@ -278,10 +284,12 @@ const getMealImpactDescription = (impact: string, unit: Unit) => {
 // Calculates the percentage of readings within the target range
 const calculatePercentageInRange = (
     readings: Reading[],
+    unit:Unit,
     targetRange: TargetRange = { min: 70, max: 180 }
 ) => {
     const total = readings.length;
-    const inRange = readings.filter(r => r.value >= targetRange.min && r.value <= targetRange.max).length;
+    
+    const inRange = readings.filter(r => Number(convertToMmol(r.value,unit,false)) >= targetRange.min && Number(convertToMmol(r.value,unit,false)) <= targetRange.max).length;
     if (total === 0) return 0;
     return (inRange / total) * 100;
 };
@@ -290,6 +298,7 @@ const calculatePercentageInRange = (
 export const getUpdatedInRangeStats = (
     readings: Reading[],
     previousStats: Stats | null,
+    unit:Unit,
     targetRange: TargetRange = { min: 70, max: 180 }
 ): Stats => {
     if (readings.length === 0) {
@@ -309,7 +318,7 @@ export const getUpdatedInRangeStats = (
     }
 
     const latestReading = readings[readings.length - 1];
-    const currentPercentage = Math.round(calculatePercentageInRange(readings, targetRange));
+    const currentPercentage = Math.round(calculatePercentageInRange(readings,unit, targetRange));
     const currentISO = new Date(latestReading.timestamp).toISOString();
 
 
@@ -371,6 +380,7 @@ export const getUpdatedInRangeStats = (
 export const getWeeklyStats = (
     readings: Reading[],
     previousStats: Stats | null,
+    unit:Unit,
     targetRange: TargetRange = { min: 70, max: 180 }
 ): Stats => {
     const now = new Date();
@@ -381,12 +391,13 @@ export const getWeeklyStats = (
             end: now
         })
     );
-    return getUpdatedInRangeStats(weeklyReadings, previousStats, targetRange);
+    return getUpdatedInRangeStats(weeklyReadings, previousStats,unit, targetRange);
 };
 
 export const getMonthlyStats = (
     readings: Reading[],
     previousStats: Stats | null,
+    unit:Unit,
     targetRange: TargetRange = { min: 70, max: 180 }
 ): Stats => {
     const now = new Date();
@@ -397,7 +408,7 @@ export const getMonthlyStats = (
             end: now,
         })
     );
-    return getUpdatedInRangeStats(monthlyReadings, previousStats, targetRange);
+    return getUpdatedInRangeStats(monthlyReadings, previousStats,unit, targetRange);
 };
 
 //* Reading History Page Functions
@@ -557,7 +568,7 @@ export const getMonthChange = (
             return date.getMonth() === currentMonth &&
                 date.getFullYear() === currentYear;
         })
-        .map(r => convertToMmol(r.value, unit, false) as number);
+        .map(r => unit === "mg/dL" ? convertToMmol(r.value, unit, false) as number : r.value);
 
     // 3. Calculate current average if enough data
     const currentAvg = currentReadings.length >= 5
@@ -587,7 +598,8 @@ export const getMonthChange = (
             return date.getMonth() === lastMonth &&
                 date.getFullYear() === lastMonthYear;
         })
-        .map(r => convertToMmol(r.value, unit, false) as number);
+        .map(r => unit === "mg/dL" ? convertToMmol(r.value, unit, false) as number : r.value);
+
 
     // 6. Final calculation
     const baseStats: Stats = {
@@ -608,7 +620,7 @@ export const getMonthChange = (
 
     return {
         value: `${arrow} ${percentage}%`,
-        description: `From ${lastFallbackAvg.toFixed(1)} ${unit} to ${currentFallbackAvg.toFixed(1)} ${unit}`,
+        description: `From ${Number(convertToMmol(lastFallbackAvg, unit, false)).toFixed(1)} ${unit} to ${Number(convertToMmol(currentFallbackAvg, unit, false)).toFixed(1)} ${unit}`,
         lastUpdated: now.toISOString(),
         trend: percentage
     };
@@ -753,12 +765,13 @@ export const estimateHba1c = (
     }
 
     // 3. Calculate HbA1c
-    const average = relevantReadings.reduce((sum, r) => sum + r.value, 0)
-        / relevantReadings.length;
+    const averageMg = relevantReadings.reduce((sum, r) => {
+        return sum + (unit === "mg/dL" ? Number(convertToMmol(r.value, unit, false)) : r.value);
+    }, 0) / relevantReadings.length;
 
-    const hba1c = unit === 'mg/dL'
-        ? (average + 46.7) / 28.7
-        : (average + 2.59) / 1.59;
+
+    const hba1c = (averageMg + 46.7) / 28.7;
+
 
     return {
         value: `${hba1c.toFixed(1)}%`,

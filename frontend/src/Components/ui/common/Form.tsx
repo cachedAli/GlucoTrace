@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import clsx from "clsx";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ThemeProvider } from "@emotion/react";
 import { FcGoogle } from "react-icons/fc";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { ZodSchema } from "zod";
+import dayjs from "dayjs";
 
+import { useUserStore } from "@/store/useUserStore";
 import { useThemeStore } from "@/store/useThemeStore";
 import { FormField } from "@/types/formTypes";
 import inputTheme from "../inputs/inputTheme";
@@ -28,7 +29,6 @@ type FormProps = {
   buttonClassName?: string;
   buttonAlignment?: "center" | "end";
 };
-
 const Form = ({
   fields,
   schema,
@@ -43,6 +43,10 @@ const Form = ({
   buttonClassName,
   buttonAlignment = "center",
 }: FormProps) => {
+  const user = useUserStore((state) => state.user);
+  const darkMode = useThemeStore((state) => state.darkMode);
+  const originalUnit = user?.medicalProfile?.bloodSugarUnit || "mg/dL";
+
   const {
     handleSubmit,
     reset,
@@ -53,58 +57,77 @@ const Form = ({
     resolver: zodResolver(schema),
   });
 
-  const darkMode = useThemeStore((state) => state.darkMode);
+  useFormDefaults({ fields, user, reset, originalUnit });
 
   const onFormSubmit = (data: Record<string, any>) => {
-    onSubmit(data);
+    const submittedUnit = data.unit;
+    let finalTargetMin = data.targetMin;
+    let finalTargetMax = data.targetMax;
+
+    // Always use displayed values but convert if unit changed
+    if (submittedUnit !== originalUnit) {
+      const convertValue = (value: number) => {
+        if (originalUnit === "mg/dL" && submittedUnit === "mmol/L")
+          return +(value / 18).toFixed(1);
+        if (originalUnit === "mmol/L" && submittedUnit === "mg/dL")
+          return Math.round(value * 18);
+        return value;
+      };
+
+      finalTargetMin = convertValue(Number(data.targetMin));
+      finalTargetMax = convertValue(Number(data.targetMax));
+    }
+
+    finalTargetMin = Number(finalTargetMin);
+    finalTargetMax = Number(finalTargetMax);
+
     reset();
+    onSubmit({
+      ...data,
+      targetMin: finalTargetMin,
+      targetMax: finalTargetMax,
+    });
   };
 
   return (
     <>
       <form
         onSubmit={handleSubmit(onFormSubmit)}
-        className=" w-full grid grid-cols-2 gap-4 items-center justify-center"
+        className="w-full grid grid-cols-2 gap-4 items-center justify-center"
       >
         {fields.map((field, index) => (
-          <React.Fragment key={index}>
-            <div
-              className={clsx(
-                "flex flex-col",
-                field.colSpan === 1 ? "col-span-1" : "col-span-2",
-                field.smColSpan && "max-sm:col-span-2"
-              )}
-            >
-              <ThemeProvider theme={inputTheme(darkMode)}>
-                <InputField
-                  name={field.name}
-                  control={control}
-                  label={field.label}
-                  error={errors[field.name]?.message as string}
-                  type={field.type}
-                  isSignIn={buttonLabel === "Sign in"}
-                  otpLength={otpLength}
-                  className={className}
-                  darkMode={darkMode}
-                  {...(field.type === "select" && {
-                    customLabel: field.customLabel,
-                    enableCustom: field.enableCustom,
-                    maxCustomLength: field.maxCustomLength,
-                    options: field.options,
-                    defaultValue: field.defaultValue,
-                    useDefault: field.useDefault,
-                  })}
-                />
-              </ThemeProvider>
-            </div>
-          </React.Fragment>
+          <div
+            key={index}
+            className={clsx(
+              "flex flex-col",
+              field.colSpan === 1 ? "col-span-1" : "col-span-2",
+              field.smColSpan && "max-sm:col-span-2"
+            )}
+          >
+            <ThemeProvider theme={inputTheme(darkMode)}>
+              <InputField
+                name={field.name}
+                control={control}
+                label={field.label}
+                error={errors[field.name]?.message as string}
+                type={field.type}
+                otpLength={otpLength}
+                className={className}
+                darkMode={darkMode}
+                {...(field.type === "select" && {
+                  options: field.options,
+                  defaultValue: field.defaultValue,
+                })}
+              />
+            </ThemeProvider>
+          </div>
         ))}
         <div
           className={clsx(
             "col-span-2 flex gap-4 w-full",
             buttonAlignment === "end"
-              ? " justify-end "
-              : "justify-center flex-col "
+              ? "justify-end"
+              : "justify-center flex-col"
           )}
         >
           <FormButtons
@@ -119,6 +142,67 @@ const Form = ({
       <GoogleAuthButton disabled={disabled} googleAuth={googleAuth} />
     </>
   );
+};
+
+type UseFormDefaultsProps = {
+  fields: FormField[];
+  user: any;
+  reset: (values: Record<string, any>) => void;
+  originalUnit: "mg/dL" | "mmol/L";
+};
+
+const useFormDefaults = ({
+  fields,
+  user,
+  reset,
+  originalUnit,
+}: UseFormDefaultsProps) => {
+  useEffect(() => {
+    const defaults = fields.reduce((acc, field) => {
+      switch (field.name) {
+        case "age":
+          acc[field.name] = user?.medicalProfile?.age;
+          break;
+        case "gender":
+          acc[field.name] = user?.medicalProfile?.gender;
+          break;
+        case "diabetesType":
+          acc[field.name] = user?.medicalProfile?.diabetesType;
+          break;
+        case "diagnosisDate": {
+          const storedDate = user?.medicalProfile?.diagnosisDate;
+          acc[field.name] = storedDate ? dayjs(storedDate) : null;
+          break;
+        }
+        case "unit":
+          acc[field.name] = originalUnit;
+          break;
+        case "targetMin":
+        case "targetMax": {
+          const isMmol = originalUnit === "mmol/L";
+          const value =
+            user?.medicalProfile?.targetBloodSugarRange?.[
+              field.name === "targetMin" ? "min" : "max"
+            ] ??
+            (field.name === "targetMin"
+              ? isMmol
+                ? 3.9
+                : 70
+              : isMmol
+              ? 10
+              : 180);
+          acc[field.name] = value;
+
+          break;
+        }
+        default:
+          acc[field.name] = field.defaultValue ?? "";
+      }
+      return acc;
+    }, {} as Record<string, any>);
+
+    reset(defaults);
+  }, [user?.medicalProfile, originalUnit, fields, reset]);
 };
 
 type FormButtonProps = {

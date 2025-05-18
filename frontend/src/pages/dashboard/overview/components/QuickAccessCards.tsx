@@ -133,11 +133,14 @@ const DownloadReportCard = ({
   const prevTargetRangeStats = getPreviousStat("targetRange");
 
   const monthlyChangeStats = getMonthChange(readings, prevMonthlyChange, unit);
+
   const monthlyTargetRangeStats = getMonthlyStats(
     readings,
     prevTargetRangeStats,
+    unit,
     targetRange
-  );
+  )
+  
   const HbA1c = estimateHba1c(readings, unit);
 
   const formatChangeSymbol = (value: string) => {

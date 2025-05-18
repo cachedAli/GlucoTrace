@@ -1,8 +1,8 @@
 import PageTitle from "@/components/layout/dashboard/mainContent/PageTitle";
 import QuickStats from "@/components/ui/dashboard/stats/QuickStats";
 import StatFields from "@/libs/constants/dashboard/statFields";
-import ActionButtons from "./ActionButtons";
-import ReadingTable from "./ReadingTable";
+import ActionButtons from "./components/ActionButtons";
+import ReadingTable from "./components/ReadingTable";
 
 const History = () => {
   const { readingsHistoryStats } = StatFields();

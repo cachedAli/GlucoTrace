@@ -28,20 +28,19 @@ const getStatusIndicator = (status: string) => {
     }
 };
 
-const convertIfNeeded = (value: number, unit: Unit) =>
-    unit === "mmol/L" ? parseFloat(convertToMmol(value, unit, false) as string) : value;
 
 const getStatusTooltipFooter = (value: number, unit: Unit, targetRange: { min: number; max: number } | undefined) => {
-    const converted = convertIfNeeded(value, unit);
-    const status = getReadingStatus(converted, unit, targetRange);
+    const status = getReadingStatus(unit === "mmol/L" ? value * 18 : value, unit, targetRange);
     const indicator = getStatusIndicator(status.status);
     return `${indicator} ${status.status}`;
 };
 
 const processDataPoints = (values: number[], unit: Unit, targetRange: { min: number; max: number } | undefined) => {
     const avg = values.reduce((sum, v) => sum + v, 0) / values.length;
-    const convertedAvg = Math.round(convertIfNeeded(avg, unit));
-    const status = getReadingStatus(convertedAvg, unit, targetRange);
+    const convertedAvg = Math.round(Number(convertToMmol(avg, unit, false)));
+    const status = getReadingStatus(Math.round(avg), unit, targetRange);
+
+
 
     return {
         value: convertedAvg,
@@ -148,6 +147,7 @@ export const ChartsData = (view: "month" | "week" = "month", unit: Unit, targetR
                 : processDataPoints(values, unit, targetRange);
         });
 
+
         return {
             lineChartData: createLineChartData(labels, dataPoints, unit, "Weekly"),
             getStatusTooltipFooter: (value: number) => getStatusTooltipFooter(value, unit, targetRange),
@@ -199,8 +199,8 @@ export const ChartsData = (view: "month" | "week" = "month", unit: Unit, targetR
     const barDataPoints = barLabels.map((key, index) => {
         const values = mealTimingMap[key];
         const avg = values.reduce((sum, v) => sum + v, 0) / values.length;
-        const convertedAvg = Math.round(convertIfNeeded(avg, unit));
-        const status = getReadingStatus(convertedAvg, unit, targetRange);
+        const convertedAvg = Math.round(Number(convertToMmol(avg, unit, false)));
+        const status = getReadingStatus(Math.round(avg), unit, targetRange);
 
         const blueVariant = baseBlueVariants[index % baseBlueVariants.length];
         const color = status.status === "normal"
@@ -224,8 +224,7 @@ export const ChartsData = (view: "month" | "week" = "month", unit: Unit, targetR
     };
 
     filteredMonth.forEach((reading) => {
-        const converted = convertIfNeeded(reading.value, unit);
-        const { status } = getReadingStatus(converted, unit, targetRange);
+        const { status } = getReadingStatus(reading.value, unit, targetRange);
 
         if (status === "low") statusCounts.low++;
         else if (status === "normal") statusCounts.normal++;

@@ -6,6 +6,7 @@ import { useDashboardStore } from "@/store/useDashboardStore";
 import { useReadingStore } from "@/store/useReadingStore";
 import MobileNavDropUp from "./sidebar/MobileNavDropUp";
 import { useAuthStore } from "@/store/useAuthStore";
+import Setup from "@/components/ui/dashboard/Setup";
 
 const DashboardOverlay = () => {
   const {
@@ -15,6 +16,9 @@ const DashboardOverlay = () => {
     showDeleteReading,
     setShowDeleteReading,
     readingToDelete,
+    showDeleteAccountModal,
+    setShowDeleteAccountModal,
+    showSetupModal,
   } = useDashboardStore();
   const deleteReading = useReadingStore((state) => state.deleteReading);
   const logout = useAuthStore((state) => state.logout);
@@ -33,6 +37,8 @@ const DashboardOverlay = () => {
   return (
     <>
       <AnimatePresence>
+        {showSetupModal && <Setup />}
+
         {showNavModal && <MobileNavDropUp />}
 
         {showLogoutModal && (
@@ -53,6 +59,16 @@ const DashboardOverlay = () => {
             confirmText="Delete"
             onCancel={() => setShowDeleteReading(false)}
             onConfirm={handleDeleteReading}
+          />
+        )}
+
+        {showDeleteAccountModal && (
+          <ConfirmationModal
+            title="Delete this Account?"
+            message="Are you sure you want to delete this reading? This action can’t be undone."
+            confirmText="Delete"
+            onCancel={() => setShowDeleteAccountModal(false)}
+            // onConfirm={handleDeleteReading}
           />
         )}
       </AnimatePresence>

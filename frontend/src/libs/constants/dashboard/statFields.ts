@@ -39,7 +39,7 @@ const StatFields = () => {
     // * Add Reading Stats
     const lastReading = readings[0];
     const { mealImpactValue, mealImpactTimeFrame, mealImpactDescription } = getMealImpact(readings, unit);
-    const targetRangeStats = getWeeklyStats(readings, previousTargetRangeStats, targetRange);
+    const targetRangeStats = getWeeklyStats(readings, previousTargetRangeStats, unit,targetRange);
     const lastReadingTimeStamp = lastReading?.timestamp;
     const relativeTime = lastReadingTimeStamp && formatDistanceToNow(new Date(lastReadingTimeStamp), { addSuffix: true });
     const reading = lastReading?.value;

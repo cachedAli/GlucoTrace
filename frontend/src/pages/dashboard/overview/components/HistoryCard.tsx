@@ -84,8 +84,13 @@ const HistoryCard = () => {
       const meal = getMealTimingLabel(reading.mealTiming);
       if (!mealCounts[meal]) mealCounts[meal] = { highs: 0, lows: 0 };
 
-      if (reading.value > max) mealCounts[meal].highs += 1;
-      else if (reading.value < min) mealCounts[meal].lows += 1;
+      const readingValue =
+        unit === "mmol/L"
+          ? Number(convertToMmol(reading.value, unit, false))
+          : reading.value;
+
+      if (readingValue > max) mealCounts[meal].highs += 1;
+      else if (readingValue < min) mealCounts[meal].lows += 1;
     });
 
     return mealCounts;

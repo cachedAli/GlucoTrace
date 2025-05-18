@@ -18,6 +18,7 @@ import {
   capitalizeFirstLetter,
   getStatusColorClass,
   getReadingStatus,
+  convertToMmol,
 } from "@/libs/utils/utils";
 import { useDashboardStore } from "@/store/useDashboardStore";
 import { useReadingStore } from "@/store/useReadingStore";
@@ -254,19 +255,32 @@ const TableValue = ({
       {editId === reading.id ? (
         <input
           type="number"
-          value={editedReading?.value}
+          value={
+            editedReading?.value
+              ? unit === "mmol/L"
+                ? Number(
+                    convertToMmol(Number(editedReading.value), unit, false)
+                  )
+                : editedReading.value
+              : ""
+          }
           onChange={(e) => {
-            const value = e.target.value;
+            const rawValue = e.target.value;
             const maxValue = unit === "mg/dL" ? 2000 : 110;
             const minValue = 1;
 
             if (
-              value === "" ||
-              (!isNaN(Number(value)) &&
-                Number(value) >= minValue &&
-                Number(value) <= maxValue)
+              rawValue === "" ||
+              (!isNaN(Number(rawValue)) &&
+                Number(rawValue) >= minValue &&
+                Number(rawValue) <= maxValue)
             ) {
-              setEditedReading({ ...editedReading, value });
+              const mgValue =
+                unit === "mmol/L"
+                  ? Math.round(Number(rawValue) * 18)
+                  : Number(rawValue);
+
+              setEditedReading({ ...editedReading, value: String(mgValue) });
             }
           }}
           onBlur={(e) => {
@@ -284,7 +298,7 @@ const TableValue = ({
         />
       ) : (
         <>
-          {reading.value} {unit}
+          {Number(convertToMmol(reading.value, unit, false))} {unit}
         </>
       )}
     </TableCell>

@@ -4,7 +4,7 @@ export type User = {
     lastName: string;
     email: string;
     password: string;
-    profilePic?: string;
+    profilePic?: string | undefined;
     darkMode: boolean;
 
     medicalProfile?: MedicalProfile
@@ -20,12 +20,11 @@ export type Reading = {
     createdAt: string | Date;
 }
 
-export type MedicalProfile ={
-    diabetesType: "Type 1" | "Type 2" | "Pre-diabetes";
-    bloodSugarUnit: "mg/dL" | "mmol/L";
-    weight?: number;
-    height?: number;
-    insulinDependent?: boolean;
-    conditions?: string[];
-    targetBloodSugarRange: { min: number; max: number };
+export type MedicalProfile = {
+    diabetesType?: "Type 1" | "Type 2" | "Pre-diabetes";
+    age?: number;
+    gender?: "Male" | "Female" | "Other";
+    bloodSugarUnit?: "mg/dL" | "mmol/L";
+    diagnosisDate?: Date | string;
+    targetBloodSugarRange?: { min: number; max: number };
 }

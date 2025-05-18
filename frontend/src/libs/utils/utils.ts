@@ -39,9 +39,9 @@ export const getStatusColorClass = (status: string, hex: boolean = false, textCo
 
 // Returns glucose reading status and message based on the target range and unit
 export const getReadingStatus = (value: number, unit: Unit, targetRange: TargetRange = { min: 70, max: 180 }) => {
-    const reading = unit === "mmol/L" ? value * 18 : value;
-    const min = unit === "mmol/L" ? (targetRange.min ?? 3.9) * 18 : targetRange.min ?? 70;
-    const max = unit === "mmol/L" ? (targetRange.max ?? 10) * 18 : targetRange.max ?? 180;
+    const reading = unit === "mmol/L" ? Number((value / 18).toFixed(1)) : value;
+    const min = unit === "mmol/L" ? (targetRange.min ?? 3.9) : targetRange.min ?? 70;
+    const max = unit === "mmol/L" ? (targetRange.max ?? 10) : targetRange.max ?? 180;
 
     const veryLow = unit === "mmol/L" ? 3.0 : 54;
     const veryHigh = unit === "mmol/L" ? 13.9 : 250;
@@ -50,31 +50,42 @@ export const getReadingStatus = (value: number, unit: Unit, targetRange: TargetR
         return {
             status: "no reading",
             message: "No reading available yet. Please make sure to take a reading.",
+            reading
         };
     } else if (reading < veryLow) {
         return {
             status: "very low",
             message: "Your glucose is critically low! Please take immediate action and consult your doctor.",
+            reading
+
         };
     } else if (reading < min) {
         return {
             status: "low",
             message: "Your glucose is a bit low. Consider having a quick snack to bring it up.",
+            reading
+
         };
     } else if (reading > veryHigh) {
         return {
             status: "very high",
             message: "Your glucose is very high! Please monitor closely and consider seeking medical advice.",
+            reading
+
         };
     } else if (reading > max) {
         return {
             status: "high",
             message: "Your glucose level is high. You might want to review your meals or insulin dosage.",
+            reading
+
         };
     } else {
         return {
             status: "normal",
             message: "Your glucose is within a healthy range. Keep up the great work!",
+            reading
+
         };
     }
 }

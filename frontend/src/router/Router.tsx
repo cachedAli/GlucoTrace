@@ -10,9 +10,9 @@ import DashboardLayout from "@/components/layout/dashboard/DashboardLayout";
 import Overview from "@/pages/dashboard/overview/Overview";
 import AddGlucose from "@/pages/dashboard/AddReading";
 import AddReading from "@/pages/dashboard/AddReading";
-import Report from "@/pages/dashboard/Report";
-import Settings from "@/pages/dashboard/Settings";
-import Profile from "@/pages/dashboard/Profile";
+import Report from "@/pages/dashboard/report/Report";
+import Settings from "@/pages/dashboard/settings/Settings";
+import Profile from "@/pages/dashboard/profile/Profile";
 import History from "@/pages/dashboard/history/History";
 import Trends from "@/pages/dashboard/Trends";
 

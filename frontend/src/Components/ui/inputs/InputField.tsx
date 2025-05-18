@@ -65,6 +65,8 @@ const InputField = ({
                   {...{ isSignIn, showPassword, setShowPassword }}
                 />
               );
+            case "number":
+              return <NumberInput {...commonProps} />;
             case "otp":
               return <OtpInput {...{ field, error, otpLength }} />;
 
@@ -347,5 +349,48 @@ export const BaseSelectInput = ({
         </>
       )}
     </FormControl>
+  );
+};
+
+const NumberInput = ({ label, field, error }: CommonInputProps) => {
+  const min = 1;
+  const max = 110;
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value === "" ? "" : parseInt(e.target.value);
+    field.onChange(isNaN(value as number) ? "" : value);
+  };
+
+  const currentValue =
+    field.value !== undefined && field.value !== null ? field.value : "";
+
+  return (
+    <TextField
+      label={label}
+      type="number"
+      variant="outlined"
+      fullWidth
+      error={!!error}
+      helperText={error}
+      value={currentValue}
+      inputProps={{
+        min,
+        max,
+        inputMode: "numeric",
+        pattern: "[0-9]*",
+        style: { MozAppearance: "textfield" }, // Firefox
+      }}
+      onChange={handleChange}
+      sx={{
+        "& input[type=number]::-webkit-outer-spin-button": {
+          WebkitAppearance: "none",
+          margin: 0,
+        },
+        "& input[type=number]::-webkit-inner-spin-button": {
+          WebkitAppearance: "none",
+          margin: 0,
+        },
+      }}
+    />
   );
 };

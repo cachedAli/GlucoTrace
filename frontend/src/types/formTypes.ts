@@ -10,6 +10,7 @@ export interface BaseProps {
     | "glucose"
     | "select"
     | "date"
+    | "number"
     | "time";
     error?: string;
     label: string;

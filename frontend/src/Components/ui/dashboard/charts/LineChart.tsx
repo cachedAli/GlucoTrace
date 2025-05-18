@@ -69,8 +69,8 @@ const getChartOptions = (
   },
   scales: {
     y: {
-      suggestedMin: 50,
-      suggestedMax: 300,
+      suggestedMin: unit === "mmol/L" ? 3 : 50,
+    suggestedMax: unit === "mmol/L" ? 18 : 300,
       title: {
         display: true,
         text: unit,

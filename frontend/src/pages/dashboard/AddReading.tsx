@@ -6,6 +6,7 @@ import { addReadingFields } from "@/libs/constants/dashboard";
 import { useReadingStore } from "@/store/useReadingStore";
 import { useUserStore } from "@/store/useUserStore";
 import Form from "@/components/ui/common/Form";
+import { Unit } from "@/types/dashboardTypes";
 
 type Data = {
   glucose: number;
@@ -16,8 +17,13 @@ type Data = {
 };
 const AddReading = () => {
   const { user } = useUserStore();
+  const unit = user?.medicalProfile?.bloodSugarUnit || "mg/dL";
   const { setReadings } = useReadingStore();
   const { addReadingStats } = StatFields();
+
+  const convertToMgdl = (value: number, unit: Unit) => {
+    return unit === "mmol/L" ? Math.round(value * 18.0182) : Math.round(value);
+  };
 
   const handleSubmit = (data: Data) => {
     if (!user) return;
@@ -27,7 +33,7 @@ const AddReading = () => {
 
     const newReading = {
       id: Date.now().toString(),
-      value: Number(glucose),
+      value: convertToMgdl(Number(glucose), unit),
       mealTiming,
       timestamp,
       note,
