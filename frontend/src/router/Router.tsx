@@ -8,36 +8,90 @@ import SignIn from "@/pages/userAuth/SignIn";
 import SignUp from "@/pages/userAuth/SignUp";
 import DashboardLayout from "@/components/layout/dashboard/DashboardLayout";
 import Overview from "@/pages/dashboard/overview/Overview";
-import AddGlucose from "@/pages/dashboard/AddReading";
 import AddReading from "@/pages/dashboard/AddReading";
 import Report from "@/pages/dashboard/report/Report";
 import Settings from "@/pages/dashboard/settings/Settings";
 import Profile from "@/pages/dashboard/profile/Profile";
 import History from "@/pages/dashboard/history/History";
 import Trends from "@/pages/dashboard/Trends";
+import AuthRedirectHandler from "./AuthRedirectHandler";
+import ProtectedRoute from "./ProtectedRoute";
+import PublicRoute from "./PublicRoute";
 
 const Router = () => {
   return (
     <Routes>
       {/* Site */}
-      <Route path="/" element={<HomePage />} />
+      <Route
+        path="/"
+        element={
+          <PublicRoute>
+            <HomePage />
+          </PublicRoute>
+        }
+      />
 
       {/* Auth Page */}
-      <Route path="/signin" element={<SignIn />} />
-      <Route path="/signup" element={<SignUp />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/verify-email" element={<VerifyEmail />} />
-      <Route path="/reset-password" element={<ResetPassword />} />
+      <Route
+        path="/signin"
+        element={
+          <PublicRoute>
+            <SignIn />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path="/signup"
+        element={
+          <PublicRoute>
+            <SignUp />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path="/forgot-password"
+        element={
+          <PublicRoute>
+            <ForgotPassword />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path="/verify-email"
+        element={
+          <PublicRoute>
+            <VerifyEmail />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path="/reset-password/:token"
+        element={
+          <PublicRoute>
+            <ResetPassword />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path="/auth/callback"
+        element={
+          <PublicRoute>
+            <AuthRedirectHandler />
+          </PublicRoute>
+        }
+      />
 
       {/* Dashboard */}
-      <Route path="/dashboard" element={<DashboardLayout />}>
-        <Route index element={<Overview />} />
-        <Route path="/dashboard/add-reading" element={<AddReading />} />
-        <Route path="/dashboard/trends" element={<Trends />} />
-        <Route path="/dashboard/history" element={<History />} />
-        <Route path="/dashboard/profile" element={<Profile />} />
-        <Route path="/dashboard/report" element={<Report />} />
-        <Route path="/dashboard/settings" element={<Settings />} />
+      <Route element={<ProtectedRoute />}>
+        <Route path="/dashboard" element={<DashboardLayout />}>
+          <Route index element={<Overview />} />
+          <Route path="/dashboard/add-reading" element={<AddReading />} />
+          <Route path="/dashboard/trends" element={<Trends />} />
+          <Route path="/dashboard/history" element={<History />} />
+          <Route path="/dashboard/profile" element={<Profile />} />
+          <Route path="/dashboard/report" element={<Report />} />
+          <Route path="/dashboard/settings" element={<Settings />} />
+        </Route>
       </Route>
     </Routes>
   );

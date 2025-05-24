@@ -19,14 +19,20 @@ const DashboardOverlay = () => {
     showDeleteAccountModal,
     setShowDeleteAccountModal,
     showSetupModal,
+    signOutLoading,
   } = useDashboardStore();
   const deleteReading = useReadingStore((state) => state.deleteReading);
   const logout = useAuthStore((state) => state.logout);
   const navigate = useNavigate();
 
-  const handleOnConfirm = (navigate: (path: string) => void) => {
-    logout(navigate);
-    setShowLogoutModal(false);
+  const handleOnConfirm = async (navigate: (path: string) => void) => {
+    try {
+      await logout(navigate);
+    } catch (error) {
+      console.error("Signout failed", error);
+    } finally {
+      setShowLogoutModal(false);
+    }
   };
 
   const handleDeleteReading = () => {
@@ -49,6 +55,7 @@ const DashboardOverlay = () => {
             confirmText="Confirm"
             onCancel={() => setShowLogoutModal(false)}
             onConfirm={() => handleOnConfirm(navigate)}
+            loading={signOutLoading}
           />
         )}
 

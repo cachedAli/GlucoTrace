@@ -108,7 +108,7 @@ const FeatureCards = ({ wordsToBold }: { wordsToBold: string[] }) => {
               viewport={{ once: true }}
               src={inView ? feature.img : ""}
               alt=""
-              className="w-64 md:w-80 h-auto rounded-xl shadow-lg max-w-full"
+              className="w-96 md:w-80 lg:w-[450px] h-auto rounded-xl shadow-lg bg-blue-100 p-2 max-w-full"
             />
 
             <div className="flex-1 flex flex-col gap-4 md:items-start items-center">

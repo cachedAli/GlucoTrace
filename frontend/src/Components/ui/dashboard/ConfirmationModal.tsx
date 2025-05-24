@@ -3,10 +3,13 @@ import { motion } from "framer-motion";
 import clsx from "clsx";
 
 import Button from "../common/Button";
+import { useDashboardStore } from "@/store/useDashboardStore";
+import BaseLoader from "../loader/BaseLoader";
 
 type ConfirmationModalProps = {
   title: string;
   message: string;
+  loading?: boolean;
   onConfirm?: () => void;
   onCancel?: () => void;
   confirmText?: "Confirm" | "Delete";
@@ -17,6 +20,7 @@ const ConfirmationModal = ({
   message,
   onConfirm,
   onCancel,
+  loading,
   confirmText = "Confirm",
 }: ConfirmationModalProps) => {
   const isDelete = confirmText === "Delete";
@@ -78,12 +82,13 @@ const ConfirmationModal = ({
           <Button
             variant="fill"
             onClick={onConfirm}
+            disabled={loading ? true : false}
             className={clsx(
               "w-36 max-sm:w-full max-sm:text-sm",
               isDelete && "bg-red-500"
             )}
           >
-            {confirmText}
+            {loading ? <BaseLoader /> : confirmText}
           </Button>
         </div>
       </motion.div>

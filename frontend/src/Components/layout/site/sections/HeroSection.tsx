@@ -1,10 +1,12 @@
+import clsx from "clsx";
+
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
 import { preloadForm } from "@/router/preloadRoutes";
 import { Hero } from "@/libs/constants/homepage";
-import mockup from "/homepage/MockLaptop.png";
+import Dashboard from "/homepage/heroSectionImage.webp";
 
 const HeroSection = () => {
   return (
@@ -12,12 +14,18 @@ const HeroSection = () => {
       <div className="w-full max-w-screen-2xl mx-auto flex flex-col lg:flex-row items-center">
         <div className="absolute right-0 top-0 h-full w-[50%] bg-secondary lg:rounded-l-full flex items-center justify-center max-lg:top-0 max-lg:w-full max-lg:h-[50%] max-lg:rounded-b-full">
           <motion.img
-            src={mockup}
-            alt="Laptop Mockup"
+            src={Dashboard}
+            alt="GlucoTrace Dashboard"
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.7, ease: "easeOut" }}
-            className="w-[80%] max-w-[450px] lg:mb-14 "
+            className={clsx(
+              "w-full max-w-[900px]",
+              "lg:mb-14",
+              "max-sm:w-[450px]",
+              "max-md:w-[600px]",
+              "max-lg:w-[700px]"
+            )}
           />
         </div>
         <HeroTextSection />

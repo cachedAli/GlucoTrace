@@ -26,9 +26,13 @@ const UserProfile = () => {
           {capitalizeFirstLetter(user?.lastName || "")}
         </h2>
 
-        <h3 className={clsx("text-xs text-gray-500", "dark:text-gray-300",
-          "max-sm:text-[9px] max-sm:leading-3"
-        )}>
+        <h3
+          className={clsx(
+            "text-xs text-gray-500",
+            "dark:text-gray-300",
+            "max-sm:text-[9px] max-sm:leading-3"
+          )}
+        >
           {user?.medicalProfile?.diabetesType
             ? `${user?.medicalProfile?.diabetesType} Diabetic`
             : "Not Specified"}

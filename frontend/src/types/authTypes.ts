@@ -1,3 +1,4 @@
+import { string } from "zod";
 import { MedicalProfile } from "./userTypes";
 
 
@@ -15,3 +16,10 @@ export type SignUpData = {
     medicalProfile?: MedicalProfile;
 };
 
+export type VerifyOtpData = {
+    otpCode: string;
+}
+
+export type ResendVerifyOtpData ={
+    email: string
+}

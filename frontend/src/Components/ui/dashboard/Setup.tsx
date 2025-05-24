@@ -7,6 +7,8 @@ import { setupSchema } from "@/libs/validations/dashboardSchema";
 import { useUserStore } from "@/store/useUserStore";
 import { useDashboardStore } from "@/store/useDashboardStore";
 import dayjs from "dayjs";
+import { supabase } from "@/libs/supabaseClient";
+import { toast } from "sonner";
 
 interface Data {
   age: number;
@@ -21,30 +23,39 @@ const Setup = () => {
     (state) => state.setShowSetupModal
   );
 
-  const handleSubmit = (data: Data) => {
+  const handleSubmit = async (data: Data) => {
     if (!user || !user.id) return;
 
     const { age, gender, diabetesType, diagnosisDate, unit } = data;
+
     const updatedUser = {
       ...user,
       medicalProfile: {
-        diabetesType: diabetesType,
-        age: age,
+        diabetesType,
+        age,
         bloodSugarUnit: unit,
-        gender: gender,
+        gender,
         diagnosisDate: dayjs(diagnosisDate).toISOString(),
         targetBloodSugarRange: { min: 70, max: 180 },
       },
     };
-    
 
     setUser(updatedUser);
     localStorage.setItem("user", JSON.stringify(updatedUser));
 
+    const { error } = await supabase.auth.updateUser({
+      data: {
+        hasCompletedSetup: true,
+      },
+    });
+
+    if (error) {
+      toast.error(error.message);
+    }
+
     setShowSetupModal(false);
-    console.log(data);
-    console.log(user);
   };
+
   return (
     <div className="fixed z-50 inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm">
       <motion.div

@@ -26,7 +26,6 @@ export const getDateRange = (
 
     switch (range) {
         case "last7Days":
-        case "last7Days":
             return {
                 start: subDays(now, 6),
                 end: now,

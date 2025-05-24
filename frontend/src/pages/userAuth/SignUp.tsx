@@ -3,23 +3,36 @@ import { useNavigate } from "react-router-dom";
 import { signUpFields } from "@/libs/constants/authPage/formFields";
 import AuthLayout from "@/components/layout/userAuth/AuthLayout";
 import FormSkeleton from "@/components/ui/skeleton/FormSkeleton";
+import { useDashboardStore } from "@/store/useDashboardStore";
 import { signUpSchema } from "@/libs/validations/authSchema";
+import { useAuthStore } from "@/store/useAuthStore";
 import { useUserStore } from "@/store/useUserStore";
 import { SignUpData } from "@/types/authTypes";
 import LazyLoader from "@/libs/LazyLoader";
 import { Form } from "@/router/LazyRoutes";
-import { useAuthStore } from "@/store/useAuthStore";
+import { toast } from "sonner";
 
 const SignUp = () => {
   const navigate = useNavigate();
-  const user = useUserStore();
+  // const user = useUserStore((state)=>state.user);
   const signup = useAuthStore().signup;
+  const signUpLoading = useDashboardStore((state) => state.signUpLoading);
 
-  const onSubmit = (data: SignUpData) => {
-    signup(data);
-    console.log(data);
-    navigate("/verify-email");
+  const onSubmit = async (data: SignUpData) => {
+    try {
+      const user = await signup(data);
+      if (user !== null && "success" in user && user?.success) {
+        navigate("/verify-email");
+      } else if (!user) {
+        toast.error("Signup failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Signup error:", error);
+      toast.error("An unexpected error occurred.");
+    }
+    console.log("Submitted signup data:", data);
   };
+
   return (
     <AuthLayout
       isSignIn={false}
@@ -36,6 +49,7 @@ const SignUp = () => {
           onSubmit={onSubmit}
           schema={signUpSchema}
           buttonLabel="Sign up"
+          loading={signUpLoading}
         />
       </LazyLoader>
     </AuthLayout>

@@ -36,7 +36,7 @@ const GenerateReport = () => {
     dateRange.label,
     unit,
     targetRange,
-    capitalizeFirstLetter(user?.firstName + " " + user?.lastName),
+   capitalizeFirstLetter(`${user?.firstName || ""} ${user?.lastName || ""}`),
     user?.medicalProfile?.diabetesType || "Type 2",
     user?.medicalProfile?.gender || "Other",
     user?.medicalProfile?.age?.toString() || "--"

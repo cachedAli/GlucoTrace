@@ -5,6 +5,9 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      animation: {
+        "bounce-fast": "bounce 0.6s infinite",
+      },
       fontFamily: {
         nunito: ["Nunito", "sans-serif"],
         inter: ["Inter", "sans-serif"],

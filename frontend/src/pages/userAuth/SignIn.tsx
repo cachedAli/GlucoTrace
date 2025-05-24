@@ -11,17 +11,27 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { SignInData } from "@/types/authTypes";
 import LazyLoader from "@/libs/LazyLoader";
 import { Form } from "@/router/LazyRoutes";
+import { useDashboardStore } from "@/store/useDashboardStore";
+import { supabase } from "@/libs/supabaseClient";
 
 const SignIn = () => {
   const navigate = useNavigate();
   const user = useUserStore();
+  const signInLoading = useDashboardStore((state) => state.signInLoading);
   const signin = useAuthStore().signin;
 
-  const onSubmit = (data: SignInData) => {
-    console.log("Form Data:", data);
-    signin(data);
-    if (user) {
+  const onSubmit = async (data: SignInData) => {
+    const signedInUser = await signin(data);
+
+    if (signedInUser && !("success" in signedInUser)) {
       navigate("/dashboard");
+      return true;
+    } else if (signedInUser && "success" in signedInUser) {
+      navigate("/verify-email");
+      return false;
+    } else {
+      console.log("Login failed or user is not set.");
+      return false;
     }
   };
 
@@ -41,6 +51,7 @@ const SignIn = () => {
           onSubmit={onSubmit}
           schema={SignInSchema}
           buttonLabel="Sign in"
+          loading={signInLoading}
         />
       </LazyLoader>
     </AuthLayout>

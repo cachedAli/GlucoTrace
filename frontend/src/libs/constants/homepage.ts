@@ -21,21 +21,21 @@ export const Main = {
 export const features = [
   {
     heading: "Track and Log Blood Sugar",
-    img: "/homepage/img1.webp",
+    img: "/homepage/addReadingImg.webp",
     description:
-      `Manually log your blood sugar levels and track changes over time. Add tags like "Before Breakfast" or "After Dinner" to keep your readings organized.`,
+      `Manually log your blood sugar levels and track changes over time. Add tags like "Before Meal", "After Meal", or custom tags such as "After Workout" or "Feeling Unwell" to keep your readings organized and meaningful.`,
   },
   {
     heading: "Understand Your Blood Sugar Trends",
-    img: "/homepage/img2.webp",
+    img: "/homepage/trendsImg.webp",
     description:
-      "Quickly spot patterns in your blood sugar levels with intuitive charts. See how meals, insulin, and exercise impact your readings for better diabetes management.",
+      "Quickly spot patterns in your blood sugar levels with intuitive charts. See how meals, and exercise impact your readings for better diabetes management.",
   },
   {
     heading: "Share Your Data with Ease",
-    img: "/homepage/img3.webp",
+    img: "/homepage/reportImg.webp",
     description:
-      "Generate PDF or CSV reports to share with your doctor. Email or download detailed insights, including meal-related glucose levels and insulin tracking.",
+      "Generate PDF or CSV reports to share with your doctor. Email or download detailed insights, including meal-related glucose levels.",
   },
 ];
 

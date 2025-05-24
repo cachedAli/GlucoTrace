@@ -12,8 +12,16 @@ export function cn(...inputs: ClassValue[]) {
 // Capitalizes the first letter of a string
 export const capitalizeFirstLetter = (string: string) => {
     if (!string) return "";
-    return string.toLowerCase().split(" ").map((word) => word[0].toUpperCase() + word.slice(1)).join(" ");
-}
+    return string
+        .toLowerCase()
+        .split(" ")
+        .map((word) => {
+            if (!word) return "";
+            return word[0].toUpperCase() + word.slice(1);
+        })
+        .join(" ");
+};
+
 
 // Converts mg/dL to mmol/L or vice versa, rounded to 1 decimal, with optional unit string
 export function convertToMmol(value: number, unit: Unit, addString: boolean = true) {

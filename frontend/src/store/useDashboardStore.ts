@@ -25,6 +25,20 @@ type DashboardState = {
     setEndDate: (value: Dayjs | null) => void;
     showDeleteAccountModal: boolean;
     setShowDeleteAccountModal: (value: boolean) => void;
+    loading: boolean;
+    setLoading: (value: boolean) => void;
+    signInLoading: boolean;
+    setSignInLoading: (value: boolean) => void;
+    signUpLoading: boolean;
+    setSignUpLoading: (value: boolean) => void;
+    signOutLoading: boolean;
+    setSignOutLoading: (value: boolean) => void;
+    googleLoading: boolean;
+    setGoogleLoading: (value: boolean) => void;
+    verifyEmailLoading: boolean;
+    setVerifyEmailLoading: (value: boolean) => void;
+    resendEmailLoading: boolean;
+    setResendEmailLoading: (value: boolean) => void;
 }
 export const useDashboardStore = create<DashboardState>((set) => ({
 
@@ -64,4 +78,25 @@ export const useDashboardStore = create<DashboardState>((set) => ({
 
     showDeleteAccountModal: false,
     setShowDeleteAccountModal: (value) => set({ showDeleteAccountModal: value }),
+
+    loading: true,
+    setLoading: (value) => set({ loading: value }),
+
+    signInLoading: false,
+    setSignInLoading: (value) => set({ signInLoading: value }),
+
+    signUpLoading: false,
+    setSignUpLoading: (value) => set({ signUpLoading: value }),
+
+    signOutLoading: false,
+    setSignOutLoading: (value) => set({ signOutLoading: value }),
+
+    googleLoading: false,
+    setGoogleLoading: (value) => set({ googleLoading: value }),
+
+    verifyEmailLoading: false,
+    setVerifyEmailLoading: (value) => set({ verifyEmailLoading: value }),
+
+    resendEmailLoading: false,
+    setResendEmailLoading: (value) => set({ resendEmailLoading: value }),
 }))

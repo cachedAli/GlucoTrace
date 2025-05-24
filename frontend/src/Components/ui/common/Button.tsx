@@ -33,7 +33,7 @@ const Button = ({
             variant === "transparent",
           "bg-blue-700 text-white lg:hover:bg-opacity-95 lg:hover:scale-[1.02] ":
             variant === "fill",
-          "opacity-50 cursor-not-allowed pointer-events-none": disabled,
+          "opacity-85 cursor-not-allowed pointer-events-none": disabled,
         },
         className
       )}

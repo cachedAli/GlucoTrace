@@ -14,10 +14,7 @@ const ProfilePicture = () => {
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      const parseUser = JSON.parse(storedUser);
-      setProfileImage(parseUser?.profilePic || undefined);
-    } else if (user?.profilePic) {
+  if (user?.profilePic) {
       setProfileImage(user.profilePic);
     }
   }, [user]);

@@ -7,9 +7,12 @@ import { useThemeStore } from "@/store/useThemeStore";
 import DashboardOverlay from "./DashboardOverlay";
 import Sidebar from "./sidebar/Sidebar";
 import Header from "./header/Header";
+import { useScrollToTop } from "@/hooks/useScrollToTop";
 
 const DashboardLayout = () => {
   const applyDarkMode = useThemeStore((state) => state.applyDarkMode);
+
+  useScrollToTop();
 
   useEffect(() => {
     if (!document.documentElement.classList.contains("dark")) {

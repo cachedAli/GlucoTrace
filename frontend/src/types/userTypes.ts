@@ -1,11 +1,12 @@
 export type User = {
     id: string;
+    createdAt?: string | Date;
     firstName: string;
     lastName: string;
     email: string;
-    password: string;
+    password?: string;
     profilePic?: string | undefined;
-    darkMode: boolean;
+    darkMode?: boolean;
 
     medicalProfile?: MedicalProfile
 }

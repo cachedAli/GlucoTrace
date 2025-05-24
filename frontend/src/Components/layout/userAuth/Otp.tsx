@@ -7,24 +7,59 @@ import { OtpSchema } from "@/libs/validations/authSchema";
 import LazyLoader from "@/libs/LazyLoader";
 import { Form } from "@/router/LazyRoutes";
 import EmailSent from "./EmailSent";
-
-type Data = {
-  otp: string;
-};
+import { supabase } from "@/libs/supabaseClient";
+import { toast } from "sonner";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useDashboardStore } from "@/store/useDashboardStore";
 
 type OtpProps = {
   otpLength: 4 | 6;
   currentPage: string;
+  loading?: boolean;
+  handleSubmit: (data: any) => Promise<void>;
 };
 
-const Otp = ({ otpLength = 4, currentPage = "Forgot Password" }: OtpProps) => {
+const Otp = ({
+  otpLength = 4,
+  currentPage = "Forgot Password",
+  loading,
+  handleSubmit,
+}: OtpProps) => {
   const [step, setStep] = useState<"otp" | "emailSentMessage">("otp");
+  const resendVerifyOtp = useAuthStore((state) => state.resendVerifyOtp);
 
-  const onSubmit = (data: Data) => {
-    console.log("Form Data:", data);
+  if (otpLength === 4) {
+    setStep("emailSentMessage");
+  }
 
-    if (otpLength === 4) {
-      setStep("emailSentMessage");
+  const handleResend = async (): Promise<boolean> => {
+    const resendPromise = (async () => {
+      const { data, error } = await supabase.auth.getUser();
+      const email = data?.user?.email || "";
+
+      if (error || !email) {
+        throw new Error(error?.message || "Email not found");
+      }
+
+      const success = await resendVerifyOtp({ email });
+
+      if (!success) {
+        throw new Error("Failed to resend verification email");
+      }
+
+      return true;
+    })();
+
+    try {
+      await toast.promise(resendPromise, {
+        loading: "Resending OTP...",
+        success: "OTP sent!",
+        error: (err) => err.message || "Failed to resend OTP",
+      });
+
+      return true;
+    } catch {
+      return false;
     }
   };
 
@@ -46,10 +81,12 @@ const Otp = ({ otpLength = 4, currentPage = "Forgot Password" }: OtpProps) => {
         <Form
           resendOtp
           fields={OtpField}
-          onSubmit={onSubmit}
+          onSubmit={handleSubmit}
+          resendOtpOnSubmit={handleResend}
           schema={OtpSchema(otpLength)}
           buttonLabel="Confirm Code"
           googleAuth={false}
+          loading={loading}
           otpLength={otpLength}
           className="!flex-row items-center justify-center mb-2 max-sm:mb-1"
         />

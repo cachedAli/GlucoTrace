@@ -8,23 +8,28 @@ import { Link } from "react-router-dom";
 import { ZodSchema } from "zod";
 import dayjs from "dayjs";
 
-import { useUserStore } from "@/store/useUserStore";
+import { useDashboardStore } from "@/store/useDashboardStore";
 import { useThemeStore } from "@/store/useThemeStore";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useUserStore } from "@/store/useUserStore";
+import InputField from "../inputs/InputField";
 import { FormField } from "@/types/formTypes";
 import inputTheme from "../inputs/inputTheme";
-import InputField from "../inputs/InputField";
+import BaseLoader from "../loader/BaseLoader";
+import { User } from "@/types/userTypes";
 import Button from "./Button";
 
 type FormProps = {
   fields: FormField[];
   schema: ZodSchema;
-  onSubmit: (data: any) => void;
+  onSubmit: (data: any) => Promise<any>;
+  resendOtpOnSubmit: () => Promise<boolean>;
   buttonLabel?: string;
   googleAuth?: boolean;
   backButtonLabel?: string;
   resendOtp?: boolean;
   otpLength?: 4 | 6;
-  disabled?: boolean;
+  loading?: boolean;
   className?: string;
   buttonClassName?: string;
   buttonAlignment?: "center" | "end";
@@ -38,10 +43,11 @@ const Form = ({
   backButtonLabel,
   resendOtp = false,
   otpLength,
-  disabled,
+  loading,
   className,
   buttonClassName,
   buttonAlignment = "center",
+  resendOtpOnSubmit,
 }: FormProps) => {
   const user = useUserStore((state) => state.user);
   const darkMode = useThemeStore((state) => state.darkMode);
@@ -59,7 +65,7 @@ const Form = ({
 
   useFormDefaults({ fields, user, reset, originalUnit });
 
-  const onFormSubmit = (data: Record<string, any>) => {
+  const onFormSubmit = async (data: Record<string, any>) => {
     const submittedUnit = data.unit;
     let finalTargetMin = data.targetMin;
     let finalTargetMax = data.targetMax;
@@ -81,12 +87,14 @@ const Form = ({
     finalTargetMin = Number(finalTargetMin);
     finalTargetMax = Number(finalTargetMax);
 
-    reset();
-    onSubmit({
+    const shouldReset = await onSubmit({
       ...data,
       targetMin: finalTargetMin,
       targetMax: finalTargetMax,
     });
+    if (shouldReset) {
+      reset();
+    }
   };
 
   return (
@@ -133,13 +141,13 @@ const Form = ({
           <FormButtons
             backButtonLabel={backButtonLabel}
             buttonLabel={buttonLabel}
-            disabled={disabled}
+            loading={loading}
             buttonClassName={buttonClassName}
           />
         </div>
       </form>
-      {resendOtp && <ResendOtp />}
-      <GoogleAuthButton disabled={disabled} googleAuth={googleAuth} />
+      {resendOtp && <ResendOtp resendOtpOnSubmit={resendOtpOnSubmit} />}
+      <GoogleAuthButton googleAuth={googleAuth} />
     </>
   );
 };
@@ -208,13 +216,13 @@ const useFormDefaults = ({
 type FormButtonProps = {
   buttonLabel: string;
   backButtonLabel?: string;
-  disabled?: boolean;
   buttonClassName?: string;
+  loading?: boolean;
 };
 const FormButtons = ({
   buttonLabel,
   backButtonLabel,
-  disabled,
+  loading,
   buttonClassName,
 }: FormButtonProps) => {
   return (
@@ -222,14 +230,14 @@ const FormButtons = ({
       <Button
         variant="fill"
         type="submit"
-        disabled={disabled}
+        disabled={loading ? true : false}
         className={clsx(
           "col-span-2 !h-14 rounded-[14px]",
           "max-sm:text-base max-sm:!h-12",
           buttonClassName
         )}
       >
-        {buttonLabel}
+        {loading ? <BaseLoader /> : buttonLabel}
       </Button>
 
       {backButtonLabel && (
@@ -249,13 +257,17 @@ const FormButtons = ({
     </>
   );
 };
-const GoogleAuthButton = ({
-  googleAuth,
-  disabled,
-}: {
-  googleAuth: boolean;
-  disabled?: boolean;
-}) => {
+const GoogleAuthButton = ({ googleAuth }: { googleAuth: boolean }) => {
+  const signInWithGoogle = useAuthStore((state) => state.signInWithGoogle);
+  const googleLoading = useDashboardStore((state) => state.googleLoading);
+
+  const onSubmit = async () => {
+    try {
+      await signInWithGoogle();
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <>
       {googleAuth && (
@@ -272,14 +284,23 @@ const GoogleAuthButton = ({
             <Button
               type="button"
               aria-label="Sign in with Google"
-              disabled={disabled}
+              onClick={onSubmit}
+              disabled={googleLoading ? true : false}
               className={clsx(
                 "w-full flex items-center justify-center !h-14 rounded-[14px]",
                 "max-sm:text-base max-sm:!h-12"
               )}
             >
-              <FcGoogle size={20} />
-              Sign in with Google
+              {googleLoading ? (
+                <>
+                  <BaseLoader color="blue" />
+                </>
+              ) : (
+                <>
+                  <FcGoogle size={20} />
+                  Sign in with Google
+                </>
+              )}
             </Button>
           </div>
         </>
@@ -288,7 +309,11 @@ const GoogleAuthButton = ({
   );
 };
 
-const ResendOtp = () => {
+const ResendOtp = ({
+  resendOtpOnSubmit,
+}: {
+  resendOtpOnSubmit: () => Promise<boolean>;
+}) => {
   const [timeLeft, setTimeLeft] = useState(120);
   const [canResend, setCanResend] = useState(true);
 
@@ -303,9 +328,15 @@ const ResendOtp = () => {
     }
   }, [timeLeft]);
 
-  const handleResendOtp = () => {
-    setTimeLeft(120);
-    setCanResend(false);
+  const handleResendOtp = async () => {
+    const success = await resendOtpOnSubmit();
+
+    if (success) {
+      setTimeLeft(120);
+      setCanResend(false);
+    } else {
+      setCanResend(true);
+    }
   };
 
   const formatTime = (seconds: number) => {

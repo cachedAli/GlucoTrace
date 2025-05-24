@@ -6,11 +6,13 @@ import { Box } from "@mui/material";
 import dayjs from "dayjs";
 
 import { useDashboardStore } from "@/store/useDashboardStore";
+import { useUserStore } from "@/store/useUserStore";
 
 const CustomDateRange = () => {
   const { startDate, setStartDate, endDate, setEndDate } = useDashboardStore();
+  const user = useUserStore((state) => state.user);
   const today = dayjs();
-  const userCreatedAt = dayjs("2024-01-01");
+  const userCreatedAt = dayjs(user?.createdAt);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
