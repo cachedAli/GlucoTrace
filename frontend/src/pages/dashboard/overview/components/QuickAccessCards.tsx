@@ -9,7 +9,6 @@ import {
   estimateHba1c,
   getMonthChange,
   getMonthlyStats,
-  getPreviousStat,
 } from "@/libs/utils/statFieldUtils";
 import {
   capitalizeFirstLetter,
@@ -22,6 +21,7 @@ import { useReadingStore } from "@/store/useReadingStore";
 import { useUserStore } from "@/store/useUserStore";
 import { Reading } from "@/types/userTypes";
 import HistoryCard from "./HistoryCard";
+import { useStats } from "@/providers/StatsProvider";
 
 type CardProps = {
   readings: Reading[];
@@ -129,8 +129,10 @@ const DownloadReportCard = ({
   targetRange,
   navigate,
 }: CardProps) => {
-  const prevMonthlyChange = getPreviousStat("monthlyChange");
-  const prevTargetRangeStats = getPreviousStat("targetRange");
+  const { stats } = useStats();
+
+  const prevMonthlyChange = stats.monthlyChange;
+  const prevTargetRangeStats = stats.targetRange;
 
   const monthlyChangeStats = getMonthChange(readings, prevMonthlyChange, unit);
 
@@ -139,8 +141,8 @@ const DownloadReportCard = ({
     prevTargetRangeStats,
     unit,
     targetRange
-  )
-  
+  );
+
   const HbA1c = estimateHba1c(readings, unit);
 
   const formatChangeSymbol = (value: string) => {

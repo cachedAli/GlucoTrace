@@ -3,7 +3,6 @@ import { sendResetPasswordEmail, sendResetPasswordSuccessEmail, sendResetPasswor
 import { Req, Res, Email } from "../types/user.types";
 import { otpGenerator } from "../utils/otpGenerator";
 import crypto from "crypto";
-import bcrypt from "bcrypt";
 
 
 /* The function `sendOtp` sends a one-time password (OTP) to a specified email address and stores the OTP in a database for verification.*/
@@ -11,7 +10,7 @@ export const sendOtp = async (req: Req<{ email: Email, userId?: string }>, res: 
     const { email, userId } = req.body;
 
     if (!email) {
-        res.status(400).json({ error: 'Email is required' });
+        res.status(400).json({ success: false, message: 'Email is required' });
         return;
     }
 
@@ -27,7 +26,7 @@ export const sendOtp = async (req: Req<{ email: Email, userId?: string }>, res: 
     ]);
 
     if (insertError) {
-        res.status(500).json({ error: 'Failed to store OTP' });
+        res.status(500).json({ success: false, message: insertError.message });
         return;
     }
 
@@ -35,13 +34,12 @@ export const sendOtp = async (req: Req<{ email: Email, userId?: string }>, res: 
         await sendVerificationEmail(normalizedEmail, otp);
     } catch (err) {
         console.error('Failed to send verification email:', err);
-        res.status(500).json({ error: 'Failed to send verification email' });
+        res.status(500).json({ success: false, message: 'Failed to send verification email' });
         return;
     }
 
-    res.status(200).json({ message: 'OTP sent successfully' });
+    res.status(200).json({ success: true, message: `We've sent a 6-digit code to ${email}. Please enter it below to verify your account.` });
 };
-
 
 /* The function `verifyEmail` verifies a user's email using an OTP code and updates the user's metadata accordingly.*/
 export const verifyEmail = async (req: Req<{ email?: Email, code: string }>, res: Res): Promise<void> => {
@@ -82,7 +80,7 @@ export const verifyEmail = async (req: Req<{ email?: Email, code: string }>, res
         }
 
 
-        const { error: updatedError } = await supabase.auth.admin.updateUserById(otpRecord.user_id, {
+        const { data: { user }, error: updatedError } = await supabase.auth.admin.updateUserById(otpRecord.user_id, {
             user_metadata: { otpVerified: true }
         });
 
@@ -92,7 +90,7 @@ export const verifyEmail = async (req: Req<{ email?: Email, code: string }>, res
         }
         await supabase.from("otps").delete().eq("email", normalizedEmail).eq('otp_code', normalizedCode)
 
-        res.status(200).json({ success: true, message: 'Email verified successfully' });
+        res.status(200).json({ success: true, message: `Welcome ${user?.user_metadata?.firstName} ${user?.user_metadata?.lastName}` });
         return;
     } catch (error) {
         console.log(error);
@@ -104,6 +102,7 @@ export const verifyEmail = async (req: Req<{ email?: Email, code: string }>, res
 
 }
 
+// Resend a verification OTP email to the user if their email is not yet verified.
 export const resendVerificationEmail = async (req: Req<{ email?: Email }>, res: Res): Promise<void> => {
     const { email } = req.body;
     const normalizedEmail = email?.trim().toLowerCase();
@@ -157,6 +156,7 @@ export const resendVerificationEmail = async (req: Req<{ email?: Email }>, res: 
     }
 }
 
+// Handles forgot password requests by generating and sending a password reset OTP to the user's email.
 export const forgotPassword = async (req: Req<{ email?: Email }>, res: Res): Promise<void> => {
     const { email } = req.body;
     const normalizedEmail = email?.trim().toLowerCase();
@@ -197,7 +197,7 @@ export const forgotPassword = async (req: Req<{ email?: Email }>, res: Res): Pro
 
         sendResetPasswordVerificationEmail(normalizedEmail, otp);
 
-        res.status(200).json({ message: 'OTP sent successfully' });
+        res.status(200).json({ success: true, message: 'OTP sent successfully' });
         return
 
     } catch (error) {
@@ -206,11 +206,13 @@ export const forgotPassword = async (req: Req<{ email?: Email }>, res: Res): Pro
     }
 }
 
+// Verifies the OTP for password reset, generates a reset token, stores it, and sends the password reset link via email.
 export const forgotPasswordOtpVerification = async (req: Req<{ email: Email, code: string }>, res: Res): Promise<void> => {
     const { email, code } = req.body;
 
     const normalizedEmail = email?.trim().toLowerCase();
     const normalizedCode = code.trim();
+
 
     try {
         if (!email || !code) {
@@ -238,7 +240,7 @@ export const forgotPasswordOtpVerification = async (req: Req<{ email: Email, cod
         }
 
         const resetToken = crypto.randomBytes(20).toString("hex")
-        const resetTokenExpiration = new Date(Date.now() + 15 * 60 * 1000);
+        const resetTokenExpiration = new Date(Date.now() + 60 * 60 * 1000);
 
         const { error: updateError } = await supabase
             .from("password_resets")
@@ -271,6 +273,7 @@ export const forgotPasswordOtpVerification = async (req: Req<{ email: Email, cod
     }
 };
 
+// Resets the user password using a valid reset token and sends a confirmation email upon success.
 export const resetPassword = async (req: Req<{ token: string, password: string }>, res: Res): Promise<void> => {
     const { token, password } = req.body
 
@@ -289,10 +292,9 @@ export const resetPassword = async (req: Req<{ token: string, password: string }
 
         const user = data[0];
 
-        const hashedPassword = await bcrypt.hash(password, 10)
 
         const { error: updateError } = await supabase.auth.admin.updateUserById(user.user_id, {
-            password: hashedPassword
+            password,
         })
 
         if (updateError) {
@@ -311,3 +313,54 @@ export const resetPassword = async (req: Req<{ token: string, password: string }
         res.status(500).json({ success: false, message: "Error resetting password" });
     }
 }
+
+// Resend a new OTP for password reset after validating the user email and updating the OTP record.
+export const resendResetPasswordOtp = async (req: Req<{ email?: Email }>, res: Res): Promise<void> => {
+    const { email } = req.body;
+    const normalizedEmail = email?.trim().toLowerCase();
+
+    try {
+        if (!email) {
+            res.status(400).json({ success: false, message: "Email is required" });
+            return;
+        }
+
+        const { data, error } = await supabase.auth.admin.listUsers();
+        const user = data?.users?.find((u) => u.email === normalizedEmail);
+
+        if (error) {
+            res.status(400).json({ success: false, message: error.message });
+            return;
+        }
+
+        if (!user) {
+            res.status(404).json({ success: false, message: "User not found" });
+            return;
+        }
+
+        const otp = otpGenerator("4");
+        const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+
+        const { error: upsertError } = await supabase.from("password_resets").upsert({
+            email: normalizedEmail,
+            otp_code: otp,
+            expires_at: expiresAt.toISOString(),
+            user_id: user.id,
+            created_at: new Date().toISOString(),
+        }, { onConflict: "email" });
+
+        if (upsertError) {
+            res.status(500).json({ success: false, message: upsertError.message });
+            return;
+        }
+
+        await sendResetPasswordVerificationEmail(normalizedEmail, otp);
+
+
+        res.status(200).json({ success: true, message: "OTP sent for password reset" });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: "Something went wrong" });
+    }
+};

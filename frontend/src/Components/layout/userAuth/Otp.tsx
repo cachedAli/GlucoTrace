@@ -7,41 +7,28 @@ import { OtpSchema } from "@/libs/validations/authSchema";
 import LazyLoader from "@/libs/LazyLoader";
 import { Form } from "@/router/LazyRoutes";
 import EmailSent from "./EmailSent";
-import { supabase } from "@/libs/supabaseClient";
 import { toast } from "sonner";
-import { useAuthStore } from "@/store/useAuthStore";
-import { useDashboardStore } from "@/store/useDashboardStore";
 
 type OtpProps = {
   otpLength: 4 | 6;
   currentPage: string;
   loading?: boolean;
-  handleSubmit: (data: any) => Promise<void>;
+  resendOtp: () => Promise<boolean>;
+  handleSubmit: (data: any) => Promise<boolean>;
 };
 
 const Otp = ({
   otpLength = 4,
   currentPage = "Forgot Password",
   loading,
+  resendOtp,
   handleSubmit,
 }: OtpProps) => {
   const [step, setStep] = useState<"otp" | "emailSentMessage">("otp");
-  const resendVerifyOtp = useAuthStore((state) => state.resendVerifyOtp);
-
-  if (otpLength === 4) {
-    setStep("emailSentMessage");
-  }
 
   const handleResend = async (): Promise<boolean> => {
     const resendPromise = (async () => {
-      const { data, error } = await supabase.auth.getUser();
-      const email = data?.user?.email || "";
-
-      if (error || !email) {
-        throw new Error(error?.message || "Email not found");
-      }
-
-      const success = await resendVerifyOtp({ email });
+      const success = await resendOtp();
 
       if (!success) {
         throw new Error("Failed to resend verification email");
@@ -53,7 +40,6 @@ const Otp = ({
     try {
       await toast.promise(resendPromise, {
         loading: "Resending OTP...",
-        success: "OTP sent!",
         error: (err) => err.message || "Failed to resend OTP",
       });
 
@@ -81,7 +67,15 @@ const Otp = ({
         <Form
           resendOtp
           fields={OtpField}
-          onSubmit={handleSubmit}
+          onSubmit={async (data) => {
+            const success = await handleSubmit(data);
+
+            if (success) {
+              if (otpLength === 4) {
+                setStep("emailSentMessage");
+              }
+            }
+          }}
           resendOtpOnSubmit={handleResend}
           schema={OtpSchema(otpLength)}
           buttonLabel="Confirm Code"

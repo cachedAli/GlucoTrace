@@ -1,12 +1,13 @@
 import { useState } from "react";
 import clsx from "clsx";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { resetPasswordFields } from "@/libs/constants/authPage/formFields";
 import { resetPasswordSchema } from "@/libs/validations/authSchema";
 import AuthLayout from "@/components/layout/userAuth/AuthLayout";
 import FormSkeleton from "@/components/ui/skeleton/FormSkeleton";
+import { useAuthStore } from "@/store/useAuthStore";
 import LazyLoader from "@/libs/LazyLoader";
 import { Form } from "@/router/LazyRoutes";
 
@@ -18,21 +19,31 @@ const ResetPassword = () => {
   const [countdown, setCountdown] = useState(5);
   const [message, setMessage] = useState("");
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const { resetPassword, resetPasswordLoading } = useAuthStore();
   const navigate = useNavigate();
+  const { token } = useParams();
 
-  const submitForm = (data: Data) => {
-    console.log("Reset Password Form: ", data);
-    setMessage("Redirecting in ");
-    setIsRedirecting(true);
+  const submitForm = async (data: Data) => {
+    const { confirmPassword } = data;
+    try {
+      const success = await resetPassword({ token, password: confirmPassword });
 
-    const interval = setInterval(() => {
-      setCountdown((prev) => prev - 1);
-    }, 1000);
+      if (success) {
+        setMessage("Redirecting in ");
+        setIsRedirecting(true);
 
-    setTimeout(() => {
-      clearInterval(interval);
-      navigate("/signin");
-    }, 5000);
+        const interval = setInterval(() => {
+          setCountdown((prev) => prev - 1);
+        }, 1000);
+
+        setTimeout(() => {
+          clearInterval(interval);
+          navigate("/signin");
+        }, 5000);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -52,6 +63,7 @@ const ResetPassword = () => {
           onSubmit={submitForm}
           buttonLabel="Reset Password"
           googleAuth={false}
+          loading={resetPasswordLoading}
           disabled={isRedirecting}
         />
       </LazyLoader>

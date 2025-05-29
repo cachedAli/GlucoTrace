@@ -12,13 +12,13 @@ export type User = {
 }
 
 export type Reading = {
-    id: string;
+    id?: string;
     value: number;
     timestamp: string | Date;
     mealTiming: "Before Meal" | "After Meal" | "Fasting" | { custom: string };
     note?: string;
-    userId: string;
-    createdAt: string | Date;
+    userId?: string;
+    createdAt?: string | Date;
 }
 
 export type MedicalProfile = {

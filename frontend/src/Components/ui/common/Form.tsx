@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ThemeProvider } from "@emotion/react";
@@ -8,7 +8,6 @@ import { Link } from "react-router-dom";
 import { ZodSchema } from "zod";
 import dayjs from "dayjs";
 
-import { useDashboardStore } from "@/store/useDashboardStore";
 import { useThemeStore } from "@/store/useThemeStore";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useUserStore } from "@/store/useUserStore";
@@ -16,23 +15,24 @@ import InputField from "../inputs/InputField";
 import { FormField } from "@/types/formTypes";
 import inputTheme from "../inputs/inputTheme";
 import BaseLoader from "../loader/BaseLoader";
-import { User } from "@/types/userTypes";
 import Button from "./Button";
 
 type FormProps = {
   fields: FormField[];
   schema: ZodSchema;
   onSubmit: (data: any) => Promise<any>;
-  resendOtpOnSubmit: () => Promise<boolean>;
+  resendOtpOnSubmit?: () => Promise<boolean>;
   buttonLabel?: string;
   googleAuth?: boolean;
   backButtonLabel?: string;
   resendOtp?: boolean;
+  disabled?: boolean;
   otpLength?: 4 | 6;
   loading?: boolean;
   className?: string;
   buttonClassName?: string;
   buttonAlignment?: "center" | "end";
+  isSignIn?: boolean;
 };
 const Form = ({
   fields,
@@ -42,15 +42,18 @@ const Form = ({
   googleAuth = true,
   backButtonLabel,
   resendOtp = false,
+  disabled = false,
   otpLength,
   loading,
   className,
   buttonClassName,
   buttonAlignment = "center",
+  isSignIn = false,
   resendOtpOnSubmit,
 }: FormProps) => {
   const user = useUserStore((state) => state.user);
   const darkMode = useThemeStore((state) => state.darkMode);
+  const theme = useMemo(() => inputTheme(darkMode), [darkMode]);
   const originalUnit = user?.medicalProfile?.bloodSugarUnit || "mg/dL";
 
   const {
@@ -112,7 +115,7 @@ const Form = ({
               field.smColSpan && "max-sm:col-span-2"
             )}
           >
-            <ThemeProvider theme={inputTheme(darkMode)}>
+            <ThemeProvider theme={theme}>
               <InputField
                 name={field.name}
                 control={control}
@@ -121,6 +124,7 @@ const Form = ({
                 type={field.type}
                 otpLength={otpLength}
                 className={className}
+                isSignIn={isSignIn}
                 darkMode={darkMode}
                 {...(field.type === "select" && {
                   options: field.options,
@@ -143,6 +147,7 @@ const Form = ({
             buttonLabel={buttonLabel}
             loading={loading}
             buttonClassName={buttonClassName}
+            disabled={disabled}
           />
         </div>
       </form>
@@ -218,19 +223,21 @@ type FormButtonProps = {
   backButtonLabel?: string;
   buttonClassName?: string;
   loading?: boolean;
+  disabled?: boolean;
 };
 const FormButtons = ({
   buttonLabel,
   backButtonLabel,
   loading,
   buttonClassName,
+  disabled,
 }: FormButtonProps) => {
   return (
     <>
       <Button
         variant="fill"
         type="submit"
-        disabled={loading ? true : false}
+        disabled={loading || disabled}
         className={clsx(
           "col-span-2 !h-14 rounded-[14px]",
           "max-sm:text-base max-sm:!h-12",
@@ -258,8 +265,7 @@ const FormButtons = ({
   );
 };
 const GoogleAuthButton = ({ googleAuth }: { googleAuth: boolean }) => {
-  const signInWithGoogle = useAuthStore((state) => state.signInWithGoogle);
-  const googleLoading = useDashboardStore((state) => state.googleLoading);
+  const { signInWithGoogle, googleLoading } = useAuthStore();
 
   const onSubmit = async () => {
     try {
@@ -309,33 +315,56 @@ const GoogleAuthButton = ({ googleAuth }: { googleAuth: boolean }) => {
   );
 };
 
+const OTP_TIMEOUT_SECONDS = 120;
+const RESEND_TIMESTAMP_KEY = "otp-last-sent-at";
+
 const ResendOtp = ({
   resendOtpOnSubmit,
 }: {
-  resendOtpOnSubmit: () => Promise<boolean>;
+  resendOtpOnSubmit?: () => Promise<boolean>;
 }) => {
-  const [timeLeft, setTimeLeft] = useState(120);
+  const [timeLeft, setTimeLeft] = useState(0);
   const [canResend, setCanResend] = useState(true);
 
   useEffect(() => {
-    if (timeLeft > 0) {
+    const lastSent = localStorage.getItem(RESEND_TIMESTAMP_KEY);
+    if (lastSent) {
+      const secondsSince = Math.floor((Date.now() - Number(lastSent)) / 1000);
+      const remaining = OTP_TIMEOUT_SECONDS - secondsSince;
+      if (remaining > 0) {
+        setTimeLeft(remaining);
+        setCanResend(false);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!canResend && timeLeft > 0) {
       const timer = setInterval(() => {
-        setTimeLeft((prev) => prev - 1);
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            setCanResend(true);
+            return 0;
+          }
+          return prev - 1;
+        });
       }, 1000);
       return () => clearInterval(timer);
-    } else {
-      setCanResend(true);
     }
-  }, [timeLeft]);
+  }, [timeLeft, canResend]);
 
   const handleResendOtp = async () => {
-    const success = await resendOtpOnSubmit();
+    if (resendOtpOnSubmit) {
+      const success = await resendOtpOnSubmit();
 
-    if (success) {
-      setTimeLeft(120);
-      setCanResend(false);
-    } else {
-      setCanResend(true);
+      if (success) {
+        localStorage.setItem(RESEND_TIMESTAMP_KEY, Date.now().toString());
+        setTimeLeft(OTP_TIMEOUT_SECONDS);
+        setCanResend(false);
+      } else {
+        setCanResend(true);
+      }
     }
   };
 

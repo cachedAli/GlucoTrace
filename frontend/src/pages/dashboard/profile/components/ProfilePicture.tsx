@@ -1,20 +1,28 @@
 import Button from "@/components/ui/common/Button";
+import BaseLoader from "@/components/ui/loader/BaseLoader";
+import { useDashboardStore } from "@/store/useDashboardStore";
 import { useUserStore } from "@/store/useUserStore";
+import imageCompression from "browser-image-compression";
 import clsx from "clsx";
+import { Plus } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
 const ProfilePicture = () => {
   const [profileImage, setProfileImage] = useState<string | undefined>(
     undefined
-  ); // saved image
+  );
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  // saved image
   const [previewImage, setPreviewImage] = useState<string | undefined>(
     undefined
   ); // temporary
   const { user, setUser } = useUserStore();
+  const { uploadImage, uploadImageLoading } = useDashboardStore();
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-  if (user?.profilePic) {
+    if (user?.profilePic) {
       setProfileImage(user.profilePic);
     }
   }, [user]);
@@ -23,34 +31,43 @@ const ProfilePicture = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    setSelectedFile(file);
     const reader = new FileReader();
     reader.onload = () => {
       const base64 = reader.result as string;
-      setPreviewImage(base64); // only preview for now
+      setPreviewImage(base64);
     };
     reader.readAsDataURL(file);
   };
+  
+  const handleCommitImage = async () => {
+    if (!user || !user.id || !selectedFile) return;
+    
+    
+    try {
+      const compressedFile = await imageCompression(selectedFile, {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 512,
+        useWebWorker: true,
+      });
 
-  const handleCommitImage = () => {
-    if (!user || !user.id || !previewImage) return;
+      // Assuming uploadImage accepts FormData now
+      const success = await uploadImage(compressedFile);
 
-    const updatedUser = { ...user, profilePic: previewImage };
-    setUser(updatedUser);
-    localStorage.setItem("user", JSON.stringify(updatedUser));
-    setProfileImage(previewImage); // update previewed image as actual
-    setPreviewImage(undefined); // clear preview state
-  };
 
-  const handleResetImage = () => {
-    if (!user || !user.id) return;
+      if (success) {
+        // Create a preview URL for immediate UI update
+        const previewUrl = URL.createObjectURL(compressedFile);
 
-    const originalPic = user.profilePic ?? undefined;
-    setProfileImage(originalPic);
-    setPreviewImage(undefined);
-
-    const updatedUser = { ...user, profilePic: originalPic };
-    setUser(updatedUser);
-    localStorage.setItem("user", JSON.stringify(updatedUser));
+        const updatedUser = { ...user, profilePic: previewUrl };
+        setUser(updatedUser);
+        setProfileImage(previewUrl);
+        setPreviewImage(undefined);
+        setSelectedFile(null);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -65,12 +82,12 @@ const ProfilePicture = () => {
           Profile Picture
         </label>
 
-        <div className="flex items-center gap-10">
+        <div className="flex items-center gap-10 relative">
           <label htmlFor="profile-image-input" className="cursor-pointer">
             <img
               src={previewImage || profileImage || ""}
-              alt="Profile"
-              className="w-24 h-24 rounded-full object-cover border"
+              alt=""
+              className="w-24 h-24 rounded-full object-cover border dark:border-none"
             />
           </label>
 
@@ -92,8 +109,12 @@ const ProfilePicture = () => {
 
       {previewImage && (
         <div className="flex w-[30%] items-center gap-3 flex-col">
-          <Button variant="fill" onClick={handleCommitImage}>
-            Change Image
+          <Button
+            variant="fill"
+            onClick={handleCommitImage}
+            disabled={uploadImageLoading}
+          >
+            {uploadImageLoading ? <BaseLoader /> : "Change Image"}
           </Button>
           <Button onClick={() => setPreviewImage(undefined)}>Cancel</Button>
         </div>

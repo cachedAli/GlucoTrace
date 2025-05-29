@@ -11,14 +11,11 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { SignInData } from "@/types/authTypes";
 import LazyLoader from "@/libs/LazyLoader";
 import { Form } from "@/router/LazyRoutes";
-import { useDashboardStore } from "@/store/useDashboardStore";
-import { supabase } from "@/libs/supabaseClient";
 
 const SignIn = () => {
   const navigate = useNavigate();
   const user = useUserStore();
-  const signInLoading = useDashboardStore((state) => state.signInLoading);
-  const signin = useAuthStore().signin;
+  const {signin,signInLoading} = useAuthStore();
 
   const onSubmit = async (data: SignInData) => {
     const signedInUser = await signin(data);
@@ -52,6 +49,7 @@ const SignIn = () => {
           schema={SignInSchema}
           buttonLabel="Sign in"
           loading={signInLoading}
+          isSignIn
         />
       </LazyLoader>
     </AuthLayout>

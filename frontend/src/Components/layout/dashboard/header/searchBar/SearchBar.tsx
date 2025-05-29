@@ -50,8 +50,8 @@ const SearchBar = () => {
           : option.value.toString();
       const mealTiming =
         typeof option.mealTiming === "object"
-          ? option.mealTiming.custom.toLowerCase()
-          : option.mealTiming.toLowerCase();
+          ? option?.mealTiming?.custom.toLowerCase()
+          : option?.mealTiming?.toLowerCase();
 
       return (
         date.includes(searchTerm) ||
@@ -63,8 +63,10 @@ const SearchBar = () => {
   };
   const filteredReadings = filterOptions(readings, { inputValue });
 
-  const filterSearchedReadings = (id: number) => {
-    const result = readings.filter((reading) => parseInt(reading.id) === id);
+  const filterSearchedReadings = (id: string) => {
+    const result = readings.filter(
+      (reading) => reading.id !== undefined && reading.id === id
+    );
     setFilteredReadings(result);
   };
 
@@ -85,8 +87,13 @@ const SearchBar = () => {
             if (!value) resetFilteredReadings();
           }}
           onChange={(_, value) => {
-            if (value && typeof value !== "string" && "id" in value) {
-              filterSearchedReadings(Number(value.id));
+            if (
+              value &&
+              typeof value !== "string" &&
+              "id" in value &&
+              typeof value.id === "string"
+            ) {
+              filterSearchedReadings(value.id);
             }
           }}
           open={

@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { signUpFields } from "@/libs/constants/authPage/formFields";
 import AuthLayout from "@/components/layout/userAuth/AuthLayout";
 import FormSkeleton from "@/components/ui/skeleton/FormSkeleton";
-import { useDashboardStore } from "@/store/useDashboardStore";
 import { signUpSchema } from "@/libs/validations/authSchema";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useUserStore } from "@/store/useUserStore";
@@ -15,8 +14,7 @@ import { toast } from "sonner";
 const SignUp = () => {
   const navigate = useNavigate();
   // const user = useUserStore((state)=>state.user);
-  const signup = useAuthStore().signup;
-  const signUpLoading = useDashboardStore((state) => state.signUpLoading);
+  const {signup,signUpLoading} = useAuthStore();
 
   const onSubmit = async (data: SignUpData) => {
     try {

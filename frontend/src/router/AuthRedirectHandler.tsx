@@ -7,12 +7,13 @@ import { toast } from "sonner";
 
 import SphereLoader from "@/components/ui/loader/SphereLoader";
 import { useDashboardStore } from "@/store/useDashboardStore";
+import { useAuthStore } from "@/store/useAuthStore";
 import { useUserStore } from "@/store/useUserStore";
 import { supabase } from "@/libs/supabaseClient";
 
 const AuthRedirectHandler = () => {
   const navigate = useNavigate();
-  const setGoogleLoading = useDashboardStore((state) => state.setGoogleLoading);
+  const setGoogleLoading = useAuthStore((state) => state.setGoogleLoading);
 
   useEffect(() => {
     const getUser = async () => {
@@ -36,7 +37,21 @@ const AuthRedirectHandler = () => {
           toast.error(updateError.message);
         }
       }
-      
+
+      if (!meta.custom_avatar_url && meta?.avatar_url) {
+        const { error: customImageError } = await supabase.auth.updateUser({
+          data: { custom_avatar_url: meta?.avatar_url },
+        });
+
+        if (customImageError) {
+          console.error(
+            "Failed to update otpVerified:",
+            customImageError.message
+          );
+          toast.error(customImageError.message);
+        }
+      }
+
       const fullName = meta.full_name || "";
       const [firstName, ...lastParts] = fullName.split(" ");
       const lastName = lastParts.join(" ");
@@ -47,19 +62,45 @@ const AuthRedirectHandler = () => {
         email: user.email ?? "",
         firstName,
         lastName,
-        darkMode: false,
-        profilePic: meta?.avatar_url,
-        medicalProfile: undefined,
+        darkMode: user?.user_metadata?.darkMode,
+        profilePic: meta?.custom_avatar_url || meta?.avatar_url,
+        medicalProfile: {
+          bloodSugarUnit: meta?.medicalProfile?.bloodSugarUnit ?? "",
+          age: meta?.medicalProfile?.age ?? "",
+          diabetesType: meta?.medicalProfile?.diabetesType ?? "",
+          diagnosisDate: meta?.medicalProfile?.diagnosisDate ?? "",
+          gender: meta?.medicalProfile?.gender ?? "",
+          targetBloodSugarRange:
+            meta?.medicalProfile?.targetBloodSugarRange ?? "",
+        },
       };
 
       useUserStore.getState().setUser(newUser);
 
+      if (!meta.hasWelcomed) {
+        toast.success(`Welcome, ${firstName} ${lastName}!`);
+
+        const { error: welcomeUpdateError } = await supabase.auth.updateUser({
+          data: { hasWelcomed: true },
+        });
+
+        if (welcomeUpdateError) {
+          console.error(
+            "Failed to update hasWelcomed:",
+            welcomeUpdateError.message
+          );
+        }
+      } else if (meta?.hasWelcomed) {
+        toast.success(`Welcome back, ${firstName} ${lastName}!`);
+      }
+
       if (!meta.hasCompletedSetup) {
         useDashboardStore.getState().setShowSetupModal(true);
+      } else {
+        useDashboardStore.getState().setShowSetupModal(false);
       }
 
       setGoogleLoading(false);
-      toast.success(`Welcome back, ${newUser.firstName} ${newUser.lastName}`);
       navigate("/dashboard");
     };
 

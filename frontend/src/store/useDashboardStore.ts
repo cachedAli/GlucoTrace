@@ -1,3 +1,7 @@
+import { useFetch } from "@/hooks/useFetch";
+import { userApi } from "@/libs/axios";
+import { supabase } from "@/libs/supabaseClient";
+import { MedicalProfile } from "@/types/userTypes";
 import { Dayjs } from "dayjs";
 import { create } from "zustand";
 
@@ -25,20 +29,30 @@ type DashboardState = {
     setEndDate: (value: Dayjs | null) => void;
     showDeleteAccountModal: boolean;
     setShowDeleteAccountModal: (value: boolean) => void;
+
+    // loading states
     loading: boolean;
     setLoading: (value: boolean) => void;
-    signInLoading: boolean;
-    setSignInLoading: (value: boolean) => void;
-    signUpLoading: boolean;
-    setSignUpLoading: (value: boolean) => void;
     signOutLoading: boolean;
     setSignOutLoading: (value: boolean) => void;
-    googleLoading: boolean;
-    setGoogleLoading: (value: boolean) => void;
-    verifyEmailLoading: boolean;
-    setVerifyEmailLoading: (value: boolean) => void;
-    resendEmailLoading: boolean;
-    setResendEmailLoading: (value: boolean) => void;
+    darkModeLoading: boolean;
+    setDarkModeLoading: (value: boolean) => void;
+    uploadImageLoading: boolean;
+    setUploadImageLoading: (value: boolean) => void;
+    medicalProfileLoading: boolean;
+    setMedicalProfileLoading: (value: boolean) => void;
+    updateProfileLoading: boolean;
+    setUpdateProfileLoading: (value: boolean) => void;
+    glucosePreferenceLoading: boolean;
+    setGlucosePreferenceLoading: (value: boolean) => void;
+
+    //Actions
+    uploadImage: (file: File) => Promise<boolean>
+    medicalProfile: (userData: MedicalProfile) => Promise<boolean>
+    updateProfile: (userData: { firstName?: string, lastName?: string } & MedicalProfile) => Promise<boolean>
+    updateGlucosePreference: (userData: MedicalProfile) => Promise<boolean>
+
+
 }
 export const useDashboardStore = create<DashboardState>((set) => ({
 
@@ -79,24 +93,99 @@ export const useDashboardStore = create<DashboardState>((set) => ({
     showDeleteAccountModal: false,
     setShowDeleteAccountModal: (value) => set({ showDeleteAccountModal: value }),
 
+    // Loading states
     loading: true,
     setLoading: (value) => set({ loading: value }),
-
-    signInLoading: false,
-    setSignInLoading: (value) => set({ signInLoading: value }),
-
-    signUpLoading: false,
-    setSignUpLoading: (value) => set({ signUpLoading: value }),
 
     signOutLoading: false,
     setSignOutLoading: (value) => set({ signOutLoading: value }),
 
-    googleLoading: false,
-    setGoogleLoading: (value) => set({ googleLoading: value }),
+    darkModeLoading: false,
+    setDarkModeLoading: (value) => set({ darkModeLoading: value }),
 
-    verifyEmailLoading: false,
-    setVerifyEmailLoading: (value) => set({ verifyEmailLoading: value }),
+    uploadImageLoading: false,
+    setUploadImageLoading: (value) => set({ uploadImageLoading: value }),
 
-    resendEmailLoading: false,
-    setResendEmailLoading: (value) => set({ resendEmailLoading: value }),
+    medicalProfileLoading: false,
+    setMedicalProfileLoading: (value) => set({ medicalProfileLoading: value }),
+
+    updateProfileLoading: false,
+    setUpdateProfileLoading: (value) => set({ updateProfileLoading: value }),
+
+    glucosePreferenceLoading: false,
+    setGlucosePreferenceLoading: (value) => set({ glucosePreferenceLoading: value }),
+
+    // Actions
+    uploadImage: async (file: File) => {
+        const token = await supabase.auth.getSession().then(res => res.data.session?.access_token);
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const response = await useFetch("post", "/upload-avatar", formData, useDashboardStore.getState().setUploadImageLoading, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": undefined,
+            }
+        }, userApi)
+
+        if (!response?.data?.success) {
+            return false
+        }
+        return true
+    },
+
+    medicalProfile: async (userData) => {
+
+        const { diabetesType, age, bloodSugarUnit, diagnosisDate, gender } = userData
+        const token = await supabase.auth.getSession().then(res => res.data?.session?.access_token)
+
+        const response = await useFetch("post", "/medical-profile", { diabetesType, age, bloodSugarUnit, diagnosisDate, gender }, useDashboardStore.getState().setMedicalProfileLoading, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
+        }, userApi)
+
+        if (!response?.data?.success) {
+            return false
+        }
+        return true
+
+    },
+
+    updateProfile: async (userData) => {
+
+        const { firstName, lastName, diabetesType, age, diagnosisDate, gender } = userData
+        const token = await supabase.auth.getSession().then(res => res.data?.session?.access_token)
+
+        const response = await useFetch("put", "/update-profile", { firstName, lastName, diabetesType, age, diagnosisDate, gender }, useDashboardStore.getState().setUpdateProfileLoading, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
+        }, userApi)
+
+        if (!response?.data?.success) {
+            return false
+        }
+        return true
+
+    },
+    updateGlucosePreference: async (userData) => {
+
+        const { bloodSugarUnit, targetBloodSugarRange } = userData
+        const token = await supabase.auth.getSession().then(res => res.data?.session?.access_token)
+
+        const response = await useFetch("put", "/update-glucose-preference", { bloodSugarUnit, targetBloodSugarRange }, useDashboardStore.getState().setGlucosePreferenceLoading, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
+        }, userApi)
+
+        if (!response?.data?.success) {
+            return false
+        }
+        return true
+
+    }
+
 }))

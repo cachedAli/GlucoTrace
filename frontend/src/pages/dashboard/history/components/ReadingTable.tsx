@@ -139,7 +139,7 @@ const TableBodyContent = () => {
       }}
     >
       {filteredReadings.length > 0 ? (
-        filteredReadings.map((reading) => {
+        filteredReadings.map((reading, index) => {
           const sharedProps = {
             editedReading,
             editId,
@@ -150,7 +150,7 @@ const TableBodyContent = () => {
 
           return (
             <TableRow key={reading.id}>
-              <TableCell>{reading.id}</TableCell>
+              <TableCell>{index + 1}</TableCell>
               <TableDate {...sharedProps} />
               <TableTime {...sharedProps} />
               <TableValue {...sharedProps} unit={unit} />
@@ -379,9 +379,9 @@ const TableMealTiming = ({
           )}
         </div>
       ) : typeof reading.mealTiming === "string" ? (
-        reading.mealTiming
+        reading?.mealTiming
       ) : (
-        reading.mealTiming.custom
+        reading?.mealTiming?.custom
       )}
     </TableCell>
   );
@@ -490,7 +490,8 @@ const TableActionButtons = ({
   setEditId: React.Dispatch<React.SetStateAction<string | null>>;
 } & TableBodyProps) => {
   const { setShowDeleteReading, setReadingToDelete } = useDashboardStore();
-  const { updateReadings, filteredReadings } = useReadingStore();
+  const { updateReadings, filteredReadings, editReadingLoading } =
+    useReadingStore();
 
   const handleUpdateReading = async (id: string) => {
     const mealTiming =
@@ -522,7 +523,7 @@ const TableActionButtons = ({
         mealTiming: editedReading.mealTiming,
       };
 
-      await updateReadings(id, updatedReading);
+      await updateReadings(updatedReading);
       setEditId(null);
     } catch (error) {
       console.error("Update failed:", error);
@@ -536,7 +537,7 @@ const TableActionButtons = ({
             <Pencil
               size={20}
               onClick={() => {
-                setEditId(reading.id);
+                setEditId(reading?.id ?? null);
                 setEditedReading({
                   ...editedReading,
                   value: reading.value.toString(),
@@ -559,7 +560,7 @@ const TableActionButtons = ({
               size={20}
               onClick={() => {
                 setShowDeleteReading(true);
-                setReadingToDelete(reading.id);
+                setReadingToDelete(reading?.id ?? "");
               }}
               className={clsx(
                 "cursor-pointer text-gray-500 transition-all duration-150",
@@ -581,11 +582,16 @@ const TableActionButtons = ({
             />
             <Check
               size={20}
-              onClick={() => handleUpdateReading(reading.id)}
+              onClick={() => {
+                if (editReadingLoading) return;
+                handleUpdateReading(reading.id ?? "");
+              }}
               className={clsx(
                 "cursor-pointer text-gray-500 transition-all duration-150",
                 "hover:text-blue-600",
-                "dark:text-gray-300 dark:hover:text-blue-500 "
+                "dark:text-gray-300 dark:hover:text-blue-500 ",
+                editReadingLoading &&
+                  "dark:text-gray-500 text-gray-300 pointer-events-none"
               )}
             />
           </>

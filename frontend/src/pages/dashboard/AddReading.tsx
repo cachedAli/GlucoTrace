@@ -18,32 +18,31 @@ type Data = {
 const AddReading = () => {
   const { user } = useUserStore();
   const unit = user?.medicalProfile?.bloodSugarUnit || "mg/dL";
-  const { setReadings } = useReadingStore();
+  const { setReadings, addReading,addReadingLoading } = useReadingStore();
   const { addReadingStats } = StatFields();
 
   const convertToMgdl = (value: number, unit: Unit) => {
     return unit === "mmol/L" ? Math.round(value * 18.0182) : Math.round(value);
   };
 
-  const handleSubmit = (data: Data) => {
+  const handleSubmit = async (data: Data) => {
     if (!user) return;
 
     const { glucose, mealTiming, date, time, note } = data;
     const timestamp = mergeDateAndTime(date, time);
 
-    const newReading = {
-      id: Date.now().toString(),
+    const response = await addReading({
       value: convertToMgdl(Number(glucose), unit),
       mealTiming,
       timestamp,
       note,
-      userId: user.id,
-      createdAt: new Date().toISOString(),
-    };
+    });
 
-    setReadings(newReading);
+    if (response) {
+      return true;
+    }
+    return;
 
-    console.log(data);
   };
 
   const mergeDateAndTime = (date: string, time: string) => {
@@ -72,6 +71,7 @@ const AddReading = () => {
           googleAuth={false}
           buttonClassName="w-96 max-sm:w-full"
           buttonAlignment="end"
+          loading={addReadingLoading}
         />
       </div>
     </>

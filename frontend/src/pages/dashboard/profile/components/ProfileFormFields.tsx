@@ -1,4 +1,6 @@
-import Button from "@/components/ui/common/Button";
+import dayjs from "dayjs";
+import clsx from "clsx";
+
 import Form from "@/components/ui/common/Form";
 import {
   profileGlucosePreferenceFields,
@@ -8,10 +10,9 @@ import {
   profileGlucosePreferenceSchema,
   profileUserInfoSchema,
 } from "@/libs/validations/dashboardSchema";
+import { useDashboardStore } from "@/store/useDashboardStore";
 import { useUserStore } from "@/store/useUserStore";
-import clsx from "clsx";
 import ProfilePicture from "./ProfilePicture";
-import dayjs from "dayjs";
 
 type UserInfoData = {
   firstName?: string;
@@ -29,14 +30,21 @@ type GlucosePreferenceData = {
 };
 const ProfileFormFields = () => {
   const { user, setUser } = useUserStore();
+  const {
+    updateProfile,
+    updateProfileLoading,
+    updateGlucosePreference,
+    glucosePreferenceLoading,
+  } = useDashboardStore();
+
   const unit = user?.medicalProfile?.bloodSugarUnit || "mg/dL";
 
-  const handleUserInfoSubmit = (data: UserInfoData) => {
+  // User Info/Profile handler
+  const handleUserInfoSubmit = async (data: UserInfoData) => {
     if (!user || !user.id) return;
     const { firstName, lastName, age, gender, diabetesType, diagnosisDate } =
       data;
 
-    console.log(data);
     const isEmpty = (val: any) =>
       val === undefined || val === "" || val === null;
 
@@ -57,41 +65,64 @@ const ProfileFormFields = () => {
           : dayjs(diagnosisDate).toISOString(),
       },
     };
-    setUser(updatedUser);
-    localStorage.setItem("user", JSON.stringify(updatedUser));
-    console.log(user);
+
+    const success = await updateProfile({
+      firstName,
+      lastName,
+      age,
+      diabetesType,
+      diagnosisDate,
+      gender,
+    });
+
+    if (success) {
+      setUser(updatedUser);
+      return;
+    }
+    return;
   };
 
-  const handleGlucosePreferenceSubmit = (data: GlucosePreferenceData) => {
+  // Glucose Preference handler
+  const handleGlucosePreferenceSubmit = async (data: GlucosePreferenceData) => {
     if (!user || !user?.id) return;
     const { unit, targetMin, targetMax } = data;
+
+    const bloodSugarRange = {
+      min:
+        targetMin !== undefined
+          ? targetMin
+          : user.medicalProfile?.targetBloodSugarRange?.min ??
+            user?.medicalProfile?.bloodSugarUnit === "mg/dL"
+          ? 70
+          : 3.9,
+      max:
+        targetMax !== undefined
+          ? targetMax
+          : user.medicalProfile?.targetBloodSugarRange?.max ??
+            user?.medicalProfile?.bloodSugarUnit === "mg/dL"
+          ? 180
+          : 10,
+    };
 
     const updatedUser = {
       ...user,
       medicalProfile: {
         ...user?.medicalProfile,
-        bloodSugarUnit: unit ?? user?.medicalProfile?.bloodSugarUnit,
-        targetBloodSugarRange: {
-          min:
-            targetMin !== undefined
-              ? targetMin
-              : user.medicalProfile?.targetBloodSugarRange?.min ??
-                user?.medicalProfile?.bloodSugarUnit === "mg/dL"
-              ? 70
-              : 3.9,
-          max:
-            targetMax !== undefined
-              ? targetMax
-              : user.medicalProfile?.targetBloodSugarRange?.max ??
-                user?.medicalProfile?.bloodSugarUnit === "mg/dL"
-              ? 180
-              : 10,
-        },
+        bloodSugarUnit: unit,
+        targetBloodSugarRange: bloodSugarRange,
       },
     };
-    setUser(updatedUser);
-    localStorage.setItem("user", JSON.stringify(updatedUser));
-    console.log(data);
+
+    const success = await updateGlucosePreference({
+      bloodSugarUnit: unit,
+      targetBloodSugarRange: bloodSugarRange,
+    });
+
+    if (success) {
+      setUser(updatedUser);
+      return;
+    }
+    return;
   };
   return (
     <>
@@ -112,6 +143,7 @@ const ProfileFormFields = () => {
         googleAuth={false}
         buttonClassName="w-96 max-sm:w-full"
         buttonAlignment="end"
+        loading={updateProfileLoading}
       />
       <h2
         className={clsx(
@@ -129,6 +161,7 @@ const ProfileFormFields = () => {
         googleAuth={false}
         buttonClassName="w-96 max-sm:w-full"
         buttonAlignment="end"
+        loading={glucosePreferenceLoading}
       />
     </>
   );

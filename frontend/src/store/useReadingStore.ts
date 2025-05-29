@@ -1,31 +1,69 @@
 import { Reading } from "@/types/userTypes";
 import { create } from "zustand";
 import { useDashboardStore } from "./useDashboardStore";
+import { useFetch } from "@/hooks/useFetch";
+import { supabase } from "@/libs/supabaseClient";
+import { userApi } from "@/libs/axios";
+import { formatReading } from "@/libs/utils/utils";
 
 type ReadingState = {
+    // States
     readings: Reading[];
     filteredReadings: Reading[];
-    setReadings: (newReading: Reading) => void;
+
+    setReadings: (readings: Reading[]) => void;
     setFilteredReadings: (filtered: Reading[]) => void;
+
+    // Loading states
+    addReadingLoading: boolean;
+    setAddReadingLoading: (value: boolean) => void;
+    editReadingLoading: boolean;
+    setEditReadingLoading: (value: boolean) => void;
+    deleteReadingLoading: boolean;
+    setDeleteReadingLoading: (value: boolean) => void;
+
+    // Actions
+    fetchReadings: () => Promise<void>;
+    addReading: (userData: Reading) => Promise<boolean>;
+    deleteReading: (id: string) => Promise<boolean>;
+    updateReadings: (userData: Reading) => Promise<boolean>;
+
     resetFilteredReadings: () => void;
-    logReadings: () => void;
-    deleteReading: (id: string) => void
-    updateReadings: (id: string, updatedReading: Reading) => void
 }
-export const useReadingStore = create<ReadingState>((set) => ({
-    
-    readings: JSON.parse(localStorage.getItem("readings") || "[]"),
-    filteredReadings: JSON.parse(localStorage.getItem("readings") || "[]"),
 
-    setReadings: (newReading) => set((state) => {
- 
-        const updatedReadings = [newReading, ...state.readings];
-        localStorage.setItem("readings", JSON.stringify(updatedReadings));
-        return { readings: updatedReadings, filteredReadings: updatedReadings }
-    }),
+export const useReadingStore = create<ReadingState>((set, get) => ({
+    readings: [],
+    filteredReadings: [],
 
+    setReadings: (readings) => set({ readings, filteredReadings: readings }),
     setFilteredReadings: (filtered) => set({ filteredReadings: filtered }),
 
+    addReadingLoading: false,
+    setAddReadingLoading: (value) => set({ addReadingLoading: value }),
+
+    editReadingLoading: false,
+    setEditReadingLoading: (value) => set({ editReadingLoading: value }),
+
+    deleteReadingLoading: false,
+    setDeleteReadingLoading: (value) => set({ deleteReadingLoading: value }),
+
+    fetchReadings: async () => {
+        const { data: { user } } = await supabase.auth.getUser()
+        const { data, error } = await supabase
+            .from("readings")
+            .select("*")
+            .eq("user_id", user?.id)
+            .order("timestamp", { ascending: false, });
+
+        if (!error && data) {
+            const formatted = data?.map(formatReading)
+            set({ readings: formatted, filteredReadings: formatted });
+        } else {
+            console.error("Error fetching readings:", error);
+        }
+    },
+
+    // Actions
     resetFilteredReadings: () => {
         useDashboardStore.getState().setSelectedFilterOption(undefined);
         useDashboardStore.getState().setSelectedSortOption(undefined);
@@ -40,29 +78,93 @@ export const useReadingStore = create<ReadingState>((set) => ({
         set({ readings: savedReadings })
     },
 
-    deleteReading: (id: string) =>
-        set((state) => {
-            const updatedReadings = state.readings.filter((reading) => reading.id !== id);
-            localStorage.setItem("readings", JSON.stringify(updatedReadings));
-            const updatedFilteredReadings = state.filteredReadings.filter(
-                (reading) => reading.id !== id
-            );
-            return {
-                readings: updatedReadings,
-                filteredReadings: updatedFilteredReadings,
-            };
-        }),
+    deleteReading: async (id: string) => {
+        const token = await supabase.auth.getSession().then(res => res?.data?.session?.access_token)
 
-    updateReadings: (id: string, updatedReading: Reading) =>
-        set((state) => {
-            const updatedReadings = state.readings.map(reading => reading.id === id ? { ...reading, ...updatedReading } : reading)
+        const response = await useFetch("delete", "/delete-reading", { id }, useReadingStore.getState().setDeleteReadingLoading, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }, userApi)
 
-            const updatedFilteredReadings = state.filteredReadings.map(reading =>
-                reading.id === id ? { ...reading, ...updatedReading } : reading
-            );
+        if (!response?.data?.success) {
+            return false;
+        }
 
-            localStorage.setItem("readings", JSON.stringify(updatedReadings))
+        const currentReadings = useReadingStore.getState().readings;
+        const filteredReadings = useReadingStore.getState().filteredReadings;
 
-            return { readings: updatedReadings, filteredReadings: updatedFilteredReadings };
+        const updatedReadings = currentReadings.filter((r) => r.id !== id);
+        const updatedFilteredReadings = filteredReadings.filter((r) => r.id !== id);
+
+
+        useReadingStore.setState({
+            readings: updatedReadings,
+            filteredReadings: updatedFilteredReadings,
+        });
+
+        return true;
+    },
+
+    updateReadings: async (userData) => {
+        const { id, mealTiming, timestamp, value, note } = userData
+        const token = await supabase.auth.getSession().then(res => res?.data?.session?.access_token)
+
+        const response = await useFetch("put", "/edit-reading", { id, mealTiming, timestamp, value, note }, useReadingStore.getState().setEditReadingLoading, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }, userApi, {
+            type: "promise",
+            loadingMessage: "Updating your reading..."
         })
+
+        if (!response?.data?.success) {
+            return false;
+        }
+
+        const newReading = formatReading(response?.data?.data[0]);
+        const currentReadings = useReadingStore.getState().readings;
+        const filteredReadings = useReadingStore.getState().filteredReadings;
+
+
+        const updatedReadings = currentReadings.map((r) =>
+            r.id === newReading.id ? newReading : r
+        );
+
+        const updatedFilteredReadings = filteredReadings.map((r) => r.id === newReading.id ? newReading : r)
+
+        set({
+            readings: updatedReadings,
+            filteredReadings: updatedFilteredReadings,
+        });
+
+        return true;
+    },
+
+
+    addReading: async (userData) => {
+        const { mealTiming, timestamp, value, note } = userData
+        const token = await supabase.auth.getSession().then(res => res?.data?.session?.access_token)
+
+        const response = await useFetch("post", "/add-reading", { mealTiming, timestamp, value, note }, useReadingStore.getState().setAddReadingLoading, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }, userApi)
+
+        if (!response?.data?.success) {
+            return false;
+        }
+        const newReading = formatReading(response?.data?.data[0]);
+        const currentReadings = useReadingStore.getState().readings;
+
+        // ✅ append it cleanly
+        useReadingStore.getState().setReadings([newReading, ...currentReadings]);
+
+        console.log(useReadingStore.getState().readings)
+
+        return response?.data
+
+    }
 }))

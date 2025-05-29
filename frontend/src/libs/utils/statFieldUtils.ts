@@ -1,29 +1,9 @@
-import { compareAsc, differenceInDays, differenceInMinutes, endOfDay, endOfMonth, endOfWeek, format, formatDistanceToNow, isThisMonth, isWithinInterval, startOfDay, startOfMonth, startOfWeek, subDays } from "date-fns";
-import { Stats, StoredStat, TargetRange, Unit } from "@/types/dashboardTypes";
+import { compareAsc, differenceInDays, differenceInMinutes, endOfDay, endOfMonth, endOfWeek, format, formatDistanceToNow, isThisMonth, isWithinInterval, parseISO, startOfDay, startOfMonth, startOfWeek, subDays } from "date-fns";
+import { Stats, TargetRange, Unit } from "@/types/dashboardTypes";
 import { convertToMmol } from "@/libs/utils/utils";
 import { Reading } from "@/types/userTypes";
 
 
-// * Save to localeStorage Functions
-
-// Retrieves the previous value of a specific health stat from localStorage.
-export const getPreviousStat = (statName: string): Stats | null => {
-    const allStats: Record<string, StoredStat> = JSON.parse(localStorage.getItem("healthStats") || "{}");
-    return allStats[statName]?.previous || null;
-};
-
-// Saves or updates a specific health stat in localStorage.
-export const saveStat = (statName: string, newData: Stats) => {
-    const allStats: Record<string, StoredStat> = JSON.parse(localStorage.getItem("healthStats") || "{}");
-
-    if (!allStats[statName]) {
-        allStats[statName] = { previous: null, current: newData };
-    } else {
-        allStats[statName].current = newData;
-    }
-
-    localStorage.setItem("healthStats", JSON.stringify(allStats));
-};
 
 // * Overview Page Functions
 
@@ -162,10 +142,14 @@ export const get7DayAverage = (readings: Reading[], unit: Unit, previousStats: S
     let trend: string | undefined;
     if (previousStats?.value && previousStats.value !== "--") {
         const prevValue = parseFloat(previousStats.value);
-        if (!isNaN(prevValue)) {
+        if (!isNaN(prevValue) && prevValue !== 0) {
             const change = avg - prevValue;
-            const percentageChange = ((change / prevValue) * 100).toFixed(1);
-            trend = `${change >= 0 ? '+' : ''}${percentageChange}%`;
+            const percentageChange = (change / prevValue) * 100;
+
+            if (Math.abs(percentageChange) >= 0.1) {
+                const rounded = percentageChange.toFixed(1);
+                trend = `${change >= 0 ? '+' : ''}${rounded}%`;
+            }
         }
     }
 
@@ -284,12 +268,12 @@ const getMealImpactDescription = (impact: string, unit: Unit) => {
 // Calculates the percentage of readings within the target range
 const calculatePercentageInRange = (
     readings: Reading[],
-    unit:Unit,
+    unit: Unit,
     targetRange: TargetRange = { min: 70, max: 180 }
 ) => {
     const total = readings.length;
-    
-    const inRange = readings.filter(r => Number(convertToMmol(r.value,unit,false)) >= targetRange.min && Number(convertToMmol(r.value,unit,false)) <= targetRange.max).length;
+
+    const inRange = readings.filter(r => Number(convertToMmol(r.value, unit, false)) >= targetRange.min && Number(convertToMmol(r.value, unit, false)) <= targetRange.max).length;
     if (total === 0) return 0;
     return (inRange / total) * 100;
 };
@@ -298,7 +282,7 @@ const calculatePercentageInRange = (
 export const getUpdatedInRangeStats = (
     readings: Reading[],
     previousStats: Stats | null,
-    unit:Unit,
+    unit: Unit,
     targetRange: TargetRange = { min: 70, max: 180 }
 ): Stats => {
     if (readings.length === 0) {
@@ -318,7 +302,7 @@ export const getUpdatedInRangeStats = (
     }
 
     const latestReading = readings[readings.length - 1];
-    const currentPercentage = Math.round(calculatePercentageInRange(readings,unit, targetRange));
+    const currentPercentage = Math.round(calculatePercentageInRange(readings, unit, targetRange));
     const currentISO = new Date(latestReading.timestamp).toISOString();
 
 
@@ -380,7 +364,7 @@ export const getUpdatedInRangeStats = (
 export const getWeeklyStats = (
     readings: Reading[],
     previousStats: Stats | null,
-    unit:Unit,
+    unit: Unit,
     targetRange: TargetRange = { min: 70, max: 180 }
 ): Stats => {
     const now = new Date();
@@ -391,13 +375,13 @@ export const getWeeklyStats = (
             end: now
         })
     );
-    return getUpdatedInRangeStats(weeklyReadings, previousStats,unit, targetRange);
+    return getUpdatedInRangeStats(weeklyReadings, previousStats, unit, targetRange);
 };
 
 export const getMonthlyStats = (
     readings: Reading[],
     previousStats: Stats | null,
-    unit:Unit,
+    unit: Unit,
     targetRange: TargetRange = { min: 70, max: 180 }
 ): Stats => {
     const now = new Date();
@@ -408,7 +392,7 @@ export const getMonthlyStats = (
             end: now,
         })
     );
-    return getUpdatedInRangeStats(monthlyReadings, previousStats,unit, targetRange);
+    return getUpdatedInRangeStats(monthlyReadings, previousStats, unit, targetRange);
 };
 
 //* Reading History Page Functions
@@ -418,13 +402,11 @@ export const getThisWeekReadings = (readings: Reading[]) => {
     const now = new Date();
     const weekStart = startOfWeek(now, { weekStartsOn: 1 });
 
-    return readings.filter((r) =>
-        isWithinInterval(new Date(r.timestamp), {
-            start: weekStart,
-            end: now
-        })
-    )
-}
+    return readings.filter((reading) => {
+        const date = parseISO(reading.timestamp as string);
+        return isWithinInterval(date, { start: weekStart, end: now });
+    });
+};
 
 // Returns a short weekly summary message based on how many readings were logged.
 export const getThisWeekReadingsDescription = (count: number) => {
@@ -479,6 +461,7 @@ export const getUpdatedHighLowStats = (
         // Build description using ACTUAL COUNTS
         if (high > prevHigh && low > prevLow) {
             description = "You had more highs and lows this week — stay alert and keep tracking.";
+            trend = undefined;
         } else if (high > prevHigh) {
             description = "More highs than last week — review your meals and activities.";
         } else if (low > prevLow) {
@@ -701,7 +684,7 @@ export const getUpdatedMorningEveningStats = (
             const percentageChange = ((currentTotal - previousTotal) / previousTotal) * 100;
             const rounded = Math.round(percentageChange);
 
-            if (!isNaN(rounded)) {
+            if (!isNaN(rounded) && rounded !== 0) {
                 trend = `${rounded >= 0 ? '+' : ''}${rounded}%`;
                 description = percentageChange > 0
                     ? "Your averages increased this week. Review daily habits."

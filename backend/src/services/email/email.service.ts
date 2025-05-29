@@ -32,7 +32,7 @@ export const sendResetPasswordVerificationEmail = async (email: string | undefin
         const res = await transport.sendMail({
             from: `"${sender.name}" <${sender.email}`,
             to: recipient,
-            subject: "Verify your email for password reset",
+            subject: "Password Reset Verification",
             html: FORGOT_PASSWORD_EMAIL_TEMPLATE.replace(
                 "{otpCode}", verificationToken
             )
@@ -70,7 +70,7 @@ export const sendResetPasswordSuccessEmail = async (email: Email) => {
         const res = await transport.sendMail({
             from: `"${sender.name}" <${sender.email}>`,
             to: recipient,
-            subject: "Reset Password",
+            subject: "Your Password Has Been Successfully Reset",
             html: PASSWORD_RESET_SUCCESS_TEMPLATE,
         });
         console.log("Email sent successfully", res);

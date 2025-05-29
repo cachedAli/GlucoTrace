@@ -1,26 +1,42 @@
+import { supabase } from "@/libs/supabaseClient";
+import { useNavigate } from "react-router-dom";
+
 import Otp from "@/components/layout/userAuth/Otp";
 import { useAuthStore } from "@/store/useAuthStore";
-import { useDashboardStore } from "@/store/useDashboardStore";
-import { useNavigate } from "react-router-dom";
 
 type Data = {
   otp: string;
 };
 
 const VerifyEmail = () => {
-  const verifyOtp = useAuthStore((state) => state.verifyOtp);
-  const VerifyEmailLoading = useDashboardStore(
-    (state) => state.verifyEmailLoading
-  );
+  const { verifyOtp, verifyEmailLoading, resendVerifyOtp } = useAuthStore();
+
+  const handleResend = async () => {
+    const { data } = await supabase.auth.getUser();
+    const email = data?.user?.email || "";
+    const success = await resendVerifyOtp({ email });
+
+    if (success) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   const navigate = useNavigate();
 
   const onSubmit = async (data: Data) => {
     try {
       const user = await verifyOtp({ otpCode: data.otp });
-      if (user) navigate("/dashboard");
-      console.log("Form Data:", data);
+      if (user) {
+        navigate("/dashboard");
+        return true;
+      } else {
+        return false;
+      }
     } catch (error) {
       console.log(error);
+      return false;
     }
   };
   return (
@@ -29,7 +45,8 @@ const VerifyEmail = () => {
         currentPage="Verify Email"
         otpLength={6}
         handleSubmit={onSubmit}
-        loading={VerifyEmailLoading}
+        resendOtp={handleResend}
+        loading={verifyEmailLoading}
       />
     </>
   );

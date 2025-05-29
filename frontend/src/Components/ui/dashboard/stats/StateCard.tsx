@@ -59,7 +59,9 @@ const StateCardTopRow = ({
           {title}
         </h1>
       )}
-      {isOverview && trend && <TrendIndicator trend={trend} index={index} />}
+      {isOverview && trend && (
+        <TrendIndicator trend={trend} index={index} title={title} />
+      )}
     </div>
   );
 };
@@ -113,7 +115,9 @@ const StateCardContent = ({
             ) : (
               <h2 className="font-semibold text-2xl">{value}</h2>
             )}
-            {trend && <TrendIndicator trend={trend} index={index} />}
+            {trend && (
+              <TrendIndicator trend={trend} index={index} title={title} />
+            )}
           </div>
           <p
             className={clsx(
@@ -151,29 +155,36 @@ const BackgroundIcon = ({
 const TrendIndicator = ({
   trend,
   index,
+  title,
 }: {
   trend: string | number;
   index: number;
+  title: string;
 }) => {
   const isNegative = typeof trend === "string" && trend.includes("-");
+  const isHighLow = title === "High/Low Episodes";
+  const isMorningEvening = title === "Morning vs. Evening Averages";
+  const isSpecialTitle = isHighLow || isMorningEvening;
+
+  const isPositiveForSpecial = isSpecialTitle ? isNegative : !isNegative;
 
   return (
     <div
       className={clsx(
         "flex items-center gap-2 px-2 py-0.5 rounded-2xl border",
         index !== 0
-          ? !isNegative
+          ? isPositiveForSpecial
             ? "bg-green-400 border-green-500 text-gray-800"
             : "bg-red-500/90 border-red-600 text-gray-100"
-          : !isNegative
+          : isPositiveForSpecial
           ? "bg-green-300 border-green-500 text-gray-800"
           : "bg-red-400 border-red-500 text-gray-800"
       )}
     >
-      {isNegative ? (
-        <TrendingDown className="size-4" />
-      ) : (
+      {isPositiveForSpecial ? (
         <TrendingUp className="size-4" />
+      ) : (
+        <TrendingDown className="size-4" />
       )}
       <h2 className="text-[10px] font-semibold">{trend}</h2>
     </div>

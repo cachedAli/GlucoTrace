@@ -1,26 +1,77 @@
 import { create } from "zustand";
-import { ResendVerifyOtpData, SignInData, SignUpData, VerifyOtpData } from "@/types/authTypes";
+import { ResendVerifyOtpData, ResetPassword, SignInData, SignUpData, VerifyForgotPasswordData, VerifyOtpData } from "@/types/authTypes";
 import { User } from "@/types/userTypes";
 import { useUserStore } from "./useUserStore";
 import { supabase } from "@/libs/supabaseClient";
 import { toast } from "sonner";
 import { useDashboardStore } from "./useDashboardStore";
 import { useFetch } from "@/hooks/useFetch";
+import { useThemeStore } from "./useThemeStore";
 
 
 type AuthState = {
+
+    // Actions
     signin: (userData: SignInData) => Promise<User | { success: boolean } | null>;
     signInWithGoogle: () => Promise<any>;
     verifyOtp: (userData: VerifyOtpData) => Promise<User | undefined>;
     resendVerifyOtp: (userData: ResendVerifyOtpData) => Promise<boolean>;
+    forgotPassword: (userData: { email: string }) => Promise<boolean>;
+    verifyForgotPasswordEmail: (userData: VerifyForgotPasswordData) => Promise<boolean>;
+    resetPassword: (userData: ResetPassword) => Promise<boolean>;
+
+    resendForgotPasswordOtp: (userData: ResendVerifyOtpData) => Promise<boolean>;
     signup: (userData: Omit<SignUpData, "id">) => Promise<User | { success: boolean } | null>;
     logout: (navigate: (path: string) => void) => void;
     checkAuth: () => Promise<User | null>
+
+    // loading States
+    signInLoading: boolean;
+    setSignInLoading: (value: boolean) => void;
+    signUpLoading: boolean;
+    setSignUpLoading: (value: boolean) => void;
+    googleLoading: boolean;
+    setGoogleLoading: (value: boolean) => void;
+    verifyEmailLoading: boolean;
+    setVerifyEmailLoading: (value: boolean) => void;
+    forgotPasswordLoading: boolean;
+    setForgotPasswordLoading: (value: boolean) => void;
+    verifyForgotPasswordLoading: boolean;
+    setVerifyForgotPasswordLoading: (value: boolean) => void;
+    resetPasswordLoading: boolean;
+    setResetPasswordLoading: (value: boolean) => void;
+
 };
 
-export const useAuthStore = create<AuthState>(() => ({
+export const useAuthStore = create<AuthState>((set) => ({
+
+    // Loading states
+    signInLoading: false,
+    setSignInLoading: (value) => set({ signInLoading: value }),
+
+    signUpLoading: false,
+    setSignUpLoading: (value) => set({ signUpLoading: value }),
+
+
+    googleLoading: false,
+    setGoogleLoading: (value) => set({ googleLoading: value }),
+
+    verifyEmailLoading: false,
+    setVerifyEmailLoading: (value) => set({ verifyEmailLoading: value }),
+
+    forgotPasswordLoading: false,
+    setForgotPasswordLoading: (value) => set({ forgotPasswordLoading: value }),
+
+    verifyForgotPasswordLoading: false,
+    setVerifyForgotPasswordLoading: (value) => set({ verifyForgotPasswordLoading: value }),
+
+    resetPasswordLoading: false,
+    setResetPasswordLoading: (value) => set({ resetPasswordLoading: value }),
+
+
+    // Actions
     signin: async (userData) => {
-        useDashboardStore.getState().setSignInLoading(true);
+        useAuthStore.getState().setSignInLoading(true);
         const { email, password } = userData;
         try {
             const { data, error } = await supabase.auth.signInWithPassword({
@@ -30,12 +81,12 @@ export const useAuthStore = create<AuthState>(() => ({
 
             if (error) {
                 toast.error(error.message);
-                useDashboardStore.getState().setSignInLoading(false);
+                useAuthStore.getState().setSignInLoading(false);
                 return null;
             }
 
             if (!data?.user?.user_metadata?.otpVerified) {
-                useDashboardStore.getState().setSignInLoading(false);
+                useAuthStore.getState().setSignInLoading(false);
                 toast.info("Please verify your email first.")
                 return { success: false };
             }
@@ -49,9 +100,16 @@ export const useAuthStore = create<AuthState>(() => ({
                 email: user?.email ?? email,
                 firstName: userMeta.firstName ?? '',
                 lastName: userMeta.lastName ?? '',
-                darkMode: false,
-                profilePic: undefined,
-                medicalProfile: undefined,
+                darkMode: userMeta.darkMode ?? false,
+                profilePic: userMeta?.custom_avatar_url || userMeta?.avatar_url || undefined,
+                medicalProfile: {
+                bloodSugarUnit: userMeta?.medicalProfile?.bloodSugarUnit ?? "",
+                age: userMeta?.medicalProfile?.age ?? "",
+                diabetesType: userMeta?.medicalProfile?.diabetesType ?? "",
+                diagnosisDate: userMeta?.medicalProfile?.diagnosisDate ?? "",
+                gender: userMeta?.medicalProfile?.gender ?? "",
+                targetBloodSugarRange: userMeta?.medicalProfile?.targetBloodSugarRange ?? "",
+            },
             };
 
             useUserStore.getState().setUser(newUser);
@@ -59,20 +117,20 @@ export const useAuthStore = create<AuthState>(() => ({
             if (!hasCompletedSetup) {
                 useDashboardStore.getState().setShowSetupModal(true)
             }
-            useDashboardStore.getState().setSignInLoading(false);
+            useAuthStore.getState().setSignInLoading(false);
             toast.success(`Welcome back, ${newUser.firstName} ${newUser.lastName}`);
             return newUser;
 
         } catch (err) {
             toast.error("Something went wrong during sign in.");
-            useDashboardStore.getState().setSignInLoading(false);
+            useAuthStore.getState().setSignInLoading(false);
             console.error(err);
             return null;
         }
     },
 
     signInWithGoogle: async () => {
-        useDashboardStore.getState().setGoogleLoading(true);
+        useAuthStore.getState().setGoogleLoading(true);
         try {
             const { data, error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',
@@ -81,20 +139,21 @@ export const useAuthStore = create<AuthState>(() => ({
                 },
             });
             if (error) {
-                useDashboardStore.getState().setGoogleLoading(false);
+                useAuthStore.getState().setGoogleLoading(false);
                 toast.error(error.message)
             };
+
             return data
 
         } catch (err) {
-            useDashboardStore.getState().setGoogleLoading(false);
+            useAuthStore.getState().setGoogleLoading(false);
             console.log(err)
         }
     },
 
 
     signup: async (userData) => {
-        useDashboardStore.getState().setSignUpLoading(true);
+        useAuthStore.getState().setSignUpLoading(true);
         const { firstName, lastName, email, password } = userData;
         try {
             const { data, error } = await supabase.auth.signUp({
@@ -106,26 +165,25 @@ export const useAuthStore = create<AuthState>(() => ({
                         lastName,
                         hasCompletedSetup: false,
                         otpVerified: false,
+                        custom_avatar_url: import.meta.env.VITE_CLOUDINARY_DEFAULT_IMAGE
                     }
                 }
             });
-            console.log(data)
             await useFetch("post", "/send-otp", { email, userId: data?.user?.id })
             if (error) {
                 toast.error(error.message)
-                useDashboardStore.getState().setSignUpLoading(false);
+                useAuthStore.getState().setSignUpLoading(false);
                 return { success: false }
 
             } else {
-                useDashboardStore.getState().setSignUpLoading(false);
-                toast.success(`We've sent a 6-digit code to ${email}. Please enter it below to verify your account.`)
+                useAuthStore.getState().setSignUpLoading(false);
 
                 return { success: true }
             }
 
         } catch (err) {
             toast.error("Something went wrong during signup.");
-            useDashboardStore.getState().setSignUpLoading(false);
+            useAuthStore.getState().setSignUpLoading(false);
             console.error(err);
             return { success: false };
         }
@@ -141,7 +199,8 @@ export const useAuthStore = create<AuthState>(() => ({
                 useDashboardStore.getState().setLoading(false);
                 return null;
             } else {
-                document.documentElement.classList.remove("dark");
+                useThemeStore.getState().resetTheme();
+
                 useDashboardStore.getState().setSignOutLoading(false);
                 useUserStore.getState().setUser(null);
                 toast.success("Sign out successfully")
@@ -180,9 +239,16 @@ export const useAuthStore = create<AuthState>(() => ({
             email: user.email ?? '',
             firstName: firstName || meta.firstName || "",
             lastName: lastName || meta.lastName || "",
-            darkMode: false,
-            profilePic: meta.avatar_url || meta.profilePic || undefined,
-            medicalProfile: undefined,
+            darkMode: user?.user_metadata?.darkMode ?? false,
+            profilePic: meta?.custom_avatar_url || meta?.avatar_url,
+            medicalProfile: {
+                bloodSugarUnit: meta?.medicalProfile?.bloodSugarUnit ?? "",
+                age: meta?.medicalProfile?.age ?? "",
+                diabetesType: meta?.medicalProfile?.diabetesType ?? "",
+                diagnosisDate: meta?.medicalProfile?.diagnosisDate ?? "",
+                gender: meta?.medicalProfile?.gender ?? "",
+                targetBloodSugarRange: meta?.medicalProfile?.targetBloodSugarRange ?? "",
+            },
         };
 
         useUserStore.getState().setUser(newUser);
@@ -196,29 +262,42 @@ export const useAuthStore = create<AuthState>(() => ({
         const email = data?.user?.email || ""
         const firstName = data?.user?.user_metadata?.firstName || "";
         const lastName = data?.user?.user_metadata?.lastName || "";
+        const existingMeta = data?.user?.user_metadata || {}
 
         await supabase.auth.updateUser({
-            data: { hasCompletedSetup: false }
+            data: { ...existingMeta, hasCompletedSetup: false }
         });
 
-        const response = await useFetch("post", "/verify-email", { email, code: otpCode }, useDashboardStore.getState().setVerifyEmailLoading)
+        const response = await useFetch("post", "/verify-email", { email, code: otpCode }, useAuthStore.getState().setVerifyEmailLoading)
 
         if (!response?.data?.success) {
             return
         }
-
+        const meta = data?.user?.user_metadata || {}
         const newUser: User = {
             id: data.user?.id ?? '',
             createdAt: data.user?.created_at || new Date(),
             email,
             firstName,
             lastName,
-            darkMode: false,
-            profilePic: undefined,
-            medicalProfile: undefined,
+            darkMode: data?.user?.user_metadata?.darkMode ?? false,
+            profilePic: data?.user?.user_metadata?.custom_avatar_url || data?.user?.user_metadata?.avatar_url || undefined,
+            medicalProfile: {
+                bloodSugarUnit: meta?.medicalProfile?.bloodSugarUnit ?? "",
+                age: meta?.medicalProfile?.age ?? "",
+                diabetesType: meta?.medicalProfile?.diabetesType ?? "",
+                diagnosisDate: meta?.medicalProfile?.diagnosisDate ?? "",
+                gender: meta?.medicalProfile?.gender ?? "",
+                targetBloodSugarRange: meta?.medicalProfile?.targetBloodSugarRange ?? "",
+            },
         };
         useUserStore.getState().setUser(newUser);
-        toast.success(`Welcome ${firstName} ${lastName}`)
+
+        if (!data?.user?.user_metadata?.hasCompletedSetup) {
+            useDashboardStore.getState().setShowSetupModal(true);
+        } else {
+            useDashboardStore.getState().setShowSetupModal(false);
+        }
         return newUser;
     },
 
@@ -233,5 +312,54 @@ export const useAuthStore = create<AuthState>(() => ({
 
         return true
 
+    },
+
+    forgotPassword: async (userData) => {
+        const { email } = userData;
+
+        const response = await useFetch("post", "/forgot-password", { email }, useAuthStore.getState().setForgotPasswordLoading);
+
+        if (!response?.data?.success) {
+            return false;
+        }
+        return true
+    },
+
+    verifyForgotPasswordEmail: async (userData) => {
+
+        const { email, otp } = userData;
+
+        const response = await useFetch("post", "/verify-reset-password", { email, code: otp }, useAuthStore.getState().setVerifyForgotPasswordLoading);
+
+        if (!response?.data?.success) {
+            return false;
+        }
+        return true
+    },
+
+    resendForgotPasswordOtp: async (userData) => {
+        const { email } = userData;
+
+        const response = await useFetch("post", "/resend-reset-password-otp", { email })
+
+        if (!response?.data?.success) {
+            return false;
+        }
+
+        return true
+    },
+
+    resetPassword: async (userData) => {
+        const { token, password } = userData;
+
+        const response = await useFetch("post", "/reset-password", { token, password }, useAuthStore.getState().setResetPasswordLoading)
+
+        if (!response?.data?.success) {
+            return false;
+        }
+
+        return true
     }
+
+
 }));

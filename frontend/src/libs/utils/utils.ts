@@ -2,6 +2,7 @@ import { twMerge } from "tailwind-merge"
 import clsx, { ClassValue } from "clsx"
 
 import { TargetRange, Unit } from "@/types/dashboardTypes";
+import { Reading } from "@/types/userTypes";
 
 
 // Combines class names using clsx and merges Tailwind classes
@@ -97,3 +98,25 @@ export const getReadingStatus = (value: number, unit: Unit, targetRange: TargetR
         };
     }
 }
+
+export const formatReading = (reading: any) => {
+    const {
+        id,
+        value,
+        timestamp,
+        meal_timing,
+        note,
+        user_id,
+        created_at,
+    } = reading;
+
+    return {
+        id,
+        value,
+        timestamp,
+        mealTiming: meal_timing,
+        note,
+        userId: user_id,
+        createdAt: created_at,
+    };
+};

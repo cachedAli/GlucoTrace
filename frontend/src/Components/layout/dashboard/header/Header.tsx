@@ -13,7 +13,7 @@ const Header = () => {
   return (
     <header
       className={clsx(
-        "sticky z-10 top-0 bg-slate-50 dark:bg-gray-900 h-auto w-full",
+        "sticky z-10 top-0 bg-white dark:bg-gray-900 h-auto w-full",
         "flex flex-col md:selection:bg-indigo-800 md:selection:text-white"
       )}
     >

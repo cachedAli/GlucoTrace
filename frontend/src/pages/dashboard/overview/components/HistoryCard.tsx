@@ -5,13 +5,13 @@ import { useNavigate } from "react-router-dom";
 
 import {
   getBestReadingDay,
-  getPreviousStat,
   getThisWeekReadings,
   getUpdatedHighLowStats,
 } from "@/libs/utils/statFieldUtils";
 import OverviewCardWrapper from "@/components/ui/dashboard/wrapper/OverviewCardWrapper";
 import { TargetRange, Unit } from "@/types/dashboardTypes";
 import { useReadingStore } from "@/store/useReadingStore";
+import { useStats } from "@/providers/StatsProvider";
 import { useUserStore } from "@/store/useUserStore";
 import { convertToMmol } from "@/libs/utils/utils";
 import Button from "@/components/ui/common/Button";
@@ -53,6 +53,7 @@ const StatCard = ({
 
 const HistoryCard = () => {
   const navigate = useNavigate();
+  const { stats } = useStats();
   const readings = useReadingStore((state) => state.readings);
   const user = useUserStore((state) => state.user);
   const unit = user?.medicalProfile?.bloodSugarUnit ?? "mg/dL";
@@ -123,11 +124,7 @@ const HistoryCard = () => {
     { mostHighs: { meal: "", count: 0 }, mostLows: { meal: "", count: 0 } }
   );
 
-  const highLowStats = getUpdatedHighLowStats(
-    readings,
-    getPreviousStat("highLow"),
-    unit
-  );
+  const highLowStats = getUpdatedHighLowStats(readings, stats.highLow, unit);
   const bestDayStats = getBestReadingDay(readings);
   const thisWeekReadings = getThisWeekReadings(readings);
 

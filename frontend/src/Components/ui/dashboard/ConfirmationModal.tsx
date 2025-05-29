@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import clsx from "clsx";
 
 import Button from "../common/Button";
-import { useDashboardStore } from "@/store/useDashboardStore";
 import BaseLoader from "../loader/BaseLoader";
 
 type ConfirmationModalProps = {

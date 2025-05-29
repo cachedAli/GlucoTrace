@@ -7,6 +7,8 @@ import { useReadingStore } from "@/store/useReadingStore";
 import MobileNavDropUp from "./sidebar/MobileNavDropUp";
 import { useAuthStore } from "@/store/useAuthStore";
 import Setup from "@/components/ui/dashboard/Setup";
+import { supabase } from "@/libs/supabaseClient";
+import { useEffect, useState } from "react";
 
 const DashboardOverlay = () => {
   const {
@@ -19,11 +21,29 @@ const DashboardOverlay = () => {
     showDeleteAccountModal,
     setShowDeleteAccountModal,
     showSetupModal,
+    setShowSetupModal,
     signOutLoading,
   } = useDashboardStore();
-  const deleteReading = useReadingStore((state) => state.deleteReading);
+  const { deleteReading, deleteReadingLoading } = useReadingStore();
   const logout = useAuthStore((state) => state.logout);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkSetup = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      const hasCompleted = user?.user_metadata?.hasCompletedSetup;
+
+      if (!hasCompleted) {
+        setShowSetupModal(true);
+      } else {
+        setShowSetupModal(false);
+      }
+    };
+
+    checkSetup();
+  }, []);
 
   const handleOnConfirm = async (navigate: (path: string) => void) => {
     try {
@@ -35,9 +55,12 @@ const DashboardOverlay = () => {
     }
   };
 
-  const handleDeleteReading = () => {
-    deleteReading(readingToDelete);
-    setShowDeleteReading(false);
+  const handleDeleteReading = async () => {
+    const success = await deleteReading(readingToDelete);
+
+    if (success) {
+      setShowDeleteReading(false);
+    }
   };
 
   return (
@@ -66,6 +89,7 @@ const DashboardOverlay = () => {
             confirmText="Delete"
             onCancel={() => setShowDeleteReading(false)}
             onConfirm={handleDeleteReading}
+            loading={deleteReadingLoading}
           />
         )}
 

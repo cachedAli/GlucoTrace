@@ -6,11 +6,9 @@ import Button from "@/components/ui/common/Button";
 import { SunMoon, Trash2 } from "lucide-react";
 
 const SettingsActionButtons = () => {
+  const { setShowDeleteAccountModal, darkModeLoading } = useDashboardStore();
   const toggleDarkMode = useThemeStore((state) => state.toggleDarkMode);
   const user = useUserStore((state) => state.user);
-  const setShowDeleteAccountModal = useDashboardStore(
-    (state) => state.setShowDeleteAccountModal
-  );
 
   return (
     <div className="flex flex-col gap-10 p-6">
@@ -35,6 +33,7 @@ const SettingsActionButtons = () => {
           <CustomSwitch
             checked={user?.darkMode || false}
             onChange={() => toggleDarkMode()}
+            disabled={darkModeLoading}
           />
         </div>
       </div>

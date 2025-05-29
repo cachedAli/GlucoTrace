@@ -19,9 +19,8 @@ interface Data {
 }
 const Setup = () => {
   const { user, setUser } = useUserStore();
-  const setShowSetupModal = useDashboardStore(
-    (state) => state.setShowSetupModal
-  );
+  const { setShowSetupModal, medicalProfile, medicalProfileLoading } =
+    useDashboardStore();
 
   const handleSubmit = async (data: Data) => {
     if (!user || !user.id) return;
@@ -36,24 +35,21 @@ const Setup = () => {
         bloodSugarUnit: unit,
         gender,
         diagnosisDate: dayjs(diagnosisDate).toISOString(),
-        targetBloodSugarRange: { min: 70, max: 180 },
       },
     };
 
-    setUser(updatedUser);
-    localStorage.setItem("user", JSON.stringify(updatedUser));
-
-    const { error } = await supabase.auth.updateUser({
-      data: {
-        hasCompletedSetup: true,
-      },
+    const success = await medicalProfile({
+      diabetesType,
+      age,
+      bloodSugarUnit: unit,
+      gender,
+      diagnosisDate: dayjs(diagnosisDate).toISOString(),
     });
 
-    if (error) {
-      toast.error(error.message);
+    if (success) {
+      setUser(updatedUser);
+      setShowSetupModal(false);
     }
-
-    setShowSetupModal(false);
   };
 
   return (
@@ -75,10 +71,10 @@ const Setup = () => {
           "dark:bg-gray-800"
         )}
       >
-        <h1 className="font-montserrat text-xl font-semibold">
+        <h1 className="font-montserrat text-xl font-semibold dark:text-white">
           Let's personalize your experience
         </h1>
-        <h2 className=" text-gray-600">
+        <h2 className=" text-gray-600 dark:text-gray-200">
           Just a few quick questions to get you started.
         </h2>
 
@@ -88,6 +84,7 @@ const Setup = () => {
           googleAuth={false}
           buttonLabel="Save and Continue"
           onSubmit={handleSubmit}
+          loading={medicalProfileLoading}
         />
       </motion.div>
     </div>

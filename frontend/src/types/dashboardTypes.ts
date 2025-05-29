@@ -37,3 +37,10 @@ export type TargetRange = {
     min: number;
     max: number;
 };
+
+export type StatName =
+  | "sevenDayAverage"
+  | "targetRange"
+  | "highLow"
+  | "monthlyChange"
+  | "morningEvening";

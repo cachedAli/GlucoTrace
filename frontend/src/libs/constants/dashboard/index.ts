@@ -38,7 +38,7 @@ export const setupFields: FormField[] = [
 // Add Reading Page
 export const addReadingFields: FormField[] = [
   { name: "glucose", type: "glucose", label: "Glucose Level", colSpan: 1, smColSpan: true },
-  { name: "mealTiming", type: "select", label: "Meal Timing", colSpan: 1, smColSpan: true, customLabel: "Custom", enableCustom: true, maxCustomLength: 25, options: ["Before Meal", "After Meal", "Fasting"] },
+  { name: "mealTiming", type: "select", label: "Meal Timing", colSpan: 1, smColSpan: true, customLabel: "Custom", enableCustom: true, maxCustomLength: 25, options: ["Before Meal", "After Meal", "Fasting", "Custom"] },
   { name: "date", type: "date", label: "Select a day", colSpan: 1, smColSpan: true },
   { name: "time", type: "time", label: "Select time", colSpan: 1, smColSpan: true },
   { name: "note", type: "textarea", label: "Add a note", colSpan: 2 },

@@ -20,6 +20,16 @@ export type VerifyOtpData = {
     otpCode: string;
 }
 
-export type ResendVerifyOtpData ={
-    email: string
+export type ResendVerifyOtpData = {
+    email: string | undefined
+}
+
+export type VerifyForgotPasswordData = {
+    otp: string;
+    email: string;
+}
+
+export type ResetPassword = {
+    token: string | undefined;
+    password: string;
 }
