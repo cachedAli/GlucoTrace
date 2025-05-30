@@ -1,5 +1,5 @@
 import { supabase } from "../config/supabaseClient";
-import { sendResetPasswordEmail, sendResetPasswordSuccessEmail, sendResetPasswordVerificationEmail, sendVerificationEmail } from "../services/email/email.service";
+import { sendContactEmail, sendResetPasswordEmail, sendResetPasswordSuccessEmail, sendResetPasswordVerificationEmail, sendVerificationEmail } from "../services/email/email.service";
 import { Req, Res, Email } from "../types/user.types";
 import { otpGenerator } from "../utils/otpGenerator";
 import crypto from "crypto";
@@ -364,3 +364,23 @@ export const resendResetPasswordOtp = async (req: Req<{ email?: Email }>, res: R
         res.status(500).json({ success: false, message: "Something went wrong" });
     }
 };
+
+export const contactUs = async (req: Req<{ email: Email, fullName: string, message: string }>, res: Res): Promise<void> => {
+    const { email, fullName, message } = req.body;
+    console.log(email,fullName,message)
+
+    try {
+        if (!email || !fullName || !message) {
+            res.status(400).json({ success: false, message: "All fields are required" });
+            return
+        }
+        await sendContactEmail(email, fullName, message)
+
+        res.status(200).json({ success: true, message: "Email sent successfully." })
+        return;
+    } catch (error) {
+        console.log("share report error:", error)
+        res.status(500).json({ success: false, message: "Server error" });
+        return;
+    }
+}

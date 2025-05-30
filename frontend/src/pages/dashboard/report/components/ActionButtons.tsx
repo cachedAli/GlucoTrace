@@ -2,10 +2,14 @@ import { Download, Mail, Share } from "lucide-react";
 import { pdf } from "@react-pdf/renderer";
 import { saveAs } from "file-saver";
 
+import { useDashboardStore } from "@/store/useDashboardStore";
 import Button from "@/components/ui/common/Button";
 import GlucoseReportPDF from "./GenerateReportPdf";
 
 const ActionButtons = ({ data }: any) => {
+  const setShowShareReportModal = useDashboardStore(
+    (state) => state.setShowShareReportModal
+  );
   const convertReportDataToCSV = (data: any) => {
     const headers = [
       "Patient Name",
@@ -102,7 +106,7 @@ const ActionButtons = ({ data }: any) => {
         Share Report
       </Button>
 
-      <Button>
+      <Button onClick={() => setShowShareReportModal(true)}>
         <Mail size={20} />
         Share Report by Email
       </Button>

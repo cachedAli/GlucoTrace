@@ -21,7 +21,6 @@ const ProfilePicture = () => {
   const { uploadImage, uploadImageLoading } = useDashboardStore();
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
     if (user?.profilePic) {
       setProfileImage(user.profilePic);
     }
@@ -39,11 +38,10 @@ const ProfilePicture = () => {
     };
     reader.readAsDataURL(file);
   };
-  
+
   const handleCommitImage = async () => {
     if (!user || !user.id || !selectedFile) return;
-    
-    
+
     try {
       const compressedFile = await imageCompression(selectedFile, {
         maxSizeMB: 1,
@@ -52,12 +50,11 @@ const ProfilePicture = () => {
       });
 
       // Assuming uploadImage accepts FormData now
-      const success = await uploadImage(compressedFile);
+      const permanentUrl = await uploadImage(compressedFile);
 
-
-      if (success) {
+      if (permanentUrl) {
         // Create a preview URL for immediate UI update
-        const previewUrl = URL.createObjectURL(compressedFile);
+        const previewUrl = `${permanentUrl}`;
 
         const updatedUser = { ...user, profilePic: previewUrl };
         setUser(updatedUser);

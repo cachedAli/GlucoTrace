@@ -59,3 +59,9 @@ export const profileGlucosePreferenceFields: FormField[] = [
   { name: "targetMin", type: "glucose", label: "Min Target Range", colSpan: 1, smColSpan: true },
   { name: "targetMax", type: "glucose", label: "Max Target Range", colSpan: 1, smColSpan: true },
 ]
+
+// Report Page
+export const shareReportFields: FormField[] = [
+  { name: "email", type: "text", label: "Send email to:", colSpan: 2, smColSpan: true },
+  { name: "emailMessage", type: "textarea", label: "Message", colSpan: 2, smColSpan: true }
+];

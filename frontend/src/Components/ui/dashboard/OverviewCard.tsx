@@ -3,6 +3,9 @@ import clsx from "clsx";
 
 import OverviewCardWrapper from "./wrapper/OverviewCardWrapper";
 import Button from "../common/Button";
+import { useReadingStore } from "@/store/useReadingStore";
+import { useThemeStore } from "@/store/useThemeStore";
+import OverviewCardsSkeleton from "../skeleton/CardsSkeleton";
 
 type InsightItem = {
   label: string;
@@ -60,23 +63,54 @@ export default OverviewCard;
 
 const AddReading = ({ value, timeFrame, message }: AddReadingItems) => {
   const [number, unit] = value?.split(" ") ?? [];
+  const { fetchReadingLoading } = useReadingStore();
+  const { darkMode } = useThemeStore();
 
   return (
     <div className="flex flex-col gap-1">
       <h2 className="text-3xl font-semibold">
-        {number} <span className="text-lg">{unit}</span>
+        {fetchReadingLoading ? (
+          <OverviewCardsSkeleton
+            height={34}
+            width={60}
+            inline
+            darkMode={darkMode}
+          />
+        ) : (
+          number
+        )}{" "}
+        <span className="text-lg">
+          {fetchReadingLoading ? (
+            <OverviewCardsSkeleton height={23} width={65} darkMode={darkMode} />
+          ) : (
+            unit
+          )}
+        </span>
       </h2>
 
       <h2 className={clsx("text-sm text-gray-600", "dark:text-gray-300")}>
-        {timeFrame}
+        {fetchReadingLoading ? (
+          <OverviewCardsSkeleton height={15} width={133} darkMode={darkMode} />
+        ) : (
+          timeFrame
+        )}
       </h2>
 
-      <p className="font-semibold">{message}</p>
+      <p className="font-semibold">
+        {fetchReadingLoading ? (
+          <OverviewCardsSkeleton height={15} width={80} darkMode={darkMode} />
+        ) : (
+          message
+        )}
+      </p>
     </div>
   );
 };
 
 const Download = ({ insight }: { insight: InsightItem[] }) => {
+  const { fetchReadingLoading } = useReadingStore();
+  const { darkMode } = useThemeStore();
+
   return (
     <div className="flex flex-col gap-2">
       {insight?.map((item, index) => (
@@ -100,7 +134,15 @@ const Download = ({ insight }: { insight: InsightItem[] }) => {
                 : ""
             )}
           >
-            {item.value}
+            {fetchReadingLoading ? (
+              <OverviewCardsSkeleton
+                height={15}
+                width={40}
+                darkMode={darkMode}
+              />
+            ) : (
+              item.value
+            )}
           </h2>
         </div>
       ))}

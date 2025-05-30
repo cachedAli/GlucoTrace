@@ -2,7 +2,7 @@ import { twMerge } from "tailwind-merge"
 import clsx, { ClassValue } from "clsx"
 
 import { TargetRange, Unit } from "@/types/dashboardTypes";
-import { Reading } from "@/types/userTypes";
+import { Reading, User } from "@/types/userTypes";
 
 
 // Combines class names using clsx and merges Tailwind classes
@@ -120,3 +120,36 @@ export const formatReading = (reading: any) => {
         createdAt: created_at,
     };
 };
+
+export function createUserObject(user: any, useFallbackProfilePic: boolean = false): User {
+    if (!user) {
+        throw new Error("User object is required");
+    }
+
+    const meta = user.user_metadata || {};
+    const fullName = meta.full_name || meta.name || "";
+    const [firstName = "", ...lastParts] = fullName.split(" ");
+    const lastName = lastParts.join(" ");
+
+    const profilePic = useFallbackProfilePic
+        ? (meta.custom_avatar_url ? meta.custom_avatar_url! || meta.avatar_url : meta.custom_avatar_url || meta.avatar_url!)
+        : meta.custom_avatar_url || meta.avatar_url;
+
+    return {
+        id: user.id,
+        createdAt: new Date(user.created_at),
+        email: user.email ?? '',
+        firstName: firstName || meta.firstName || "",
+        lastName: lastName || meta.lastName || "",
+        darkMode: meta.darkMode ?? false,
+        profilePic,
+        medicalProfile: {
+            bloodSugarUnit: meta?.medicalProfile?.bloodSugarUnit ?? "",
+            age: meta?.medicalProfile?.age ?? "",
+            diabetesType: meta?.medicalProfile?.diabetesType ?? "",
+            diagnosisDate: meta?.medicalProfile?.diagnosisDate ?? "",
+            gender: meta?.medicalProfile?.gender ?? "",
+            targetBloodSugarRange: meta?.medicalProfile?.targetBloodSugarRange ?? "",
+        },
+    };
+}

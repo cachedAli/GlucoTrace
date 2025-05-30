@@ -9,18 +9,38 @@ import usePreloadOnScroll from "@/hooks/usePreloadOnScroll";
 import { preloadForm } from "@/router/preloadRoutes";
 import { Form } from "@/router/LazyRoutes";
 import LazyLoader from "@/libs/LazyLoader";
+import { useAuthStore } from "@/store/useAuthStore";
+import { capitalizeFirstLetter } from "@/libs/utils/utils";
 
 type Data = {
   firstName: string;
   lastName: string;
   email: string;
-  description?: string;
+  message: string;
 };
 
 const Contact = () => {
   const formRef = useRef<HTMLDivElement>(null);
-  const submit = (data: Data) => {
-    console.log("Contact Form Submit: ", data);
+  const { contactUs, contactUsLoading } = useAuthStore();
+
+  const handleContact = async (data: Data): Promise<any> => {
+    const { email, firstName, lastName, message } = data;
+    const fullName = `${firstName} ${lastName}`;
+    const capitalizedName = capitalizeFirstLetter(fullName);
+    try {
+      const success = await contactUs({
+        email,
+        fullName: capitalizedName,
+        message,
+      });
+      if (success) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
   };
   return (
     <section
@@ -32,7 +52,8 @@ const Contact = () => {
       <ContactForm
         contactFormFields={contactFormFields}
         contactSchema={contactSchema}
-        submit={submit}
+        submit={handleContact}
+        loading={contactUsLoading}
         formRef={formRef}
         usePreloadOnScroll={usePreloadOnScroll}
       />
@@ -46,10 +67,11 @@ const ContactForm = ({
   submit,
   formRef,
   usePreloadOnScroll,
+  loading,
 }: any) => {
   const isPreloaded = usePreloadOnScroll(formRef, preloadForm);
   return (
-    <div className="flex flex-col gap-6  px-6 pb-20 pt-10 md:px-4 md:mx-20">
+    <div className="flex flex-col gap-6  px-6 pb-20 pt-6 md:px-4 md:mx-20">
       {isPreloaded && (
         <LazyLoader
           fallback={() => <FormSkeleton fields={contactFormFields} />}
@@ -60,6 +82,7 @@ const ContactForm = ({
             googleAuth={false}
             buttonLabel="Submit"
             onSubmit={submit}
+            loading={loading}
           />
         </LazyLoader>
       )}
@@ -86,9 +109,6 @@ const ContactDetails = () => {
         <span className="selection:bg-indigo-800 selection:text-white">
           contact.monkebytes@gmail.com
         </span>
-      </p>
-      <p className=" md:text-base italic text-sm selection:bg-indigo-800 selection:text-white">
-        {contact.required}
       </p>
     </div>
   );

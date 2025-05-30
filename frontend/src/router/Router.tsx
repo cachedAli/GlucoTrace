@@ -72,14 +72,7 @@ const Router = () => {
           </PublicRoute>
         }
       />
-      <Route
-        path="/auth/callback"
-        element={
-          <PublicRoute>
-            <AuthRedirectHandler />
-          </PublicRoute>
-        }
-      />
+      <Route path="/auth/callback" element={<AuthRedirectHandler />} />
 
       {/* Dashboard */}
       <Route element={<ProtectedRoute />}>

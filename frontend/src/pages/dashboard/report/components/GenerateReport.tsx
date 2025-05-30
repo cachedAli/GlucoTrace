@@ -39,7 +39,8 @@ const GenerateReport = () => {
    capitalizeFirstLetter(`${user?.firstName || ""} ${user?.lastName || ""}`),
     user?.medicalProfile?.diabetesType || "Type 2",
     user?.medicalProfile?.gender || "Other",
-    user?.medicalProfile?.age?.toString() || "--"
+    user?.medicalProfile?.age?.toString() || "--",
+    user?.medicalProfile?.diagnosisDate || "--"
   );
 
   return (

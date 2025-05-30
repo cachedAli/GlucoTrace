@@ -20,6 +20,7 @@ import {
   getReadingStatus,
   convertToMmol,
 } from "@/libs/utils/utils";
+import TableSkeleton from "@/components/ui/skeleton/TableSkeleton";
 import { useDashboardStore } from "@/store/useDashboardStore";
 import { useReadingStore } from "@/store/useReadingStore";
 import { useThemeStore } from "@/store/useThemeStore";
@@ -138,7 +139,9 @@ const TableBodyContent = () => {
         },
       }}
     >
-      {filteredReadings.length > 0 ? (
+      {useReadingStore.getState().fetchReadingLoading ? (
+        <TableSkeleton />
+      ) : filteredReadings.length > 0 ? (
         filteredReadings.map((reading, index) => {
           const sharedProps = {
             editedReading,

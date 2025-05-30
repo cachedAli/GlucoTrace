@@ -90,3 +90,8 @@ export const profileGlucosePreferenceSchema = (unit: "mg/dL" | "mmol/L") => {
       }
     );
 };
+
+export const shareReportSchema = z.object({
+  email: z.string().email("Invalid email address").trim(),
+  emailMessage: z.string().optional(),
+})

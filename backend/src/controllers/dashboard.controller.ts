@@ -1,5 +1,6 @@
 import { supabase } from "../config/supabaseClient";
-import { MedicalProfile, Reading, Req, Res } from "../types/user.types";
+import { sendReportEmail } from "../services/email/email.service";
+import { Email, MedicalProfile, Reading, Req, Res } from "../types/user.types";
 
 
 export const updateDarkMode = async (req: Req<{ darkMode: boolean }>, res: Res) => {
@@ -63,8 +64,11 @@ export const uploadAvatar = async (req: Req<{ file: Express.Multer.File }>, res:
             return;
         }
 
+        const timestamp = Date.now()
         const fileExtension = file.originalname.split(".").pop();
-        const filePath = `${user.id}/avatar.${fileExtension}`
+        const filePath = `${user.id}/${timestamp}.${fileExtension}`
+
+        console.log(filePath)
 
         const { error: uploadError } = await supabase.storage.from("avatars").upload(filePath, file.buffer, {
             cacheControl: "3600",
@@ -81,11 +85,21 @@ export const uploadAvatar = async (req: Req<{ file: Express.Multer.File }>, res:
 
         const avatarUrl = publicUrlData.publicUrl;
 
+        const oldAvatarUrl = user?.user_metadata?.custom_avatar_url;
+        console.log(oldAvatarUrl)
+        if (oldAvatarUrl) {
+            const oldPath = decodeURIComponent(new URL(oldAvatarUrl).pathname.split("/").slice(6).join("/"))
+            console.log(oldPath)
+            await supabase.storage.from("avatars").remove([oldPath])
+        }
+
         const { error: userUpdateError } = await supabase.auth.admin.updateUserById(user?.id, {
             user_metadata: {
                 custom_avatar_url: avatarUrl
             }
         })
+
+        // console.log(avatarUrl)
 
         if (userUpdateError) {
             res.status(500).json({ success: false, message: userUpdateError.message });
@@ -426,4 +440,146 @@ export const deleteReading = async (
         res.status(500).json({ success: false, message: "Server error." });
         return
     }
-}  
+}
+
+export const shareReportWithEmail = async (req: Req<{ file: Express.Multer.File, email: Email, fullName: string, emailMessage?: string }>, res: Res): Promise<void> => {
+    const file = req.file;
+    const { email, fullName, emailMessage } = req.body;
+    console.log(req)
+    try {
+        if (!email) {
+            res.status(400).json({ success: false, message: "Email is required!" });
+            return;
+        }
+
+        await sendReportEmail(email, fullName, emailMessage, file!)
+
+        res.status(200).json({ success: true, message: "Report sent successfully." })
+        return;
+    } catch (error) {
+        console.log("share report error:", error)
+        res.status(500).json({ success: false, message: "Server error" });
+        return;
+    }
+}
+
+export const deleteAccount = async (
+    req: Req,
+    res: Res
+): Promise<void> => {
+
+    const token = req.headers.authorization?.replace("Bearer ", "");
+    try {
+        const {
+            data: { user },
+            error,
+        } = await supabase.auth.getUser(token);
+
+        if (!user) {
+            res.status(401).json({ success: false, message: "Unauthorized" });
+            return;
+        }
+        if (error) {
+            res.status(500).json({ success: false, message: error.message });
+            return;
+        }
+
+
+        // Delete picture
+        const oldAvatarUrl = user?.user_metadata?.custom_avatar_url;
+        if (oldAvatarUrl) {
+            const url = new URL(oldAvatarUrl);
+            const fullPath = decodeURIComponent(url.pathname.split("/").slice(6).join("/"));
+            console.log("Full path:", fullPath);
+
+            // Delete individual picture
+            await supabase.storage.from("avatars").remove([fullPath]);
+
+            // Delete entire folder
+            const folderPath = fullPath.split("/").slice(0, -1).join("/");
+            console.log("Folder path:", folderPath);
+
+            const { data: files, error: listError } = await supabase.storage
+                .from("avatars")
+                .list(folderPath);
+
+            if (listError) {
+                console.error("Error listing folder contents:", listError.message);
+                res.status(500).json({ success: false, message: listError.message });
+                return;
+            }
+
+            if (files && files.length > 0) {
+                const pathsToDelete = files.map((file) => `${folderPath}/${file.name}`);
+                const { error: deleteError } = await supabase.storage
+                    .from("avatars")
+                    .remove(pathsToDelete);
+
+                if (deleteError) {
+                    console.error("Error deleting folder contents:", deleteError.message);
+                    res.status(500).json({ success: false, message: deleteError.message });
+                    return;
+                }
+            }
+        }
+
+        // Delete readings
+        const { error: readingsError } = await supabase
+            .from('readings')
+            .delete()
+            .eq('user_id', user.id);
+
+        if (readingsError) {
+            res.status(500).json({ success: false, message: readingsError.message });
+            return;
+        }
+
+        // Delete health stats
+        const { error: healthError } = await supabase
+            .from('health_stats')
+            .delete()
+            .eq('user_id', user.id);
+
+        if (healthError) {
+            res.status(500).json({ success: false, message: healthError.message });
+            return;
+        }
+
+        // Delete otps
+        const { error: otpError } = await supabase
+            .from('otps')
+            .delete()
+            .eq('id', user.id);
+
+        if (otpError) {
+            res.status(500).json({ success: false, message: otpError.message });
+            return;
+        }
+
+        // delete password resets
+        const { error: passwordResetError } = await supabase
+            .from('password_resets')
+            .delete()
+            .eq('id', user.id);
+
+        if (passwordResetError) {
+            res.status(500).json({ success: false, message: passwordResetError.message });
+            return;
+        }
+
+        const { error: deleteError } = await supabase.auth.admin.deleteUser(user.id);
+
+        if (deleteError) {
+            console.log("by", deleteError)
+            res.status(500).json({ success: false, message: deleteError.message });
+            return;
+        }
+
+
+        res.status(200).json({ success: true, message: "Account deleted successfully." })
+        return
+
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Server error" });
+    }
+};

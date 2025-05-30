@@ -6,8 +6,8 @@ import { Toaster } from "sonner";
 import { useDashboardStore } from "./store/useDashboardStore";
 import { toastOptions } from "./components/ui/toastStyles";
 import { useAuthStore } from "./store/useAuthStore";
-import Router from "./router/Router";
 import { supabase } from "./libs/supabaseClient";
+import Router from "./router/Router";
 
 function App() {
   const setLoading = useDashboardStore((state) => state.setLoading);

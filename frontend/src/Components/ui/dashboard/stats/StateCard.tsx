@@ -2,6 +2,10 @@ import { TrendingDown, TrendingUp } from "lucide-react";
 import clsx from "clsx";
 
 import { StateProps } from "@/types/dashboardTypes";
+import { useReadingStore } from "@/store/useReadingStore";
+import Skeleton from "react-loading-skeleton";
+import { useThemeStore } from "@/store/useThemeStore";
+import StatsCardSkeleton from "../../skeleton/StatsCardSkeleton";
 
 const StateCard = ({ index, ...props }: { index: number } & StateProps) => {
   return (
@@ -81,6 +85,8 @@ const StateCardContent = ({
   splitStat2,
 }: StateProps & { index: number }) => {
   const textColor = index !== 0 ? "text-gray-800" : "text-white";
+  const { fetchReadingLoading } = useReadingStore();
+  const { darkMode } = useThemeStore();
 
   return (
     <div className={clsx("flex flex-col gap-1", textColor)}>
@@ -90,9 +96,31 @@ const StateCardContent = ({
       {isOverview ? (
         <>
           <h1 className="text-xs font-semibold">{title}</h1>
-          <h2 className="font-semibold text-2xl">{value}</h2>
+          <h2 className="font-semibold text-2xl">
+            {fetchReadingLoading ? (
+              <StatsCardSkeleton
+                index={index}
+                darkMode={darkMode}
+                width={150}
+                height={28}
+              />
+            ) : (
+              value
+            )}
+          </h2>
 
-          <p className={clsx("text-xs", textColor)}>{timeFrame}</p>
+          <p className={clsx("text-xs", textColor)}>
+            {fetchReadingLoading ? (
+              <StatsCardSkeleton
+                index={index}
+                darkMode={darkMode}
+                width="100%"
+                height={15}
+              />
+            ) : (
+              timeFrame
+            )}
+          </p>
         </>
       ) : (
         <>
@@ -102,18 +130,61 @@ const StateCardContent = ({
               index !== 0 ? "text-gray-800" : "text-gray-200"
             )}
           >
-            {timeFrame}
+            {fetchReadingLoading ? (
+              <StatsCardSkeleton
+                index={index}
+                darkMode={darkMode}
+                width={160}
+                height={15}
+              />
+            ) : (
+              timeFrame
+            )}
           </p>
           <div className="flex items-center w-full justify-between">
             {isSplitStat ? (
               <h2 className="font-semibold text-base">
                 {splitStat1}:{" "}
-                <span className="font-semibold text-2xl">{value}</span> /{" "}
-                {splitStat2}:{" "}
-                <span className="font-semibold text-2xl">{secondValue}</span>
+                <span className="font-semibold text-2xl">
+                  {fetchReadingLoading ? (
+                    <StatsCardSkeleton
+                      index={index}
+                      darkMode={darkMode}
+                      width={40}
+                      height={24}
+                      inline
+                    />
+                  ) : (
+                    value
+                  )}
+                </span>{" "}
+                / {splitStat2}:{" "}
+                <span className="font-semibold text-2xl">
+                  {fetchReadingLoading ? (
+                    <StatsCardSkeleton
+                      index={index}
+                      darkMode={darkMode}
+                      width={40}
+                      height={24}
+                    />
+                  ) : (
+                    secondValue
+                  )}
+                </span>
               </h2>
             ) : (
-              <h2 className="font-semibold text-2xl">{value}</h2>
+              <h2 className="font-semibold text-2xl">
+                {fetchReadingLoading ? (
+                  <StatsCardSkeleton
+                    index={index}
+                    darkMode={darkMode}
+                    width={150}
+                    height={28}
+                  />
+                ) : (
+                  value
+                )}
+              </h2>
             )}
             {trend && (
               <TrendIndicator trend={trend} index={index} title={title} />
@@ -125,7 +196,16 @@ const StateCardContent = ({
               index !== 0 ? "text-gray-800" : "text-gray-200"
             )}
           >
-            {description}
+            {fetchReadingLoading ? (
+              <StatsCardSkeleton
+                index={index}
+                darkMode={darkMode}
+                width={160}
+                height={15}
+              />
+            ) : (
+              description
+            )}
           </p>
         </>
       )}
@@ -165,29 +245,42 @@ const TrendIndicator = ({
   const isHighLow = title === "High/Low Episodes";
   const isMorningEvening = title === "Morning vs. Evening Averages";
   const isSpecialTitle = isHighLow || isMorningEvening;
+  const { fetchReadingLoading } = useReadingStore();
 
   const isPositiveForSpecial = isSpecialTitle ? isNegative : !isNegative;
 
   return (
-    <div
-      className={clsx(
-        "flex items-center gap-2 px-2 py-0.5 rounded-2xl border",
-        index !== 0
-          ? isPositiveForSpecial
-            ? "bg-green-400 border-green-500 text-gray-800"
-            : "bg-red-500/90 border-red-600 text-gray-100"
-          : isPositiveForSpecial
-          ? "bg-green-300 border-green-500 text-gray-800"
-          : "bg-red-400 border-red-500 text-gray-800"
-      )}
-    >
-      {isPositiveForSpecial ? (
-        <TrendingUp className="size-4" />
+    <>
+      {fetchReadingLoading ? (
+        <StatsCardSkeleton
+          trend
+          index={index}
+          width={70}
+          height={19}
+          borderRadius={"1rem"}
+        />
       ) : (
-        <TrendingDown className="size-4" />
+        <div
+          className={clsx(
+            "flex items-center gap-2 px-2 py-0.5 rounded-2xl border",
+            index !== 0
+              ? isPositiveForSpecial
+                ? "bg-green-400 border-green-500 text-gray-800"
+                : "bg-red-500/90 border-red-600 text-gray-100"
+              : isPositiveForSpecial
+              ? "bg-green-300 border-green-500 text-gray-800"
+              : "bg-red-400 border-red-500 text-gray-800"
+          )}
+        >
+          {isPositiveForSpecial ? (
+            <TrendingUp className="size-4" />
+          ) : (
+            <TrendingDown className="size-4" />
+          )}
+          <h2 className="text-[10px] font-semibold">{trend}</h2>
+        </div>
       )}
-      <h2 className="text-[10px] font-semibold">{trend}</h2>
-    </div>
+    </>
   );
 };
 

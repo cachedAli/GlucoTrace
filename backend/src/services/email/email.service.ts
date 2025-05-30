@@ -1,3 +1,4 @@
+import dotenv from "dotenv";
 import { Email } from "../../types/user.types";
 import { sender, transport } from "./email.config";
 import { FORGOT_PASSWORD_EMAIL_TEMPLATE } from "./templates/forgotPasswordEmailTemplate";
@@ -5,6 +6,7 @@ import { PASSWORD_RESET_REQUEST_TEMPLATE } from "./templates/passwordResetReques
 import { PASSWORD_RESET_SUCCESS_TEMPLATE } from "./templates/resetPasswordSuccessTemplate";
 import { VERIFICATION_EMAIL_TEMPLATE } from "./templates/verificationEmailTemplate";
 
+dotenv.config()
 
 export const sendVerificationEmail = async (email: string, verificationToken: string) => {
     const recipient = email;
@@ -78,3 +80,76 @@ export const sendResetPasswordSuccessEmail = async (email: Email) => {
         throw new Error(`Error sending email ${error}`);
     }
 };
+
+export const sendReportEmail = async (
+    email: Email,
+    fullName: string,
+    customMessage: string | undefined,
+    file: Express.Multer.File
+) => {
+    const recipient = email;
+
+    const plainText = [
+        `Hello,`,
+        ``,
+        `${fullName} has shared a glucose report with you.`,
+        ...(customMessage
+            ? [
+                ``,
+                `Message from ${fullName}:`,
+                customMessage.trim(),
+            ]
+            : []),
+        ``,
+        `Please find the attached report below.`,
+        ``,
+        `Thanks`
+    ].join('\n');
+
+    try {
+        const res = await transport.sendMail({
+            from: `"${sender.name}" <${sender.email}>`,
+            to: recipient,
+            subject: "Glucose Report",
+            text: plainText,
+            attachments: [
+                {
+                    filename: file.originalname || "glucose_report.pdf",
+                    content: file.buffer,
+                    contentType: file.mimetype,
+                },
+            ],
+        });
+
+        console.log("Email sent successfully:", res);
+    } catch (error) {
+        console.error("Failed to send email:", error);
+    }
+};
+
+export const sendContactEmail = async (email: Email, fullName: string, message: string) => {
+    const recipient = process.env.EMAIL_PERSONAL;
+    const plainText = [
+        `You have received a new message from the contact form.`,
+        ``,
+        `Name: ${fullName}`,
+        `Email: ${email}`,
+        ``,
+        `Message:`,
+        `${message}`,
+        ``,
+    ].join('\n');
+    try {
+        const res = await transport.sendMail({
+            from: `"${sender.name}" <${sender.email}>`,
+            to: recipient,
+            replyTo: email,
+            subject: `New Contact Form Message From ${fullName}`,
+            text: plainText
+        })
+        console.log("Email sent successfully:", res);
+    } catch (error) {
+        console.error("Failed to send email:", error);
+        return;
+    }
+}

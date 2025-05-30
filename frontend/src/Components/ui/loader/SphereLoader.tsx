@@ -1,10 +1,10 @@
-import React from "react";
 import logo from "/GlucoTraceLogo.webp";
 
 const SphereLoader = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-white dark:bg-gray-900">
-      <div className="animate-bounce-fast relative w-20 h-20 rounded-full bg-gradient-to-br from-teal-300 to-blue-500 shadow-[inset_-6px_-6px_12px_rgba(255,255,255,0.4),_inset_6px_6px_12px_rgba(0,0,0,0.2),_0_8px_16px_rgba(0,0,0,0.3)]">
+      <div className="animate-bounce-fast relative w-20 h-20 rounded-full bg-gradient-to-br from-blue-400 to-teal-400 shadow-[inset_-6px_-6px_12px_rgba(255,255,255,0.4),_inset_6px_6px_12px_rgba(0,0,0,0.2),_0_8px_16px_rgba(0,0,0,0.3)]">
+        
         <img
           src={logo}
           alt="Logo"

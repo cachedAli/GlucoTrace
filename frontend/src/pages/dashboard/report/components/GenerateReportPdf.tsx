@@ -46,6 +46,14 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#353232",
   },
+  label: {
+    fontWeight: "bold",
+    color: "#1F2937",
+  },
+  value: {
+    fontWeight: "normal",
+    color: "#4B5563",
+  },
   section: {
     marginBottom: 12,
   },
@@ -88,17 +96,40 @@ const GlucoseReportPDF = ({ data }: { data: any }) => {
           <View style={styles.headerRow}>
             <View style={styles.headerText}>
               <Text style={styles.title}>Glucose Report</Text>
+
               <Text style={styles.subtitle}>
-                Patient: {data.patientName || "--"}
+                <Text style={styles.label}>Patient: </Text>
+                <Text style={styles.value}>{data.patientName || "--"}</Text>
               </Text>
+
               <Text style={styles.subtitle}>
-                Type: {data.diabetesType || "--"} | Gender:{" "}
-                {data.gender || "--"} | Age: {data.age || "--"}
+                <Text style={styles.label}>Diabetes: </Text>
+                <Text style={styles.value}>{data.diabetesType || "--"}</Text>
+                <Text style={styles.label}> | Gender: </Text>
+                <Text style={styles.value}>{data.gender || "--"}</Text>
+                <Text style={styles.label}> | Age: </Text>
+                <Text style={styles.value}>{data.age || "--"}</Text>
               </Text>
-              <Text style={styles.subtitle}>Date Range: {data.range}</Text>
+
               <Text style={styles.subtitle}>
-                Date Generated:{" "}
-                {format(new Date(data.generatedDate), "MMMM d yyyy")}
+                <Text style={styles.label}>Diagnosed on: </Text>
+                <Text style={styles.value}>
+                  {data.diagnosedDate
+                    ? format(new Date(data.diagnosedDate), "MMMM d yyyy")
+                    : "--"}
+                </Text>
+              </Text>
+
+              <Text style={styles.subtitle}>
+                <Text style={styles.label}>Date Range: </Text>
+                <Text style={styles.value}>{data.range}</Text>
+              </Text>
+
+              <Text style={styles.subtitle}>
+                <Text style={styles.label}>Date Generated: </Text>
+                <Text style={styles.value}>
+                  {format(new Date(data.generatedDate), "MMMM d yyyy")}
+                </Text>
               </Text>
             </View>
 

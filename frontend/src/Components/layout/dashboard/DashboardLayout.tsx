@@ -2,25 +2,27 @@ import { useEffect, useRef } from "react";
 import clsx from "clsx";
 import { Outlet } from "react-router-dom";
 
+import { useReadingStore } from "@/store/useReadingStore";
+import { StatsProvider } from "@/providers/StatsProvider";
+import { useScrollToTop } from "@/hooks/useScrollToTop";
 import { useThemeStore } from "@/store/useThemeStore";
+import { useUserStore } from "@/store/useUserStore";
 import DashboardOverlay from "./DashboardOverlay";
 import Sidebar from "./sidebar/Sidebar";
 import Header from "./header/Header";
-import { useScrollToTop } from "@/hooks/useScrollToTop";
-import { useUserStore } from "@/store/useUserStore";
-import { useReadingStore } from "@/store/useReadingStore";
-import { StatsProvider } from "@/providers/StatsProvider";
 
 const DashboardLayout = () => {
   const applyDarkMode = useThemeStore((state) => state.applyDarkMode);
   const fetchUser = useUserStore((state) => state.fetchUserFromSupabase);
-  const { fetchReadings } = useReadingStore();
+  const { fetchReadings, setFetchReadingLoading } = useReadingStore();
   const user = useUserStore((state) => state.user);
   const hasAppliedDarkMode = useRef(false);
 
   useScrollToTop();
 
   useEffect(() => {
+    setFetchReadingLoading(true);
+
     fetchUser();
   }, [fetchUser]);
 

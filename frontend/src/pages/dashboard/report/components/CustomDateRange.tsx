@@ -13,6 +13,9 @@ const CustomDateRange = () => {
   const user = useUserStore((state) => state.user);
   const today = dayjs();
   const userCreatedAt = dayjs(user?.createdAt);
+            console.log(user)
+
+  console.log(user?.createdAt)
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>

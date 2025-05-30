@@ -18,7 +18,7 @@ type Data = {
 const AddReading = () => {
   const { user } = useUserStore();
   const unit = user?.medicalProfile?.bloodSugarUnit || "mg/dL";
-  const { setReadings, addReading,addReadingLoading } = useReadingStore();
+  const { setReadings, addReading, addReadingLoading } = useReadingStore();
   const { addReadingStats } = StatFields();
 
   const convertToMgdl = (value: number, unit: Unit) => {
@@ -42,7 +42,6 @@ const AddReading = () => {
       return true;
     }
     return;
-
   };
 
   const mergeDateAndTime = (date: string, time: string) => {

@@ -1,6 +1,6 @@
 export type User = {
     id: string;
-    createdAt?: string | Date;
+    createdAt?: Date;
     firstName: string;
     lastName: string;
     email: string;

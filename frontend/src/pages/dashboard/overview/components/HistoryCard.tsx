@@ -9,8 +9,10 @@ import {
   getUpdatedHighLowStats,
 } from "@/libs/utils/statFieldUtils";
 import OverviewCardWrapper from "@/components/ui/dashboard/wrapper/OverviewCardWrapper";
+import OverviewCardsSkeleton from "@/components/ui/skeleton/CardsSkeleton";
 import { TargetRange, Unit } from "@/types/dashboardTypes";
 import { useReadingStore } from "@/store/useReadingStore";
+import { useThemeStore } from "@/store/useThemeStore";
 import { useStats } from "@/providers/StatsProvider";
 import { useUserStore } from "@/store/useUserStore";
 import { convertToMmol } from "@/libs/utils/utils";
@@ -54,7 +56,8 @@ const StatCard = ({
 const HistoryCard = () => {
   const navigate = useNavigate();
   const { stats } = useStats();
-  const readings = useReadingStore((state) => state.readings);
+  const { readings, fetchReadingLoading } = useReadingStore();
+  const { darkMode } = useThemeStore();
   const user = useUserStore((state) => state.user);
   const unit = user?.medicalProfile?.bloodSugarUnit ?? "mg/dL";
   const targetRange = user?.medicalProfile?.targetBloodSugarRange;
@@ -135,12 +138,41 @@ const HistoryCard = () => {
           <div className={clsx("flex gap-4", "max-sm:flex-col")}>
             <StatCard
               title="Entries"
-              value={thisWeekReadings.length}
+              value={
+                fetchReadingLoading ? (
+                  <OverviewCardsSkeleton
+                    height={20}
+                    width={35}
+                    darkMode={darkMode}
+                  />
+                ) : (
+                  thisWeekReadings.length
+                )
+              }
               className="w-1/2 max-sm:w-full"
             />
             <StatCard
               title="Highs / Lows"
-              value={`${highLowStats.high ?? 0} / ${highLowStats.low ?? 0}`}
+              value={
+                fetchReadingLoading ? (
+                  <>
+                    <OverviewCardsSkeleton
+                      height={20}
+                      width={30}
+                      inline
+                      darkMode={darkMode}
+                    />{" "}
+                    /{" "}
+                    <OverviewCardsSkeleton
+                      height={20}
+                      width={30}
+                      darkMode={darkMode}
+                    />
+                  </>
+                ) : (
+                  `${highLowStats.high ?? 0} / ${highLowStats.low ?? 0}`
+                )
+              }
               className="w-1/2 max-sm:w-full"
             />
           </div>
@@ -148,17 +180,50 @@ const HistoryCard = () => {
           <div className={clsx("flex gap-4", "max-sm:flex-col")}>
             <StatCard
               title="Most Lows (Meal Time)"
-              value={mostLows.meal || "-"}
+              value={
+                fetchReadingLoading ? (
+                  <OverviewCardsSkeleton
+                    height={23}
+                    width={130}
+                    darkMode={darkMode}
+                  />
+                ) : (
+                  mostLows.meal || "-"
+                )
+              }
               className="w-1/2 max-sm:w-full"
             />
             <StatCard
               title="Most Highs (Meal Time)"
-              value={mostHighs.meal || "-"}
+              value={
+                fetchReadingLoading ? (
+                  <OverviewCardsSkeleton
+                    height={23}
+                    width={130}
+                    darkMode={darkMode}
+                  />
+                ) : (
+                  mostHighs.meal || "-"
+                )
+              }
               className="w-1/2 max-sm:w-full"
             />
           </div>
 
-          <StatCard title="Best Day for Readings" value={bestDayStats.value} />
+          <StatCard
+            title="Best Day for Readings"
+            value={
+              fetchReadingLoading ? (
+                <OverviewCardsSkeleton
+                  height={23}
+                  width={130}
+                  darkMode={darkMode}
+                />
+              ) : (
+                bestDayStats.value
+              )
+            }
+          />
         </div>
 
         <Button

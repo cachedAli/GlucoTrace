@@ -2,27 +2,34 @@ import { CircleHelp } from "lucide-react";
 import { motion } from "framer-motion";
 import clsx from "clsx";
 
-import Button from "../common/Button";
 import BaseLoader from "../loader/BaseLoader";
+import Button from "../common/Button";
+import Form from "../common/Form";
 
-type ConfirmationModalProps = {
+type BaseProps = {
   title: string;
   message: string;
   loading?: boolean;
   onConfirm?: () => void;
   onCancel?: () => void;
+};
+
+type DeleteOrConfirmModal = BaseProps & {
   confirmText?: "Confirm" | "Delete";
 };
 
-const ConfirmationModal = ({
-  title,
-  message,
-  onConfirm,
-  onCancel,
-  loading,
-  confirmText = "Confirm",
-}: ConfirmationModalProps) => {
-  const isDelete = confirmText === "Delete";
+type ShareModal = BaseProps & {
+  confirmText: "Share";
+  fields: any;
+  schema: any;
+  onConfirm: (data: any) => Promise<any>;
+};
+
+type ConfirmationModalProps = DeleteOrConfirmModal | ShareModal;
+
+const ConfirmationModal = ({ ...props }: ConfirmationModalProps) => {
+  const isDelete = props.confirmText === "Delete";
+  const isShare = props.confirmText === "Share";
 
   return (
     <div className="fixed z-50 inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm">
@@ -52,7 +59,7 @@ const ConfirmationModal = ({
                 "dark:text-headingMain-dark"
               )}
             >
-              {title}
+              {props.title}
             </h1>
             <p
               className={clsx(
@@ -60,36 +67,51 @@ const ConfirmationModal = ({
                 "dark:text-cardsSub"
               )}
             >
-              {message}
+              {props.message}
             </p>
           </div>
         </div>
 
-        <div className="w-full flex gap-2 justify-end items-end">
-          <Button
-            variant="transparent"
-            onClick={onCancel}
-            className={clsx(
-              "w-28 max-sm:w-full max-sm:text-sm",
-              isDelete && "border-red-500 text-red-500"
-            )}
-            hoverExpandBg={clsx(isDelete && "bg-red-500")}
-          >
-            Cancel
-          </Button>
+        {isShare ? (
+          <Form
+            fields={props.fields}
+            schema={props.schema}
+            onSubmit={props.onConfirm}
+            backButtonLabel="Cancel"
+            loading={props.loading}
+            googleAuth={false}
+            backButtonOnClick={props.onCancel}
+            buttonClassName="w-44 max-sm:w-36 max-[412px]:w-28"
+            backButtonClassName="w-36 max-sm:w-28 max-[412px]:w-24"
+            buttonAlignment="custom"
+          />
+        ) : (
+          <div className="w-full flex gap-2 justify-end items-end">
+            <Button
+              variant="transparent"
+              onClick={props.onCancel}
+              className={clsx(
+                "w-28 max-sm:w-full max-sm:text-sm",
+                isDelete && "border-red-500 text-red-500"
+              )}
+              hoverExpandBg={clsx(isDelete && "bg-red-500")}
+            >
+              Cancel
+            </Button>
 
-          <Button
-            variant="fill"
-            onClick={onConfirm}
-            disabled={loading ? true : false}
-            className={clsx(
-              "w-36 max-sm:w-full max-sm:text-sm",
-              isDelete && "bg-red-500"
-            )}
-          >
-            {loading ? <BaseLoader /> : confirmText}
-          </Button>
-        </div>
+            <Button
+              variant="fill"
+              onClick={props.onConfirm}
+              disabled={props.loading ? true : false}
+              className={clsx(
+                "w-36 max-sm:w-full max-sm:text-sm",
+                isDelete && "bg-red-500"
+              )}
+            >
+              {props.loading ? <BaseLoader /> : props.confirmText}
+            </Button>
+          </div>
+        )}
       </motion.div>
     </div>
   );

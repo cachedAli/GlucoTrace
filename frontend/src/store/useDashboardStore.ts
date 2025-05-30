@@ -1,6 +1,7 @@
 import { useFetch } from "@/hooks/useFetch";
 import { userApi } from "@/libs/axios";
 import { supabase } from "@/libs/supabaseClient";
+import { ShareReport } from "@/types/dashboardTypes";
 import { MedicalProfile } from "@/types/userTypes";
 import { Dayjs } from "dayjs";
 import { create } from "zustand";
@@ -29,6 +30,8 @@ type DashboardState = {
     setEndDate: (value: Dayjs | null) => void;
     showDeleteAccountModal: boolean;
     setShowDeleteAccountModal: (value: boolean) => void;
+    showShareReportModal: boolean;
+    setShowShareReportModal: (value: boolean) => void;
 
     // loading states
     loading: boolean;
@@ -45,12 +48,18 @@ type DashboardState = {
     setUpdateProfileLoading: (value: boolean) => void;
     glucosePreferenceLoading: boolean;
     setGlucosePreferenceLoading: (value: boolean) => void;
+    shareReportLoading: boolean;
+    setShareReportLoading: (value: boolean) => void;
+    deleteAccountLoading: boolean;
+    setDeleteAccountLoading: (value: boolean) => void;
 
     //Actions
     uploadImage: (file: File) => Promise<boolean>
     medicalProfile: (userData: MedicalProfile) => Promise<boolean>
     updateProfile: (userData: { firstName?: string, lastName?: string } & MedicalProfile) => Promise<boolean>
     updateGlucosePreference: (userData: MedicalProfile) => Promise<boolean>
+    shareReportWithEmail: (userData: ShareReport) => Promise<boolean>
+    deleteAccount: () => Promise<boolean>
 
 
 }
@@ -93,6 +102,9 @@ export const useDashboardStore = create<DashboardState>((set) => ({
     showDeleteAccountModal: false,
     setShowDeleteAccountModal: (value) => set({ showDeleteAccountModal: value }),
 
+    showShareReportModal: false,
+    setShowShareReportModal: (value) => set({ showShareReportModal: value }),
+
     // Loading states
     loading: true,
     setLoading: (value) => set({ loading: value }),
@@ -115,6 +127,12 @@ export const useDashboardStore = create<DashboardState>((set) => ({
     glucosePreferenceLoading: false,
     setGlucosePreferenceLoading: (value) => set({ glucosePreferenceLoading: value }),
 
+    shareReportLoading: false,
+    setShareReportLoading: (value) => set({ shareReportLoading: value }),
+
+    deleteAccountLoading: false,
+    setDeleteAccountLoading: (value) => set({ deleteAccountLoading: value }),
+
     // Actions
     uploadImage: async (file: File) => {
         const token = await supabase.auth.getSession().then(res => res.data.session?.access_token);
@@ -132,7 +150,7 @@ export const useDashboardStore = create<DashboardState>((set) => ({
         if (!response?.data?.success) {
             return false
         }
-        return true
+        return response?.data?.avatarUrl
     },
 
     medicalProfile: async (userData) => {
@@ -176,6 +194,46 @@ export const useDashboardStore = create<DashboardState>((set) => ({
         const token = await supabase.auth.getSession().then(res => res.data?.session?.access_token)
 
         const response = await useFetch("put", "/update-glucose-preference", { bloodSugarUnit, targetBloodSugarRange }, useDashboardStore.getState().setGlucosePreferenceLoading, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
+        }, userApi)
+
+        if (!response?.data?.success) {
+            return false
+        }
+        return true
+
+    },
+
+    shareReportWithEmail: async (userData) => {
+
+        const { email, file, fullName, emailMessage } = userData
+
+        const formData = new FormData();
+        formData.append("file", file!);
+        formData.append("email", email);
+        formData.append("fullName", fullName!);
+        formData.append("emailMessage", emailMessage ?? "");
+
+        const response = await useFetch("post", "/share-report", formData, useDashboardStore.getState().setShareReportLoading, {
+            headers: {
+                "Content-Type": undefined,
+            }
+        }, userApi)
+
+        if (!response?.data?.success) {
+            return false
+        }
+        return true
+
+    },
+
+    deleteAccount: async () => {
+
+        const token = await supabase.auth.getSession().then(res => res.data.session?.access_token);
+
+        const response = await useFetch("delete", "/delete-account", undefined, useDashboardStore.getState().setDeleteAccountLoading, {
             headers: {
                 Authorization: `Bearer ${token}`,
             }

@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { useDashboardStore } from "./useDashboardStore";
 import { useFetch } from "@/hooks/useFetch";
 import { useThemeStore } from "./useThemeStore";
+import { createUserObject } from "@/libs/utils/utils";
 
 
 type AuthState = {
@@ -24,6 +25,8 @@ type AuthState = {
     signup: (userData: Omit<SignUpData, "id">) => Promise<User | { success: boolean } | null>;
     logout: (navigate: (path: string) => void) => void;
     checkAuth: () => Promise<User | null>
+    contactUs: (userData: { email: string, fullName: string, message: string }) => Promise<boolean>;
+
 
     // loading States
     signInLoading: boolean;
@@ -40,6 +43,8 @@ type AuthState = {
     setVerifyForgotPasswordLoading: (value: boolean) => void;
     resetPasswordLoading: boolean;
     setResetPasswordLoading: (value: boolean) => void;
+    contactUsLoading: boolean;
+    setContactUsLoading: (value: boolean) => void;
 
 };
 
@@ -68,6 +73,9 @@ export const useAuthStore = create<AuthState>((set) => ({
     resetPasswordLoading: false,
     setResetPasswordLoading: (value) => set({ resetPasswordLoading: value }),
 
+    contactUsLoading: false,
+    setContactUsLoading: (value) => set({ contactUsLoading: value }),
+
 
     // Actions
     signin: async (userData) => {
@@ -92,25 +100,8 @@ export const useAuthStore = create<AuthState>((set) => ({
             }
 
             const { user } = data;
-            const userMeta = user?.user_metadata || {};
 
-            const newUser: User = {
-                id: user?.id ?? '',
-                createdAt: user?.created_at || new Date(),
-                email: user?.email ?? email,
-                firstName: userMeta.firstName ?? '',
-                lastName: userMeta.lastName ?? '',
-                darkMode: userMeta.darkMode ?? false,
-                profilePic: userMeta?.custom_avatar_url || userMeta?.avatar_url || undefined,
-                medicalProfile: {
-                bloodSugarUnit: userMeta?.medicalProfile?.bloodSugarUnit ?? "",
-                age: userMeta?.medicalProfile?.age ?? "",
-                diabetesType: userMeta?.medicalProfile?.diabetesType ?? "",
-                diagnosisDate: userMeta?.medicalProfile?.diagnosisDate ?? "",
-                gender: userMeta?.medicalProfile?.gender ?? "",
-                targetBloodSugarRange: userMeta?.medicalProfile?.targetBloodSugarRange ?? "",
-            },
-            };
+            const newUser = createUserObject(user)
 
             useUserStore.getState().setUser(newUser);
             const hasCompletedSetup = user.user_metadata?.hasCompletedSetup;
@@ -138,6 +129,7 @@ export const useAuthStore = create<AuthState>((set) => ({
                     redirectTo: `${window.location.origin}/auth/callback`
                 },
             });
+
             if (error) {
                 useAuthStore.getState().setGoogleLoading(false);
                 toast.error(error.message)
@@ -226,30 +218,7 @@ export const useAuthStore = create<AuthState>((set) => ({
             return null;
         }
 
-        const user = data.user;
-        const meta = user.user_metadata || {};
-
-        const fullName = meta.full_name || meta.name || "";
-        const [firstName = "", ...lastParts] = fullName.split(" ");
-        const lastName = lastParts.join(" ");
-
-        const newUser: User = {
-            id: user.id,
-            createdAt: user.created_at || new Date(),
-            email: user.email ?? '',
-            firstName: firstName || meta.firstName || "",
-            lastName: lastName || meta.lastName || "",
-            darkMode: user?.user_metadata?.darkMode ?? false,
-            profilePic: meta?.custom_avatar_url || meta?.avatar_url,
-            medicalProfile: {
-                bloodSugarUnit: meta?.medicalProfile?.bloodSugarUnit ?? "",
-                age: meta?.medicalProfile?.age ?? "",
-                diabetesType: meta?.medicalProfile?.diabetesType ?? "",
-                diagnosisDate: meta?.medicalProfile?.diagnosisDate ?? "",
-                gender: meta?.medicalProfile?.gender ?? "",
-                targetBloodSugarRange: meta?.medicalProfile?.targetBloodSugarRange ?? "",
-            },
-        };
+        const newUser = createUserObject(data?.user, true)
 
         useUserStore.getState().setUser(newUser);
         return newUser;
@@ -273,24 +242,8 @@ export const useAuthStore = create<AuthState>((set) => ({
         if (!response?.data?.success) {
             return
         }
-        const meta = data?.user?.user_metadata || {}
-        const newUser: User = {
-            id: data.user?.id ?? '',
-            createdAt: data.user?.created_at || new Date(),
-            email,
-            firstName,
-            lastName,
-            darkMode: data?.user?.user_metadata?.darkMode ?? false,
-            profilePic: data?.user?.user_metadata?.custom_avatar_url || data?.user?.user_metadata?.avatar_url || undefined,
-            medicalProfile: {
-                bloodSugarUnit: meta?.medicalProfile?.bloodSugarUnit ?? "",
-                age: meta?.medicalProfile?.age ?? "",
-                diabetesType: meta?.medicalProfile?.diabetesType ?? "",
-                diagnosisDate: meta?.medicalProfile?.diagnosisDate ?? "",
-                gender: meta?.medicalProfile?.gender ?? "",
-                targetBloodSugarRange: meta?.medicalProfile?.targetBloodSugarRange ?? "",
-            },
-        };
+        const newUser = createUserObject(data?.user)
+
         useUserStore.getState().setUser(newUser);
 
         if (!data?.user?.user_metadata?.hasCompletedSetup) {
@@ -353,6 +306,18 @@ export const useAuthStore = create<AuthState>((set) => ({
         const { token, password } = userData;
 
         const response = await useFetch("post", "/reset-password", { token, password }, useAuthStore.getState().setResetPasswordLoading)
+
+        if (!response?.data?.success) {
+            return false;
+        }
+
+        return true
+    },
+
+    contactUs: async (userData) => {
+        const { email, fullName, message } = userData
+
+        const response = await useFetch("post", "/contact-us", { email, fullName, message }, useAuthStore.getState().setContactUsLoading)
 
         if (!response?.data?.success) {
             return false;

@@ -106,7 +106,8 @@ export const generateReportData = (
     name: string,
     diabetesType: "Type 1" | "Type 2" | "Pre-diabetes",
     gender: "Male" | "Female" | "Other",
-    age: string
+    age: string,
+    diagnosedDate: Date|string
 ) => {
     const avgGlucose = getAverageInRange(filteredReadings, unit);
     const timeInRange = getUpdatedInRangeStats(filteredReadings, null, unit, targetRange);
@@ -185,6 +186,7 @@ export const generateReportData = (
         patientName: name,
         diabetesType: diabetesType,
         gender: gender,
-        age: age
+        age: age,
+        diagnosedDate:diagnosedDate 
     };
 };

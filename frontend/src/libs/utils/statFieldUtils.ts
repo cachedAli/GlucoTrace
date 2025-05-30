@@ -140,15 +140,18 @@ export const get7DayAverage = (readings: Reading[], unit: Unit, previousStats: S
 
     // Trend calculation
     let trend: string | undefined;
-    if (previousStats?.value && previousStats.value !== "--") {
+    if (previousStats?.value && previousStats.value !== "--" && previousStats.lastUpdated) {
         const prevValue = parseFloat(previousStats.value);
-        if (!isNaN(prevValue) && prevValue !== 0) {
+        const prevDate = new Date(previousStats.lastUpdated);
+        const daysBetween = differenceInDays(new Date(now), prevDate);
+
+        if (!isNaN(prevValue) && prevValue !== 0 && daysBetween >= 7) {
             const change = avg - prevValue;
             const percentageChange = (change / prevValue) * 100;
 
             if (Math.abs(percentageChange) >= 0.1) {
                 const rounded = percentageChange.toFixed(1);
-                trend = `${change >= 0 ? '+' : ''}${rounded}%`;
+                trend = `${change >= 0 ? "+" : ""}${rounded}%`;
             }
         }
     }

@@ -21,6 +21,8 @@ type ReadingState = {
     setEditReadingLoading: (value: boolean) => void;
     deleteReadingLoading: boolean;
     setDeleteReadingLoading: (value: boolean) => void;
+    fetchReadingLoading: boolean;
+    setFetchReadingLoading: (value: boolean) => void;
 
     // Actions
     fetchReadings: () => Promise<void>;
@@ -32,12 +34,15 @@ type ReadingState = {
 }
 
 export const useReadingStore = create<ReadingState>((set, get) => ({
+
+    // States
     readings: [],
     filteredReadings: [],
 
     setReadings: (readings) => set({ readings, filteredReadings: readings }),
     setFilteredReadings: (filtered) => set({ filteredReadings: filtered }),
 
+    // Loading states
     addReadingLoading: false,
     setAddReadingLoading: (value) => set({ addReadingLoading: value }),
 
@@ -47,8 +52,13 @@ export const useReadingStore = create<ReadingState>((set, get) => ({
     deleteReadingLoading: false,
     setDeleteReadingLoading: (value) => set({ deleteReadingLoading: value }),
 
+    fetchReadingLoading: false,
+    setFetchReadingLoading: (value) => set({ fetchReadingLoading: value }),
+
+    // Actions
     fetchReadings: async () => {
         const { data: { user } } = await supabase.auth.getUser()
+
         const { data, error } = await supabase
             .from("readings")
             .select("*")
@@ -56,6 +66,7 @@ export const useReadingStore = create<ReadingState>((set, get) => ({
             .order("timestamp", { ascending: false, });
 
         if (!error && data) {
+            useReadingStore.getState().setFetchReadingLoading(false)
             const formatted = data?.map(formatReading)
             set({ readings: formatted, filteredReadings: formatted });
         } else {
@@ -63,7 +74,6 @@ export const useReadingStore = create<ReadingState>((set, get) => ({
         }
     },
 
-    // Actions
     resetFilteredReadings: () => {
         useDashboardStore.getState().setSelectedFilterOption(undefined);
         useDashboardStore.getState().setSelectedSortOption(undefined);

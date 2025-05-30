@@ -16,6 +16,7 @@ import { FormField } from "@/types/formTypes";
 import inputTheme from "../inputs/inputTheme";
 import BaseLoader from "../loader/BaseLoader";
 import Button from "./Button";
+import { cn } from "@/libs/utils/utils";
 
 type FormProps = {
   fields: FormField[];
@@ -25,13 +26,15 @@ type FormProps = {
   buttonLabel?: string;
   googleAuth?: boolean;
   backButtonLabel?: string;
+  backButtonOnClick?: () => void;
+  backButtonClassName?: string;
   resendOtp?: boolean;
   disabled?: boolean;
   otpLength?: 4 | 6;
   loading?: boolean;
   className?: string;
   buttonClassName?: string;
-  buttonAlignment?: "center" | "end";
+  buttonAlignment?: "center" | "end" | "custom";
   isSignIn?: boolean;
 };
 const Form = ({
@@ -41,6 +44,8 @@ const Form = ({
   buttonLabel = "Submit",
   googleAuth = true,
   backButtonLabel,
+  backButtonOnClick,
+  backButtonClassName,
   resendOtp = false,
   disabled = false,
   otpLength,
@@ -137,7 +142,7 @@ const Form = ({
         <div
           className={clsx(
             "col-span-2 flex gap-4 w-full",
-            buttonAlignment === "end"
+            buttonAlignment === "end" || buttonAlignment === "custom"
               ? "justify-end"
               : "justify-center flex-col"
           )}
@@ -148,6 +153,9 @@ const Form = ({
             loading={loading}
             buttonClassName={buttonClassName}
             disabled={disabled}
+            backButtonClassName={backButtonClassName}
+            backButtonOnClick={backButtonOnClick}
+            buttonAlignment={buttonAlignment}
           />
         </div>
       </form>
@@ -222,8 +230,11 @@ type FormButtonProps = {
   buttonLabel: string;
   backButtonLabel?: string;
   buttonClassName?: string;
+  backButtonOnClick?: () => void;
+  backButtonClassName?: string;
   loading?: boolean;
   disabled?: boolean;
+  buttonAlignment?: "center" | "end" | "custom";
 };
 const FormButtons = ({
   buttonLabel,
@@ -231,6 +242,9 @@ const FormButtons = ({
   loading,
   buttonClassName,
   disabled,
+  backButtonOnClick,
+  backButtonClassName,
+  buttonAlignment,
 }: FormButtonProps) => {
   return (
     <>
@@ -238,29 +252,47 @@ const FormButtons = ({
         variant="fill"
         type="submit"
         disabled={loading || disabled}
-        className={clsx(
+        className={cn(
           "col-span-2 !h-14 rounded-[14px]",
           "max-sm:text-base max-sm:!h-12",
+          buttonAlignment === "custom" ? "order-2" : "order-1",
           buttonClassName
         )}
       >
         {loading ? <BaseLoader /> : buttonLabel}
       </Button>
 
-      {backButtonLabel && (
-        <Link to="/signin" className="col-span-2">
-          <Button
-            variant="transparent"
-            type="button"
-            className={clsx(
-              "!h-14 rounded-[14px]",
-              "max-sm:text-base max-sm:!h-12"
-            )}
-          >
-            {backButtonLabel}
-          </Button>
-        </Link>
-      )}
+      {backButtonLabel &&
+        (backButtonClassName ? (
+          <>
+            <Button
+              variant="transparent"
+              type="button"
+              onClick={backButtonOnClick}
+              className={cn(
+                "!h-14 rounded-[14px]",
+                "max-sm:text-base max-sm:!h-12",
+                buttonAlignment === "custom" ? "order-1" : "order-2",
+                backButtonClassName
+              )}
+            >
+              {backButtonLabel}
+            </Button>
+          </>
+        ) : (
+          <Link to="/signin" className="col-span-2">
+            <Button
+              variant="transparent"
+              type="button"
+              className={clsx(
+                "!h-14 rounded-[14px]",
+                "max-sm:text-base max-sm:!h-12"
+              )}
+            >
+              {backButtonLabel}
+            </Button>
+          </Link>
+        ))}
     </>
   );
 };

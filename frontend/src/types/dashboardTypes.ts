@@ -39,8 +39,15 @@ export type TargetRange = {
 };
 
 export type StatName =
-  | "sevenDayAverage"
-  | "targetRange"
-  | "highLow"
-  | "monthlyChange"
-  | "morningEvening";
+    | "sevenDayAverage"
+    | "targetRange"
+    | "highLow"
+    | "monthlyChange"
+    | "morningEvening";
+
+export type ShareReport = {
+    file?: File,
+    email: string,
+    fullName?: string,
+    emailMessage?: string
+} 
