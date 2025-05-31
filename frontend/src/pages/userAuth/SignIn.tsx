@@ -5,15 +5,15 @@ import { useNavigate } from "react-router-dom";
 import { signInFields } from "@/libs/constants/authPage/formFields";
 import FormSkeleton from "@/components/ui/skeleton/FormSkeleton";
 import AuthLayout from "@/components/layout/userAuth/AuthLayout";
-import { SignInSchema } from "@/libs/validations/authSchema.js";
-import { useAuthStore } from "@/store/useAuthStore.js";
-import { SignInData } from "@/types/authTypes.js";
+import { SignInSchema } from "@/libs/validations/authSchema";
+import { useAuthStore } from "@/store/useAuthStore";
+import { SignInData } from "@/types/authTypes";
 import LazyLoader from "@/libs/LazyLoader";
-import { Form } from "@/router/LazyRoutes.js";
+import { Form } from "@/router/LazyRoutes";
 import {
   preloadDashboardLayout,
   preloadOverview,
-} from "@/router/preloadRoutes.js";
+} from "@/router/preloadRoutes";
 
 const SignIn = () => {
   const navigate = useNavigate();

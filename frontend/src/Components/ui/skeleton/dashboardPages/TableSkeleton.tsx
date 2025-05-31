@@ -1,7 +1,7 @@
 import { TableCell, TableRow } from "@mui/material";
 import Skeleton from "react-loading-skeleton";
 
-import { useThemeStore } from "@/store/useThemeStore.js";
+import { useThemeStore } from "@/store/useThemeStore";
 
 const TableSkeleton = () => {
   const darkMode = useThemeStore((state) => state.darkMode);

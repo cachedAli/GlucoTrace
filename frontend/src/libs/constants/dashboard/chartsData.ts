@@ -1,6 +1,6 @@
-import { convertToMmol, getReadingStatus, getStatusColorClass } from "@/libs/utils/utils.js";
-import { useReadingStore } from "@/store/useReadingStore.js";
-import { Unit } from "@/types/dashboardTypes.js";
+import { convertToMmol, getReadingStatus, getStatusColorClass } from "@/libs/utils/utils";
+import { useReadingStore } from "@/store/useReadingStore";
+import { Unit } from "@/types/dashboardTypes";
 import {
     format,
     parseISO,

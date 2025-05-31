@@ -1,9 +1,9 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
 
-import { useDashboardStore } from "@/store/useDashboardStore.js";
+import { useDashboardStore } from "@/store/useDashboardStore";
 import SphereLoader from "@/components/ui/loader/SphereLoader";
-import { useUserStore } from "@/store/useUserStore.js";
+import { useUserStore } from "@/store/useUserStore";
 
 const PublicRoute = ({ children }: { children: React.ReactNode }) => {
   const loading = useDashboardStore((state) => state.loading);

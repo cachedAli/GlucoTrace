@@ -4,8 +4,8 @@ import clsx from "clsx";
 import { MoreHorizontal } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
-import { useDashboardStore } from "@/store/useDashboardStore.js";
-import { useThemeStore } from "@/store/useThemeStore.js";
+import { useDashboardStore } from "@/store/useDashboardStore";
+import { useThemeStore } from "@/store/useThemeStore";
 import { navLinks } from "@/libs/constants/dashboard";
 
 const Sidebar = () => {

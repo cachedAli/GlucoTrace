@@ -1,15 +1,15 @@
 import { useEffect, useMemo } from "react";
 import { useStats } from "@/providers/StatsProvider";
-import { useReadingStore } from "@/store/useReadingStore.js";
-import { useUserStore } from "@/store/useUserStore.js";
+import { useReadingStore } from "@/store/useReadingStore";
+import { useUserStore } from "@/store/useUserStore";
 import {
     get7DayAverage,
     getWeeklyStats,
     getUpdatedHighLowStats,
     getMonthChange,
     getUpdatedMorningEveningStats
-} from "../libs/utils/statFieldUtils.js";
-import { StatName } from "@/types/dashboardTypes.js";
+} from "../libs/utils/statFieldUtils";
+import { StatName } from "@/types/dashboardTypes";
 
 export const useStatCalculation = () => {
     const { stats, isStatsInitialized, updateStat } = useStats();

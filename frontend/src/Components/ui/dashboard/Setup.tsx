@@ -3,11 +3,12 @@ import React from "react";
 import { motion } from "framer-motion";
 import Form from "../common/Form";
 import { setupFields } from "@/libs/constants/dashboard";
-import { setupSchema } from "@/libs/validations/dashboardSchema.js";
-import { useUserStore } from "@/store/useUserStore.js";
-import { useDashboardStore } from "@/store/useDashboardStore.js";
+import { setupSchema } from "@/libs/validations/dashboardSchema";
+import { useUserStore } from "@/store/useUserStore";
+import { useDashboardStore } from "@/store/useDashboardStore";
 import dayjs from "dayjs";
-
+import { supabase } from "@/libs/supabaseClient";
+import { toast } from "sonner";
 
 interface Data {
   age: number;

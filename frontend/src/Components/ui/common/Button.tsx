@@ -1,5 +1,5 @@
 import React from "react";
-import { cn } from "@/libs/utils/utils.js";
+import { cn } from "@/libs/utils/utils";
 
 type buttonProps = {
   children: React.ReactNode;

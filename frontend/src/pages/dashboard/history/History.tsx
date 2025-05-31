@@ -1,6 +1,6 @@
 import PageTitle from "@/components/layout/dashboard/mainContent/PageTitle";
 import QuickStats from "@/components/ui/dashboard/stats/QuickStats";
-import StatFields from "@/libs/constants/dashboard/statFields.js";
+import StatFields from "@/libs/constants/dashboard/statFields";
 import ActionButtons from "./components/ActionButtons";
 import ReadingTable from "./components/ReadingTable";
 

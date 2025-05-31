@@ -1,11 +1,11 @@
 import { useState } from "react";
 
-import { OtpField } from "@/libs/constants/authPage/formFields.js";
+import { OtpField } from "@/libs/constants/authPage/formFields";
 import AuthLayout from "@/components/layout/userAuth/AuthLayout";
 import FormSkeleton from "@/components/ui/skeleton/FormSkeleton";
-import { OtpSchema } from "@/libs/validations/authSchema.js";
+import { OtpSchema } from "@/libs/validations/authSchema";
 import LazyLoader from "@/libs/LazyLoader";
-import { Form } from "@/router/LazyRoutes.js";
+import { Form } from "@/router/LazyRoutes";
 import EmailSent from "./EmailSent";
 import { toast } from "sonner";
 

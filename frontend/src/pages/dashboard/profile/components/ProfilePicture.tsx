@@ -1,7 +1,7 @@
 import Button from "@/components/ui/common/Button";
 import BaseLoader from "@/components/ui/loader/BaseLoader";
-import { useDashboardStore } from "@/store/useDashboardStore.js";
-import { useUserStore } from "@/store/useUserStore.js";
+import { useDashboardStore } from "@/store/useDashboardStore";
+import { useUserStore } from "@/store/useUserStore";
 import imageCompression from "browser-image-compression";
 import clsx from "clsx";
 import { Plus } from "lucide-react";

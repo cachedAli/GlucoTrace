@@ -5,7 +5,7 @@ import { Menu, X } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import glucoTrace from "/homepage/GlucoTrace.webp";
-import { preloadForm } from "@/router/preloadRoutes.js";
+import { preloadForm } from "@/router/preloadRoutes";
 
 type HeaderProps = {
   headerRef?: React.RefObject<HTMLElement>;

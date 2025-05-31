@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
-import { preloadForm } from "@/router/preloadRoutes.js";
+import { preloadForm } from "@/router/preloadRoutes";
 import { Hero } from "@/libs/constants/homepage";
 import Dashboard from "/homepage/heroSectionImage.webp";
 

@@ -2,7 +2,7 @@ import { Download, Mail, Share } from "lucide-react";
 import { pdf } from "@react-pdf/renderer";
 import { saveAs } from "file-saver";
 
-import { useDashboardStore } from "@/store/useDashboardStore.js";
+import { useDashboardStore } from "@/store/useDashboardStore";
 import Button from "@/components/ui/common/Button";
 import GlucoseReportPDF from "./GenerateReportPdf";
 

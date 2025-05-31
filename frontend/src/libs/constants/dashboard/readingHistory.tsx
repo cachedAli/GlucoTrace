@@ -6,7 +6,7 @@ import {
   ArrowDownAZ,
   ArrowUpZA,
 } from "lucide-react";
-import { useReadingHistoryUtils } from "../../utils/useReadingHistoryUtils.js";
+import { useReadingHistoryUtils } from "../../utils/useReadingHistoryUtils";
 
 export const readingHistory = () => {
   const {

@@ -1,7 +1,7 @@
 import clsx from "clsx";
 
 import glucoTraceDark from "/homepage/GlucoTraceDark.webp";
-import { useUserStore } from "@/store/useUserStore.js";
+import { useUserStore } from "@/store/useUserStore";
 import glucoTrace from "/homepage/GlucoTrace.webp";
 import { useLocation } from "react-router-dom";
 import SearchBar from "./searchBar/SearchBar";

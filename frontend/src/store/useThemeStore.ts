@@ -1,10 +1,10 @@
 import { create } from "zustand";
 
-import { useDashboardStore } from "./useDashboardStore.js";
-import { supabase } from "@/libs/supabaseClient.js";
-import { useUserStore } from "./useUserStore.js";
-import { useFetch } from "@/hooks/useFetch.js";
-import { userApi } from "@/libs/axios.js";
+import { useDashboardStore } from "./useDashboardStore";
+import { supabase } from "@/libs/supabaseClient";
+import { useUserStore } from "./useUserStore";
+import { useFetch } from "@/hooks/useFetch";
+import { userApi } from "@/libs/axios";
 
 type ThemeState = {
     isDarkMode: boolean;

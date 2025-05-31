@@ -2,26 +2,26 @@ import { AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
 import ConfirmationModal from "@/components/ui/dashboard/ConfirmationModal";
-import { useDashboardStore } from "@/store/useDashboardStore.js";
-import { useReadingStore } from "@/store/useReadingStore.js";
+import { useDashboardStore } from "@/store/useDashboardStore";
+import { useReadingStore } from "@/store/useReadingStore";
 import MobileNavDropUp from "./sidebar/MobileNavDropUp";
-import { useAuthStore } from "@/store/useAuthStore.js";
+import { useAuthStore } from "@/store/useAuthStore";
 import Setup from "@/components/ui/dashboard/Setup";
-import { supabase } from "@/libs/supabaseClient.js";
+import { supabase } from "@/libs/supabaseClient";
 import { useEffect } from "react";
 import { shareReportFields } from "@/libs/constants/dashboard";
-import { shareReportSchema } from "@/libs/validations/dashboardSchema.js";
-import { ShareReport } from "@/types/dashboardTypes.js";
-import { useUserStore } from "@/store/useUserStore.js";
+import { shareReportSchema } from "@/libs/validations/dashboardSchema";
+import { ShareReport } from "@/types/dashboardTypes";
+import { useUserStore } from "@/store/useUserStore";
 import {
   filterReadingsByDate,
   generateReportData,
   getDateRange,
-} from "@/libs/utils/reportUtils.js";
+} from "@/libs/utils/reportUtils";
 import GlucoseReportPDF from "@/pages/dashboard/report/components/GenerateReportPdf";
-import { capitalizeFirstLetter } from "@/libs/utils/utils.js";
+import { capitalizeFirstLetter } from "@/libs/utils/utils";
 import { pdf } from "@react-pdf/renderer";
-import { useThemeStore } from "@/store/useThemeStore.js";
+import { useThemeStore } from "@/store/useThemeStore";
 
 const DashboardOverlay = () => {
   const {

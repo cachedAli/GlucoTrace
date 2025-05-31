@@ -9,17 +9,17 @@ import {
   estimateHba1c,
   getMonthChange,
   getMonthlyStats,
-} from "@/libs/utils/statFieldUtils.js";
+} from "@/libs/utils/statFieldUtils";
 import {
   capitalizeFirstLetter,
   convertToMmol,
   getReadingStatus,
   getStatusColorClass,
-} from "@/libs/utils/utils.js";
-import { TargetRange, Unit } from "@/types/dashboardTypes.js";
-import { useReadingStore } from "@/store/useReadingStore.js";
-import { useUserStore } from "@/store/useUserStore.js";
-import { Reading } from "@/types/userTypes.js";
+} from "@/libs/utils/utils";
+import { TargetRange, Unit } from "@/types/dashboardTypes";
+import { useReadingStore } from "@/store/useReadingStore";
+import { useUserStore } from "@/store/useUserStore";
+import { Reading } from "@/types/userTypes";
 import HistoryCard from "./HistoryCard";
 import { useStats } from "@/providers/StatsProvider";
 

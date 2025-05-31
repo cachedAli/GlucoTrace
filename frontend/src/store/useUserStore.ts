@@ -1,7 +1,7 @@
 import { create } from "zustand";
-import { createUserObject } from "@/libs/utils/utils.js";
-import { supabase } from "@/libs/supabaseClient.js";
-import { User } from "@/types/userTypes.js";
+import { createUserObject } from "@/libs/utils/utils";
+import { supabase } from "@/libs/supabaseClient";
+import { User } from "@/types/userTypes";
 
 type UserState = {
   user: User | null;

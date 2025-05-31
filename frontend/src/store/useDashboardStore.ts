@@ -1,8 +1,8 @@
-import { useFetch } from "@/hooks/useFetch.js";
-import { userApi } from "@/libs/axios.js";
-import { supabase } from "@/libs/supabaseClient.js";
-import { ShareReport } from "@/types/dashboardTypes.js";
-import { MedicalProfile } from "@/types/userTypes.js";
+import { useFetch } from "@/hooks/useFetch";
+import { userApi } from "@/libs/axios";
+import { supabase } from "@/libs/supabaseClient";
+import { ShareReport } from "@/types/dashboardTypes";
+import { MedicalProfile } from "@/types/userTypes";
 import { Dayjs } from "dayjs";
 import { create } from "zustand";
 

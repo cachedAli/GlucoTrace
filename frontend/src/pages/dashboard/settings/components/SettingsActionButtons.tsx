@@ -1,7 +1,7 @@
 import { CustomSwitch } from "@/components/ui/dashboard/CustomSwitch";
-import { useDashboardStore } from "@/store/useDashboardStore.js";
-import { useThemeStore } from "@/store/useThemeStore.js";
-import { useUserStore } from "@/store/useUserStore.js";
+import { useDashboardStore } from "@/store/useDashboardStore";
+import { useThemeStore } from "@/store/useThemeStore";
+import { useUserStore } from "@/store/useUserStore";
 import Button from "@/components/ui/common/Button";
 import { SunMoon, Trash2 } from "lucide-react";
 

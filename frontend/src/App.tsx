@@ -3,9 +3,9 @@ import { useEffect } from "react";
 import { MantineProvider } from "@mantine/core";
 import { Toaster } from "sonner";
 
-import { useDashboardStore } from "./store/useDashboardStore.js";
-import { toastOptions } from "./components/ui/toastStyles.js";
-import { useAuthStore } from "./store/useAuthStore.js";
+import { useDashboardStore } from "./store/useDashboardStore";
+import { toastOptions } from "./components/ui/toastStyles";
+import { useAuthStore } from "./store/useAuthStore";
 import Router from "./router/Router";
 
 function App() {

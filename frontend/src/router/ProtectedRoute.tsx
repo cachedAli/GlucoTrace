@@ -1,9 +1,9 @@
 import { Navigate, Outlet } from "react-router-dom";
 
-import { useDashboardStore } from "@/store/useDashboardStore.js";
+import { useDashboardStore } from "@/store/useDashboardStore";
 import SphereLoader from "@/components/ui/loader/SphereLoader";
-import { useUserStore } from "@/store/useUserStore.js";
-import { supabase } from "@/libs/supabaseClient.js";
+import { useUserStore } from "@/store/useUserStore";
+import { supabase } from "@/libs/supabaseClient";
 
 const ProtectedRoute = () => {
   const loading = useDashboardStore((state) => state.loading);

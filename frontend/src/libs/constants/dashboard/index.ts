@@ -1,5 +1,5 @@
-import { preloadAddReading, preloadHistory, preloadProfile, preloadReport, preloadSettings, preloadTrends } from "@/router/preloadRoutes.js";
-import { FormField } from "@/types/formTypes.js";
+import { preloadAddReading, preloadHistory, preloadProfile, preloadReport, preloadSettings, preloadTrends } from "@/router/preloadRoutes";
+import { FormField } from "@/types/formTypes";
 import {
   LayoutDashboard,
   CircleFadingPlus,
