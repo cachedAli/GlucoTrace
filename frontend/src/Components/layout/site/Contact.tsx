@@ -6,11 +6,11 @@ import { contact } from "@/libs/constants/homepage";
 
 import FormSkeleton from "@/components/ui/skeleton/FormSkeleton";
 import usePreloadOnScroll from "@/hooks/usePreloadOnScroll";
+import { capitalizeFirstLetter } from "@/libs/utils/utils";
 import { preloadForm } from "@/router/preloadRoutes";
+import { useAuthStore } from "@/store/useAuthStore";
 import { Form } from "@/router/LazyRoutes";
 import LazyLoader from "@/libs/LazyLoader";
-import { useAuthStore } from "@/store/useAuthStore";
-import { capitalizeFirstLetter } from "@/libs/utils/utils";
 
 type Data = {
   firstName: string;
