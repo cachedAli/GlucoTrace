@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { signUpFields } from "@/libs/constants/authPage/formFields";
@@ -5,16 +6,19 @@ import AuthLayout from "@/components/layout/userAuth/AuthLayout";
 import FormSkeleton from "@/components/ui/skeleton/FormSkeleton";
 import { signUpSchema } from "@/libs/validations/authSchema";
 import { useAuthStore } from "@/store/useAuthStore";
-import { useUserStore } from "@/store/useUserStore";
 import { SignUpData } from "@/types/authTypes";
 import LazyLoader from "@/libs/LazyLoader";
 import { Form } from "@/router/LazyRoutes";
 import { toast } from "sonner";
+import {
+  preloadDashboardLayout,
+  preloadOverview,
+} from "@/router/preloadRoutes";
 
 const SignUp = () => {
   const navigate = useNavigate();
-  // const user = useUserStore((state)=>state.user);
-  const {signup,signUpLoading} = useAuthStore();
+  const { signup, signUpLoading } = useAuthStore();
+  const hasPrefetched = useRef(false);
 
   const onSubmit = async (data: SignUpData) => {
     try {
@@ -28,7 +32,14 @@ const SignUp = () => {
       console.error("Signup error:", error);
       toast.error("An unexpected error occurred.");
     }
-    console.log("Submitted signup data:", data);
+  };
+
+  const handleMouseEnter = () => {
+    if (!hasPrefetched.current) {
+      preloadDashboardLayout();
+      preloadOverview();
+      hasPrefetched.current = true;
+    }
   };
 
   return (
@@ -48,6 +59,7 @@ const SignUp = () => {
           schema={signUpSchema}
           buttonLabel="Sign up"
           loading={signUpLoading}
+          googleOnMouseEnter={handleMouseEnter}
         />
       </LazyLoader>
     </AuthLayout>

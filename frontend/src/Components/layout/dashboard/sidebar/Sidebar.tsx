@@ -53,8 +53,14 @@ const DesktopNav = () => {
           "max-lg:hidden"
         )}
       >
-        {navLinks.slice(0, 6).map(({ to, icon, label }) => (
-          <NavItems key={to} to={to} icon={icon} label={label} />
+        {navLinks.slice(0, 6).map(({ to, icon, label, onMouseEnter }) => (
+          <NavItems
+            key={to}
+            to={to}
+            icon={icon}
+            label={label}
+            onMouseEnter={onMouseEnter}
+          />
         ))}
       </div>
 
@@ -65,8 +71,14 @@ const DesktopNav = () => {
           "max-lg:hidden"
         )}
       >
-        {navLinks.slice(6, 8).map(({ to, icon, label }) => (
-          <NavItems key={to} to={to} icon={icon} label={label} />
+        {navLinks.slice(6, 8).map(({ to, icon, label, onMouseEnter }) => (
+          <NavItems
+            key={to}
+            to={to}
+            icon={icon}
+            label={label}
+            onMouseEnter={onMouseEnter}
+          />
         ))}
       </div>
     </>
@@ -92,8 +104,14 @@ const MobileNav = () => {
             "max-sm:hidden"
           )}
         >
-          {navLinks.map(({ to, icon, label }) => (
-            <NavItems key={to} to={to} icon={icon} label={label} />
+          {navLinks.map(({ to, icon, label, onMouseEnter }) => (
+            <NavItems
+              key={to}
+              to={to}
+              icon={icon}
+              label={label}
+              onMouseEnter={onMouseEnter}
+            />
           ))}
         </div>
 
@@ -105,8 +123,14 @@ const MobileNav = () => {
             "max-[375px]:gap-[25px]"
           )}
         >
-          {navLinks.slice(0, 3).map(({ to, icon, label }) => (
-            <NavItems key={to} to={to} icon={icon} label={label} />
+          {navLinks.slice(0, 3).map(({ to, icon, label, onMouseEnter }) => (
+            <NavItems
+              key={to}
+              to={to}
+              icon={icon}
+              label={label}
+              onMouseEnter={onMouseEnter}
+            />
           ))}
           <MoreHorizontal
             onClick={handleNavModal}
@@ -122,8 +146,9 @@ type NavItemsProps = {
   to: string;
   icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   label: string;
+  onMouseEnter?: React.MouseEventHandler<HTMLElement>;
 };
-const NavItems = ({ to, icon: Icon, label }: NavItemsProps) => {
+const NavItems = ({ to, icon: Icon, label, onMouseEnter }: NavItemsProps) => {
   const setShowLogoutModal = useDashboardStore(
     (state) => state.setShowLogoutModal
   );
@@ -133,6 +158,7 @@ const NavItems = ({ to, icon: Icon, label }: NavItemsProps) => {
   return (
     <NavLink
       to={label === "Logout" ? "#" : to}
+      onMouseEnter={onMouseEnter}
       end
       onClick={label === "Logout" ? () => setShowLogoutModal(true) : undefined}
       className={({ isActive }) =>

@@ -23,8 +23,8 @@ const StatsCardSkeleton = ({
     index === 0
       ? !trend
         ? darkMode
-          ? "#2563eb"
-          : "#1d4ed8"
+          ? "#1d4ed8"
+          : " #1e40af"
         : "#86efac"
       : !trend
       ? darkMode
@@ -49,6 +49,7 @@ const StatsCardSkeleton = ({
     <Skeleton
       width={width}
       height={height}
+      className="to-blue-800"
       inline={inline}
       borderRadius={borderRadius}
       baseColor={baseColor}

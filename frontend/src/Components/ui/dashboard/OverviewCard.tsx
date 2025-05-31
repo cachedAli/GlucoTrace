@@ -5,7 +5,7 @@ import OverviewCardWrapper from "./wrapper/OverviewCardWrapper";
 import Button from "../common/Button";
 import { useReadingStore } from "@/store/useReadingStore";
 import { useThemeStore } from "@/store/useThemeStore";
-import OverviewCardsSkeleton from "../skeleton/CardsSkeleton";
+import OverviewCardsSkeleton from "../skeleton/dashboardPages/CardsSkeleton";
 
 type InsightItem = {
   label: string;

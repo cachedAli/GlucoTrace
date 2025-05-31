@@ -5,6 +5,7 @@ import { toast } from "sonner";
 
 import SphereLoader from "@/components/ui/loader/SphereLoader";
 import { useDashboardStore } from "@/store/useDashboardStore";
+import { useReadingStore } from "@/store/useReadingStore";
 import { createUserObject } from "@/libs/utils/utils";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useUserStore } from "@/store/useUserStore";
@@ -37,7 +38,6 @@ const AuthRedirectHandler = () => {
         }
       }
 
-      console.log("hello");
       if (!meta.custom_avatar_url && meta?.avatar_url) {
         const { error: customImageError } = await supabase.auth.updateUser({
           data: { custom_avatar_url: meta?.avatar_url },
@@ -51,12 +51,24 @@ const AuthRedirectHandler = () => {
           toast.error(customImageError.message);
         }
       }
-      console.log("hola");
 
       const fullName = meta.full_name || "";
       const [firstName, ...lastParts] = fullName.split(" ");
       const lastName = lastParts.join(" ");
 
+      if (!meta.hasCompletedSetup) {
+        useDashboardStore.getState().setShowSetupModal(true);
+      } else {
+        useDashboardStore.getState().setShowSetupModal(false);
+      }
+
+      const newUser = createUserObject(data?.user);
+
+      useUserStore.getState().setUser(newUser);
+      useReadingStore.getState().setFetchReadingLoading(true);
+      await useReadingStore.getState().fetchReadings();
+
+      setGoogleLoading(false);
       if (!meta.hasWelcomed) {
         toast.success(`Welcome, ${firstName} ${lastName}!`);
 
@@ -73,18 +85,6 @@ const AuthRedirectHandler = () => {
       } else if (meta?.hasWelcomed === true) {
         toast.success(`Welcome back, ${firstName} ${lastName}!`);
       }
-
-      if (!meta.hasCompletedSetup) {
-        useDashboardStore.getState().setShowSetupModal(true);
-      } else {
-        useDashboardStore.getState().setShowSetupModal(false);
-      }
-
-      const newUser = createUserObject(data?.user);
-
-      useUserStore.getState().setUser(newUser);
-
-      setGoogleLoading(false);
       navigate("/dashboard");
     };
 

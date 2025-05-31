@@ -15,6 +15,7 @@ type OtpProps = {
   loading?: boolean;
   resendOtp: () => Promise<boolean>;
   handleSubmit: (data: any) => Promise<boolean>;
+  onMouseEnter?: React.MouseEventHandler<HTMLButtonElement>;
 };
 
 const Otp = ({
@@ -23,6 +24,7 @@ const Otp = ({
   loading,
   resendOtp,
   handleSubmit,
+  onMouseEnter,
 }: OtpProps) => {
   const [step, setStep] = useState<"otp" | "emailSentMessage">("otp");
 
@@ -82,6 +84,7 @@ const Otp = ({
           googleAuth={false}
           loading={loading}
           otpLength={otpLength}
+          onMouseEnter={onMouseEnter}
           className="!flex-row items-center justify-center mb-2 max-sm:mb-1"
         />
       </LazyLoader>

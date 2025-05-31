@@ -8,6 +8,7 @@ type buttonProps = {
   disabled?: boolean;
   className?: string;
   hoverExpandBg?: string;
+  onMouseEnter?: React.MouseEventHandler<HTMLButtonElement>;
   onClick?: () => void;
 };
 
@@ -18,6 +19,7 @@ const Button = ({
   disabled = false,
   className = "",
   hoverExpandBg = "",
+  onMouseEnter,
   onClick,
   ...props
 }: buttonProps) => {
@@ -25,6 +27,7 @@ const Button = ({
     <button
       type={type}
       disabled={disabled}
+      onMouseEnter={onMouseEnter}
       onClick={onClick}
       className={cn(
         "relative text-lg overflow-hidden rounded-xl w-full h-12 group transition-all duration-300 ease-in-out",

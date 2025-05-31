@@ -1,8 +1,14 @@
-import { supabase } from "@/libs/supabaseClient";
+import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
+
+import { supabase } from "@/libs/supabaseClient";
 
 import Otp from "@/components/layout/userAuth/Otp";
 import { useAuthStore } from "@/store/useAuthStore";
+import {
+  preloadDashboardLayout,
+  preloadOverview,
+} from "@/router/preloadRoutes";
 
 type Data = {
   otp: string;
@@ -10,6 +16,8 @@ type Data = {
 
 const VerifyEmail = () => {
   const { verifyOtp, verifyEmailLoading, resendVerifyOtp } = useAuthStore();
+  const hasPrefetched = useRef(false);
+  const navigate = useNavigate();
 
   const handleResend = async () => {
     const { data } = await supabase.auth.getUser();
@@ -23,12 +31,12 @@ const VerifyEmail = () => {
     }
   };
 
-  const navigate = useNavigate();
-
   const onSubmit = async (data: Data) => {
     try {
       const user = await verifyOtp({ otpCode: data.otp });
       if (user) {
+        preloadDashboardLayout();
+        preloadOverview();
         navigate("/dashboard");
         return true;
       } else {
@@ -39,6 +47,14 @@ const VerifyEmail = () => {
       return false;
     }
   };
+
+  const handleMouseEnter = () => {
+    if (!hasPrefetched.current) {
+      preloadDashboardLayout();
+      preloadOverview();
+      hasPrefetched.current = true;
+    }
+  };
   return (
     <>
       <Otp
@@ -47,6 +63,7 @@ const VerifyEmail = () => {
         handleSubmit={onSubmit}
         resendOtp={handleResend}
         loading={verifyEmailLoading}
+        onMouseEnter={handleMouseEnter}
       />
     </>
   );

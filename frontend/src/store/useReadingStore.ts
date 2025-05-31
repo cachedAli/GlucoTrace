@@ -172,8 +172,6 @@ export const useReadingStore = create<ReadingState>((set, get) => ({
         // ✅ append it cleanly
         useReadingStore.getState().setReadings([newReading, ...currentReadings]);
 
-        console.log(useReadingStore.getState().readings)
-
         return response?.data
 
     }

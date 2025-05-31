@@ -27,6 +27,8 @@ type FormProps = {
   googleAuth?: boolean;
   backButtonLabel?: string;
   backButtonOnClick?: () => void;
+  onMouseEnter?: React.MouseEventHandler<HTMLButtonElement>;
+  googleOnMouseEnter?: React.MouseEventHandler<HTMLButtonElement>;
   backButtonClassName?: string;
   resendOtp?: boolean;
   disabled?: boolean;
@@ -41,8 +43,10 @@ const Form = ({
   fields,
   schema,
   onSubmit,
+  onMouseEnter,
   buttonLabel = "Submit",
   googleAuth = true,
+  googleOnMouseEnter,
   backButtonLabel,
   backButtonOnClick,
   backButtonClassName,
@@ -156,11 +160,15 @@ const Form = ({
             backButtonClassName={backButtonClassName}
             backButtonOnClick={backButtonOnClick}
             buttonAlignment={buttonAlignment}
+            onMouseEnter={onMouseEnter}
           />
         </div>
       </form>
       {resendOtp && <ResendOtp resendOtpOnSubmit={resendOtpOnSubmit} />}
-      <GoogleAuthButton googleAuth={googleAuth} />
+      <GoogleAuthButton
+        googleAuth={googleAuth}
+        googleOnMouseEnter={googleOnMouseEnter}
+      />
     </>
   );
 };
@@ -235,6 +243,7 @@ type FormButtonProps = {
   loading?: boolean;
   disabled?: boolean;
   buttonAlignment?: "center" | "end" | "custom";
+  onMouseEnter?: React.MouseEventHandler<HTMLButtonElement>;
 };
 const FormButtons = ({
   buttonLabel,
@@ -245,12 +254,14 @@ const FormButtons = ({
   backButtonOnClick,
   backButtonClassName,
   buttonAlignment,
+  onMouseEnter,
 }: FormButtonProps) => {
   return (
     <>
       <Button
         variant="fill"
         type="submit"
+        onMouseEnter={onMouseEnter}
         disabled={loading || disabled}
         className={cn(
           "col-span-2 !h-14 rounded-[14px]",
@@ -296,7 +307,13 @@ const FormButtons = ({
     </>
   );
 };
-const GoogleAuthButton = ({ googleAuth }: { googleAuth: boolean }) => {
+const GoogleAuthButton = ({
+  googleAuth,
+  googleOnMouseEnter,
+}: {
+  googleAuth: boolean;
+  googleOnMouseEnter?: React.MouseEventHandler<HTMLButtonElement>;
+}) => {
   const { signInWithGoogle, googleLoading } = useAuthStore();
 
   const onSubmit = async () => {
@@ -322,6 +339,7 @@ const GoogleAuthButton = ({ googleAuth }: { googleAuth: boolean }) => {
             <Button
               type="button"
               aria-label="Sign in with Google"
+              onMouseEnter={googleOnMouseEnter}
               onClick={onSubmit}
               disabled={googleLoading ? true : false}
               className={clsx(

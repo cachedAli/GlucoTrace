@@ -7,6 +7,7 @@ export type User = {
     password?: string;
     profilePic?: string | undefined;
     darkMode?: boolean;
+    hasCompletedSetup?: boolean;
 
     medicalProfile?: MedicalProfile
 }

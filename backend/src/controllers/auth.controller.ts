@@ -367,7 +367,6 @@ export const resendResetPasswordOtp = async (req: Req<{ email?: Email }>, res: R
 
 export const contactUs = async (req: Req<{ email: Email, fullName: string, message: string }>, res: Res): Promise<void> => {
     const { email, fullName, message } = req.body;
-    console.log(email,fullName,message)
 
     try {
         if (!email || !fullName || !message) {

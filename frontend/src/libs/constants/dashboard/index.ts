@@ -1,3 +1,4 @@
+import { preloadAddReading, preloadHistory, preloadProfile, preloadReport, preloadSettings, preloadTrends } from "@/router/preloadRoutes";
 import { FormField } from "@/types/formTypes";
 import {
   LayoutDashboard,
@@ -17,12 +18,13 @@ export const navLinks = [
     to: "/dashboard/add-reading",
     icon: CircleFadingPlus,
     label: "Add Reading",
+    onMouseEnter: () => preloadAddReading()
   },
-  { to: "/dashboard/trends", icon: ChartLine, label: "Trends" },
-  { to: "/dashboard/history", icon: History, label: "History" },
-  { to: "/dashboard/profile", icon: User, label: "Profile" },
-  { to: "/dashboard/report", icon: Download, label: "Report" },
-  { to: "/dashboard/settings", icon: Settings, label: "Settings" },
+  { to: "/dashboard/trends", icon: ChartLine, label: "Trends", onMouseEnter: () => preloadTrends() },
+  { to: "/dashboard/history", icon: History, label: "History", onMouseEnter: () => preloadHistory() },
+  { to: "/dashboard/profile", icon: User, label: "Profile", onMouseEnter: () => preloadProfile() },
+  { to: "/dashboard/report", icon: Download, label: "Report", onMouseEnter: () => preloadReport() },
+  { to: "/dashboard/settings", icon: Settings, label: "Settings", onMouseEnter: () => preloadSettings() },
   { to: "", icon: LogOut, label: "Logout" },
 
 ];

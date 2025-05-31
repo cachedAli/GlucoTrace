@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 
 import { useNavigate } from "react-router-dom";
 
@@ -6,21 +6,26 @@ import { signInFields } from "@/libs/constants/authPage/formFields";
 import FormSkeleton from "@/components/ui/skeleton/FormSkeleton";
 import AuthLayout from "@/components/layout/userAuth/AuthLayout";
 import { SignInSchema } from "@/libs/validations/authSchema";
-import { useUserStore } from "@/store/useUserStore";
 import { useAuthStore } from "@/store/useAuthStore";
 import { SignInData } from "@/types/authTypes";
 import LazyLoader from "@/libs/LazyLoader";
 import { Form } from "@/router/LazyRoutes";
+import {
+  preloadDashboardLayout,
+  preloadOverview,
+} from "@/router/preloadRoutes";
 
 const SignIn = () => {
   const navigate = useNavigate();
-  const user = useUserStore();
-  const {signin,signInLoading} = useAuthStore();
+  const { signin, signInLoading } = useAuthStore();
+  const hasPrefetched = useRef(false);
 
   const onSubmit = async (data: SignInData) => {
     const signedInUser = await signin(data);
 
     if (signedInUser && !("success" in signedInUser)) {
+      preloadDashboardLayout();
+      preloadOverview();
       navigate("/dashboard");
       return true;
     } else if (signedInUser && "success" in signedInUser) {
@@ -29,6 +34,14 @@ const SignIn = () => {
     } else {
       console.log("Login failed or user is not set.");
       return false;
+    }
+  };
+
+  const handleMouseEnter = () => {
+    if (!hasPrefetched.current) {
+      preloadDashboardLayout();
+      preloadOverview();
+      hasPrefetched.current = true;
     }
   };
 
@@ -50,6 +63,8 @@ const SignIn = () => {
           buttonLabel="Sign in"
           loading={signInLoading}
           isSignIn
+          onMouseEnter={handleMouseEnter}
+          googleOnMouseEnter={handleMouseEnter}
         />
       </LazyLoader>
     </AuthLayout>

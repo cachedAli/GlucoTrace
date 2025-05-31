@@ -68,7 +68,6 @@ export const uploadAvatar = async (req: Req<{ file: Express.Multer.File }>, res:
         const fileExtension = file.originalname.split(".").pop();
         const filePath = `${user.id}/${timestamp}.${fileExtension}`
 
-        console.log(filePath)
 
         const { error: uploadError } = await supabase.storage.from("avatars").upload(filePath, file.buffer, {
             cacheControl: "3600",
@@ -86,10 +85,8 @@ export const uploadAvatar = async (req: Req<{ file: Express.Multer.File }>, res:
         const avatarUrl = publicUrlData.publicUrl;
 
         const oldAvatarUrl = user?.user_metadata?.custom_avatar_url;
-        console.log(oldAvatarUrl)
         if (oldAvatarUrl) {
             const oldPath = decodeURIComponent(new URL(oldAvatarUrl).pathname.split("/").slice(6).join("/"))
-            console.log(oldPath)
             await supabase.storage.from("avatars").remove([oldPath])
         }
 
@@ -99,7 +96,6 @@ export const uploadAvatar = async (req: Req<{ file: Express.Multer.File }>, res:
             }
         })
 
-        // console.log(avatarUrl)
 
         if (userUpdateError) {
             res.status(500).json({ success: false, message: userUpdateError.message });
@@ -327,8 +323,6 @@ export const addReading = async (
             note
         }).select();
 
-        typeof mealTiming === "object" && console.log(mealTiming.custom)
-
 
         if (insertError) {
             res.status(500).json({ success: false, message: insertError.message });
@@ -490,14 +484,12 @@ export const deleteAccount = async (
         if (oldAvatarUrl) {
             const url = new URL(oldAvatarUrl);
             const fullPath = decodeURIComponent(url.pathname.split("/").slice(6).join("/"));
-            console.log("Full path:", fullPath);
 
             // Delete individual picture
             await supabase.storage.from("avatars").remove([fullPath]);
 
             // Delete entire folder
             const folderPath = fullPath.split("/").slice(0, -1).join("/");
-            console.log("Folder path:", folderPath);
 
             const { data: files, error: listError } = await supabase.storage
                 .from("avatars")

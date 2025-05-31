@@ -15,6 +15,8 @@ const PageTitle = ({
   isDashboard = false,
 }: PageTitleProps) => {
   const user = useUserStore((state) => state.user);
+  const fullName = `${user?.firstName} ${user?.lastName}`;
+
   return (
     <div className={clsx("flex items-center font-montserrat")}>
       {isDashboard ? (
@@ -27,13 +29,23 @@ const PageTitle = ({
               "dark:text-headingMain-dark"
             )}
           >
-            Welcome Back, {capitalizeFirstLetter(user?.firstName || "")}{" "}
-            {capitalizeFirstLetter(user?.lastName || "")}
+            {user?.hasCompletedSetup
+              ? `Welcome back, ${capitalizeFirstLetter(fullName)}`
+              : `Welcome, ${capitalizeFirstLetter(fullName)} `}
           </h1>
 
           <h2
-            className={clsx("text-lg", "max-lg:text-base", "max-sm:text-sm")}
-          ></h2>
+            className={clsx(
+              "text-lg text-headingSub font-medium font-inter",
+              "max-lg:text-base",
+              "max-sm:text-sm",
+              "dark:text-headingSub-dark"
+            )}
+          >
+            {user?.hasCompletedSetup
+              ? "Review your latest readings and plan your next steps."
+              : "Congrats on setting up GlucoTrace! Let’s start tracking your progress."}
+          </h2>
         </div>
       ) : (
         <div

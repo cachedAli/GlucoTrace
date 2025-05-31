@@ -3,32 +3,59 @@ import clsx from "clsx";
 import { Outlet } from "react-router-dom";
 
 import { useReadingStore } from "@/store/useReadingStore";
-import { StatsProvider } from "@/providers/StatsProvider";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 import { useThemeStore } from "@/store/useThemeStore";
 import { useUserStore } from "@/store/useUserStore";
+import { StatsProvider } from "@/providers/StatsProvider";
 import DashboardOverlay from "./DashboardOverlay";
 import Sidebar from "./sidebar/Sidebar";
 import Header from "./header/Header";
+import {
+  preloadAddReading,
+  preloadHistory,
+  preloadProfile,
+  preloadReport,
+  preloadSettings,
+  preloadTrends,
+} from "@/router/preloadRoutes";
 
 const DashboardLayout = () => {
   const applyDarkMode = useThemeStore((state) => state.applyDarkMode);
-  const fetchUser = useUserStore((state) => state.fetchUserFromSupabase);
   const { fetchReadings, setFetchReadingLoading } = useReadingStore();
-  const user = useUserStore((state) => state.user);
+  const { user, fetchUserFromSupabase } = useUserStore();
   const hasAppliedDarkMode = useRef(false);
 
   useScrollToTop();
 
   useEffect(() => {
-    setFetchReadingLoading(true);
-
-    fetchUser();
-  }, [fetchUser]);
+    fetchUserFromSupabase();
+  }, [fetchUserFromSupabase]);
 
   useEffect(() => {
+    setFetchReadingLoading(true);
     fetchReadings();
   }, [fetchReadings]);
+
+  useEffect(() => {
+    if ("requestIdleCallback" in window) {
+      requestIdleCallback(() => {
+        preloadAddReading();
+        preloadHistory();
+        preloadProfile();
+        preloadReport();
+        preloadSettings();
+        preloadTrends();
+      });
+    } else {
+      setTimeout(() => {
+        preloadAddReading();
+        preloadHistory();
+        preloadProfile();
+        preloadReport();
+        preloadSettings();
+      }, 2000);
+    }
+  }, []);
 
   useEffect(() => {
     if (user && !hasAppliedDarkMode.current) {

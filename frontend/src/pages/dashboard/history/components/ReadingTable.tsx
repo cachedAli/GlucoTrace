@@ -20,7 +20,7 @@ import {
   getReadingStatus,
   convertToMmol,
 } from "@/libs/utils/utils";
-import TableSkeleton from "@/components/ui/skeleton/TableSkeleton";
+import TableSkeleton from "@/components/ui/skeleton/dashboardPages/TableSkeleton";
 import { useDashboardStore } from "@/store/useDashboardStore";
 import { useReadingStore } from "@/store/useReadingStore";
 import { useThemeStore } from "@/store/useThemeStore";

@@ -9,7 +9,7 @@ import {
   getUpdatedHighLowStats,
 } from "@/libs/utils/statFieldUtils";
 import OverviewCardWrapper from "@/components/ui/dashboard/wrapper/OverviewCardWrapper";
-import OverviewCardsSkeleton from "@/components/ui/skeleton/CardsSkeleton";
+import OverviewCardsSkeleton from "@/components/ui/skeleton/dashboardPages/CardsSkeleton";
 import { TargetRange, Unit } from "@/types/dashboardTypes";
 import { useReadingStore } from "@/store/useReadingStore";
 import { useThemeStore } from "@/store/useThemeStore";

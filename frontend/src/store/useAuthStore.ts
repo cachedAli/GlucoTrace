@@ -8,6 +8,7 @@ import { useDashboardStore } from "./useDashboardStore";
 import { useFetch } from "@/hooks/useFetch";
 import { useThemeStore } from "./useThemeStore";
 import { createUserObject } from "@/libs/utils/utils";
+import { useReadingStore } from "./useReadingStore";
 
 
 type AuthState = {
@@ -104,6 +105,8 @@ export const useAuthStore = create<AuthState>((set) => ({
             const newUser = createUserObject(user)
 
             useUserStore.getState().setUser(newUser);
+            useReadingStore.getState().setFetchReadingLoading(true);
+            await useReadingStore.getState().fetchReadings()
             const hasCompletedSetup = user.user_metadata?.hasCompletedSetup;
             if (!hasCompletedSetup) {
                 useDashboardStore.getState().setShowSetupModal(true)
@@ -218,7 +221,7 @@ export const useAuthStore = create<AuthState>((set) => ({
             return null;
         }
 
-        const newUser = createUserObject(data?.user, true)
+        const newUser = createUserObject(data?.user)
 
         useUserStore.getState().setUser(newUser);
         return newUser;
@@ -229,8 +232,6 @@ export const useAuthStore = create<AuthState>((set) => ({
         const { data } = await supabase.auth.getUser()
 
         const email = data?.user?.email || ""
-        const firstName = data?.user?.user_metadata?.firstName || "";
-        const lastName = data?.user?.user_metadata?.lastName || "";
         const existingMeta = data?.user?.user_metadata || {}
 
         await supabase.auth.updateUser({

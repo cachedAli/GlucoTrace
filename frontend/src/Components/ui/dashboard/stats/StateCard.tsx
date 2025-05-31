@@ -3,15 +3,14 @@ import clsx from "clsx";
 
 import { StateProps } from "@/types/dashboardTypes";
 import { useReadingStore } from "@/store/useReadingStore";
-import Skeleton from "react-loading-skeleton";
 import { useThemeStore } from "@/store/useThemeStore";
-import StatsCardSkeleton from "../../skeleton/StatsCardSkeleton";
+import StatsCardSkeleton from "../../skeleton/dashboardPages/StatsCardSkeleton";
 
 const StateCard = ({ index, ...props }: { index: number } & StateProps) => {
   return (
     <div
       className={clsx(
-        "py-4 px-3 w-full min-w-60 max-w-[300px] flex-1 shadow-md h-40 sha rounded-xl flex flex-col justify-between",
+        "py-4 px-3 w-full min-w-60 max-w-[300px] flex-1 shadow-md h-40 rounded-xl flex flex-col justify-between",
         "max-lg:max-w-full",
         index === 0 && "max-lg:max-w-full max-lg:w-full",
         index === 0

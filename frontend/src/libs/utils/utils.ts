@@ -121,7 +121,7 @@ export const formatReading = (reading: any) => {
     };
 };
 
-export function createUserObject(user: any, useFallbackProfilePic: boolean = false): User {
+export function createUserObject(user: any): User {
     if (!user) {
         throw new Error("User object is required");
     }
@@ -131,9 +131,8 @@ export function createUserObject(user: any, useFallbackProfilePic: boolean = fal
     const [firstName = "", ...lastParts] = fullName.split(" ");
     const lastName = lastParts.join(" ");
 
-    const profilePic = useFallbackProfilePic
-        ? (meta.custom_avatar_url ? meta.custom_avatar_url! || meta.avatar_url : meta.custom_avatar_url || meta.avatar_url!)
-        : meta.custom_avatar_url || meta.avatar_url;
+    const profilePic =
+        meta.custom_avatar_url || meta.avatar_url;
 
     return {
         id: user.id,
@@ -143,6 +142,7 @@ export function createUserObject(user: any, useFallbackProfilePic: boolean = fal
         lastName: lastName || meta.lastName || "",
         darkMode: meta.darkMode ?? false,
         profilePic,
+        hasCompletedSetup: meta?.hasCompletedSetup,
         medicalProfile: {
             bloodSugarUnit: meta?.medicalProfile?.bloodSugarUnit ?? "",
             age: meta?.medicalProfile?.age ?? "",

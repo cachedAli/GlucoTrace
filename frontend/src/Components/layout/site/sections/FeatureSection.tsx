@@ -3,6 +3,7 @@ import Highlighter from "react-highlight-words";
 
 import { features, Main } from "@/libs/constants/homepage";
 import { motion } from "framer-motion";
+import { useState } from "react";
 
 const FeatureSection = () => {
   const wordsToBold = [
@@ -86,8 +87,10 @@ const FeatureCards = ({ wordsToBold }: { wordsToBold: string[] }) => {
         const isEven = index % 2 === 0;
         const { ref, inView } = useInView({
           triggerOnce: true,
-          threshold: 0.3,
+          threshold: 0.1,
         });
+
+        const [isLoaded, setIsLoaded] = useState(false);
 
         return (
           <motion.div
@@ -101,21 +104,34 @@ const FeatureCards = ({ wordsToBold }: { wordsToBold: string[] }) => {
               isEven ? "md:flex-row" : "md:flex-row-reverse"
             }`}
           >
-            <motion.img
-              initial={{ opacity: 0, x: isEven ? -20 : 20 }}
-              animate={inView ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.6, ease: "easeOut" }}
-              viewport={{ once: true }}
-              src={inView ? feature.img : ""}
-              alt=""
-              className="w-96 md:w-80 lg:w-[450px] h-auto rounded-xl shadow-lg bg-blue-100 p-2 max-w-full"
-            />
+            <div className="relative w-96 md:w-80 lg:w-[450px] h-auto rounded-xl shadow-lg bg-blue-100 p-2 max-w-full overflow-hidden">
+              <motion.img
+                src={feature.blurImg}
+                alt=""
+                className="w-full h-auto rounded-xl absolute top-0 left-0"
+                initial={{ opacity: 1 }}
+                animate={{ opacity: isLoaded ? 0 : 1 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+              />
+
+              {inView && (
+                <motion.img
+                  src={feature.img}
+                  alt=""
+                  className="w-full h-auto rounded-xl relative"
+                  onLoad={() => setIsLoaded(true)}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: isLoaded ? 1 : 0 }}
+                  transition={{ duration: 0.5, ease: "easeOut" }}
+                />
+              )}
+            </div>
 
             <div className="flex-1 flex flex-col gap-4 md:items-start items-center">
               <h1 className="font-nunito text-2xl md:text-3xl font-bold text-headingSub">
                 {feature.heading}
               </h1>
-              <p className=" text-base text-center md:text-start md:text-lg text-zinc-800 selection:text-white leading-relaxed">
+              <p className="text-base text-center md:text-start md:text-lg text-zinc-800 selection:text-white leading-relaxed">
                 <Highlighter
                   highlightStyle={{ backgroundColor: "transparent" }}
                   highlightClassName="font-bold"
