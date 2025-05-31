@@ -13,9 +13,9 @@ import {
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 
-import { ChartsData } from "@/libs/constants/dashboard/chartsData";
-import { useThemeStore } from "@/store/useThemeStore";
-import { useUserStore } from "@/store/useUserStore";
+import { ChartsData } from "@/libs/constants/dashboard/chartsData.js";
+import { useThemeStore } from "@/store/useThemeStore.js";
+import { useUserStore } from "@/store/useUserStore.js";
 
 // Register ChartJS components
 ChartJS.register(

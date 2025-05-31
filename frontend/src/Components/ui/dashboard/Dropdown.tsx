@@ -3,8 +3,8 @@ import clsx from "clsx";
 
 import { motion } from "framer-motion";
 
-import { useCloseOnClick } from "@/hooks/useCloseOnClick";
-import { capitalizeFirstLetter } from "@/libs/utils/utils";
+import { useCloseOnClick } from "@/hooks/useCloseOnClick.js";
+import { capitalizeFirstLetter } from "@/libs/utils/utils.js";
 import { Check } from "lucide-react";
 
 interface SubMenuItem {

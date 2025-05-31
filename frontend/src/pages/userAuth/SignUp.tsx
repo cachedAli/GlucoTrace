@@ -4,16 +4,16 @@ import { useNavigate } from "react-router-dom";
 import { signUpFields } from "@/libs/constants/authPage/formFields";
 import AuthLayout from "@/components/layout/userAuth/AuthLayout";
 import FormSkeleton from "@/components/ui/skeleton/FormSkeleton";
-import { signUpSchema } from "@/libs/validations/authSchema";
-import { useAuthStore } from "@/store/useAuthStore";
-import { SignUpData } from "@/types/authTypes";
+import { signUpSchema } from "@/libs/validations/authSchema.js";
+import { useAuthStore } from "@/store/useAuthStore.js";
+import { SignUpData } from "@/types/authTypes.js";
 import LazyLoader from "@/libs/LazyLoader";
-import { Form } from "@/router/LazyRoutes";
+import { Form } from "@/router/LazyRoutes.js";
 import { toast } from "sonner";
 import {
   preloadDashboardLayout,
   preloadOverview,
-} from "@/router/preloadRoutes";
+} from "@/router/preloadRoutes.js";
 
 const SignUp = () => {
   const navigate = useNavigate();

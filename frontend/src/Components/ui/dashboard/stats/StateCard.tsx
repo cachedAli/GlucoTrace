@@ -1,9 +1,9 @@
 import { TrendingDown, TrendingUp } from "lucide-react";
 import clsx from "clsx";
 
-import { StateProps } from "@/types/dashboardTypes";
-import { useReadingStore } from "@/store/useReadingStore";
-import { useThemeStore } from "@/store/useThemeStore";
+import { StateProps } from "@/types/dashboardTypes.js";
+import { useReadingStore } from "@/store/useReadingStore.js";
+import { useThemeStore } from "@/store/useThemeStore.js";
 import StatsCardSkeleton from "../../skeleton/dashboardPages/StatsCardSkeleton";
 
 const StateCard = ({ index, ...props }: { index: number } & StateProps) => {

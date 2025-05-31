@@ -1,14 +1,14 @@
 import { create } from "zustand";
-import { ResendVerifyOtpData, ResetPassword, SignInData, SignUpData, VerifyForgotPasswordData, VerifyOtpData } from "@/types/authTypes";
-import { User } from "@/types/userTypes";
-import { useUserStore } from "./useUserStore";
-import { supabase } from "@/libs/supabaseClient";
+import { ResendVerifyOtpData, ResetPassword, SignInData, SignUpData, VerifyForgotPasswordData, VerifyOtpData } from "@/types/authTypes.js";
+import { User } from "@/types/userTypes.js";
+import { useUserStore } from "./useUserStore.js";
+import { supabase } from "@/libs/supabaseClient.js";
 import { toast } from "sonner";
-import { useDashboardStore } from "./useDashboardStore";
-import { useFetch } from "@/hooks/useFetch";
-import { useThemeStore } from "./useThemeStore";
-import { createUserObject } from "@/libs/utils/utils";
-import { useReadingStore } from "./useReadingStore";
+import { useDashboardStore } from "./useDashboardStore.js";
+import { useFetch } from "@/hooks/useFetch.js";
+import { useThemeStore } from "./useThemeStore.js";
+import { createUserObject } from "@/libs/utils/utils.js";
+import { useReadingStore } from "./useReadingStore.js";
 
 
 type AuthState = {

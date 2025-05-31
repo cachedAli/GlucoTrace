@@ -1,7 +1,7 @@
 import React from "react";
 import clsx from "clsx";
 
-import { useThemeStore } from "@/store/useThemeStore";
+import { useThemeStore } from "@/store/useThemeStore.js";
 import "react-loading-skeleton/dist/skeleton.css";
 import Skeleton from "react-loading-skeleton";
 

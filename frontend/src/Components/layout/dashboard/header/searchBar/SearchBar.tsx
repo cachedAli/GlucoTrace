@@ -4,12 +4,12 @@ import clsx from "clsx";
 import { Autocomplete, TextField, ThemeProvider } from "@mui/material";
 import { SearchIcon } from "lucide-react";
 
-import getInputTheme from "@/components/ui/inputs/inputTheme";
-import { useReadingStore } from "@/store/useReadingStore";
-import { useThemeStore } from "@/store/useThemeStore";
-import { useUserStore } from "@/store/useUserStore";
-import { Reading } from "@/types/userTypes";
-import { convertToMmol } from "@/libs/utils/utils";
+import getInputTheme from "@/components/ui/inputs/inputTheme.js";
+import { useReadingStore } from "@/store/useReadingStore.js";
+import { useThemeStore } from "@/store/useThemeStore.js";
+import { useUserStore } from "@/store/useUserStore.js";
+import { Reading } from "@/types/userTypes.js";
+import { convertToMmol } from "@/libs/utils/utils.js";
 
 const formatDate = (timestamp: string | number | Date) => {
   const dateObj = new Date(timestamp);

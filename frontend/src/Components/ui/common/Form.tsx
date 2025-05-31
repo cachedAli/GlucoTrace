@@ -8,15 +8,15 @@ import { Link } from "react-router-dom";
 import { ZodSchema } from "zod";
 import dayjs from "dayjs";
 
-import { useThemeStore } from "@/store/useThemeStore";
-import { useAuthStore } from "@/store/useAuthStore";
-import { useUserStore } from "@/store/useUserStore";
+import { useThemeStore } from "@/store/useThemeStore.js";
+import { useAuthStore } from "@/store/useAuthStore.js";
+import { useUserStore } from "@/store/useUserStore.js";
 import InputField from "../inputs/InputField";
-import { FormField } from "@/types/formTypes";
-import inputTheme from "../inputs/inputTheme";
+import { FormField } from "@/types/formTypes.js";
+import inputTheme from "../inputs/inputTheme.js";
 import BaseLoader from "../loader/BaseLoader";
 import Button from "./Button";
-import { cn } from "@/libs/utils/utils";
+import { cn } from "@/libs/utils/utils.js";
 
 type FormProps = {
   fields: FormField[];

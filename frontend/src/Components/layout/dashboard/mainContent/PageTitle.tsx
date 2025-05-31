@@ -1,7 +1,7 @@
 import clsx from "clsx";
 
-import { capitalizeFirstLetter } from "@/libs/utils/utils";
-import { useUserStore } from "@/store/useUserStore";
+import { capitalizeFirstLetter } from "@/libs/utils/utils.js";
+import { useUserStore } from "@/store/useUserStore.js";
 
 type PageTitleProps = {
   title?: string;

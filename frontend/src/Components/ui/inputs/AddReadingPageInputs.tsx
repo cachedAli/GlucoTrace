@@ -16,8 +16,8 @@ import {
 } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
 
-import { CommonInputProps } from "@/types/formTypes";
-import { useUserStore } from "@/store/useUserStore";
+import { CommonInputProps } from "@/types/formTypes.js";
+import { useUserStore } from "@/store/useUserStore.js";
 
 export const GlucoseInput = ({
   label,

@@ -2,10 +2,10 @@ import { useEffect, useRef } from "react";
 import clsx from "clsx";
 import { Outlet } from "react-router-dom";
 
-import { useReadingStore } from "@/store/useReadingStore";
-import { useScrollToTop } from "@/hooks/useScrollToTop";
-import { useThemeStore } from "@/store/useThemeStore";
-import { useUserStore } from "@/store/useUserStore";
+import { useReadingStore } from "@/store/useReadingStore.js";
+import { useScrollToTop } from "@/hooks/useScrollToTop.js";
+import { useThemeStore } from "@/store/useThemeStore.js";
+import { useUserStore } from "@/store/useUserStore.js";
 import { StatsProvider } from "@/providers/StatsProvider";
 import DashboardOverlay from "./DashboardOverlay";
 import Sidebar from "./sidebar/Sidebar";
@@ -17,7 +17,7 @@ import {
   preloadReport,
   preloadSettings,
   preloadTrends,
-} from "@/router/preloadRoutes";
+} from "@/router/preloadRoutes.js";
 
 const DashboardLayout = () => {
   const applyDarkMode = useThemeStore((state) => state.applyDarkMode);

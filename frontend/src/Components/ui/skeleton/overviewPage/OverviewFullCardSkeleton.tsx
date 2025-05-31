@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import clsx from "clsx";
 
 import "react-loading-skeleton/dist/skeleton.css";
-import { useThemeStore } from "@/store/useThemeStore";
+import { useThemeStore } from "@/store/useThemeStore.js";
 import Skeleton from "react-loading-skeleton";
 import CardsSkeleton from "../dashboardPages/CardsSkeleton";
 

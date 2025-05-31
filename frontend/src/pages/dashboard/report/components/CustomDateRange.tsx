@@ -5,8 +5,8 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { Box } from "@mui/material";
 import dayjs from "dayjs";
 
-import { useDashboardStore } from "@/store/useDashboardStore";
-import { useUserStore } from "@/store/useUserStore";
+import { useDashboardStore } from "@/store/useDashboardStore.js";
+import { useUserStore } from "@/store/useUserStore.js";
 
 const CustomDateRange = () => {
   const { startDate, setStartDate, endDate, setEndDate } = useDashboardStore();

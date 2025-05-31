@@ -1,6 +1,6 @@
 // utils/reportUtils.ts
-import { TargetRange, Unit } from "@/types/dashboardTypes";
-import { Reading } from "@/types/userTypes";
+import { TargetRange, Unit } from "@/types/dashboardTypes.js";
+import { Reading } from "@/types/userTypes.js";
 import {
     subDays,
     startOfMonth,
@@ -9,7 +9,7 @@ import {
     isWithinInterval,
     parseISO,
 } from "date-fns";
-import { estimateHba1c, get7DayAverage, getUpdatedInRangeStats } from "./statFieldUtils";
+import { estimateHba1c, get7DayAverage, getUpdatedInRangeStats } from "./statFieldUtils.js";
 import { convertToMmol } from "./utils";
 import dayjs from "dayjs";
 

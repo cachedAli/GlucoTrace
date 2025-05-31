@@ -5,9 +5,9 @@ import { ArrowDownUp, ListFilter, Plus, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import { readingHistory } from "@/libs/constants/dashboard/readingHistory";
-import { useDashboardStore } from "@/store/useDashboardStore";
+import { useDashboardStore } from "@/store/useDashboardStore.js";
 import Dropdown from "@/components/ui/dashboard/Dropdown";
-import { useReadingStore } from "@/store/useReadingStore";
+import { useReadingStore } from "@/store/useReadingStore.js";
 import Button from "@/components/ui/common/Button";
 
 const ActionButtons = () => {

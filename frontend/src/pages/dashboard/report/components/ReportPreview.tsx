@@ -3,11 +3,11 @@ import { format } from "date-fns";
 import clsx from "clsx";
 
 import ReportCardsSkeleton from "@/components/ui/skeleton/dashboardPages/CardsSkeleton";
-import { useReadingStore } from "@/store/useReadingStore";
+import { useReadingStore } from "@/store/useReadingStore.js";
 import { logobase64Dark } from "@/assets/logobase64Dark";
-import { useThemeStore } from "@/store/useThemeStore";
-import { useUserStore } from "@/store/useUserStore";
-import { logoBase64 } from "@/assets/logobase64";
+import { useThemeStore } from "@/store/useThemeStore.js";
+import { useUserStore } from "@/store/useUserStore.js";
+import { logoBase64 } from "@/assets/logobase64.js";
 
 const ReportPreview = ({ data }: { data: any }) => {
   const user = useUserStore((state) => state.user);

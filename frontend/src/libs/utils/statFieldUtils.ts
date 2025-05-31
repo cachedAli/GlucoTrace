@@ -1,7 +1,7 @@
 import { compareAsc, differenceInDays, differenceInMinutes, endOfDay, endOfMonth, endOfWeek, format, formatDistanceToNow, isThisMonth, isWithinInterval, parseISO, startOfDay, startOfMonth, startOfWeek, subDays } from "date-fns";
-import { Stats, TargetRange, Unit } from "@/types/dashboardTypes";
-import { convertToMmol } from "@/libs/utils/utils";
-import { Reading } from "@/types/userTypes";
+import { Stats, TargetRange, Unit } from "@/types/dashboardTypes.js";
+import { convertToMmol } from "@/libs/utils/utils.js";
+import { Reading } from "@/types/userTypes.js";
 
 
 

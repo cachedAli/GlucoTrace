@@ -4,8 +4,8 @@ import clsx from "clsx";
 import { NavLink } from "react-router-dom";
 import { motion } from "framer-motion";
 
-import { useDashboardStore } from "@/store/useDashboardStore";
-import { useCloseOnClick } from "@/hooks/useCloseOnClick";
+import { useDashboardStore } from "@/store/useDashboardStore.js";
+import { useCloseOnClick } from "@/hooks/useCloseOnClick.js";
 import { navLinks } from "@/libs/constants/dashboard";
 
 const MobileNavDropUp = () => {

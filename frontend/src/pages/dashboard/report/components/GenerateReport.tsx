@@ -1,12 +1,12 @@
-import { useDashboardStore } from "@/store/useDashboardStore";
-import { useReadingStore } from "@/store/useReadingStore";
-import { useUserStore } from "@/store/useUserStore";
+import { useDashboardStore } from "@/store/useDashboardStore.js";
+import { useReadingStore } from "@/store/useReadingStore.js";
+import { useUserStore } from "@/store/useUserStore.js";
 import {
   filterReadingsByDate,
   generateReportData,
   getDateRange,
-} from "@/libs/utils/reportUtils";
-import { capitalizeFirstLetter } from "@/libs/utils/utils";
+} from "@/libs/utils/reportUtils.js";
+import { capitalizeFirstLetter } from "@/libs/utils/utils.js";
 import ReportPreview from "./ReportPreview";
 import ActionButtons from "./ActionButtons";
 

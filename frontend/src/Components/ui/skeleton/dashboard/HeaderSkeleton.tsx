@@ -2,7 +2,7 @@ import React from "react";
 import clsx from "clsx";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { useThemeStore } from "@/store/useThemeStore";
+import { useThemeStore } from "@/store/useThemeStore.js";
 import { useLocation } from "react-router-dom";
 import SearchBarSkeleton from "../dashboardPages/SearchBarSkeleton";
 

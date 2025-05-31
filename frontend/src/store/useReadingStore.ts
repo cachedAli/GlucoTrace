@@ -1,10 +1,10 @@
-import { Reading } from "@/types/userTypes";
+import { Reading } from "@/types/userTypes.js";
 import { create } from "zustand";
-import { useDashboardStore } from "./useDashboardStore";
-import { useFetch } from "@/hooks/useFetch";
-import { supabase } from "@/libs/supabaseClient";
-import { userApi } from "@/libs/axios";
-import { formatReading } from "@/libs/utils/utils";
+import { useDashboardStore } from "./useDashboardStore.js";
+import { useFetch } from "@/hooks/useFetch.js";
+import { supabase } from "@/libs/supabaseClient.js";
+import { userApi } from "@/libs/axios.js";
+import { formatReading } from "@/libs/utils/utils.js";
 
 type ReadingState = {
     // States

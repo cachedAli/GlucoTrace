@@ -1,8 +1,8 @@
 import { twMerge } from "tailwind-merge"
 import clsx, { ClassValue } from "clsx"
 
-import { TargetRange, Unit } from "@/types/dashboardTypes";
-import { Reading, User } from "@/types/userTypes";
+import { TargetRange, Unit } from "@/types/dashboardTypes.js";
+import { Reading, User } from "@/types/userTypes.js";
 
 
 // Combines class names using clsx and merges Tailwind classes

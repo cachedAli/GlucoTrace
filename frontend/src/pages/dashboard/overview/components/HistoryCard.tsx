@@ -7,17 +7,17 @@ import {
   getBestReadingDay,
   getThisWeekReadings,
   getUpdatedHighLowStats,
-} from "@/libs/utils/statFieldUtils";
+} from "@/libs/utils/statFieldUtils.js";
 import OverviewCardWrapper from "@/components/ui/dashboard/wrapper/OverviewCardWrapper";
 import OverviewCardsSkeleton from "@/components/ui/skeleton/dashboardPages/CardsSkeleton";
-import { TargetRange, Unit } from "@/types/dashboardTypes";
-import { useReadingStore } from "@/store/useReadingStore";
-import { useThemeStore } from "@/store/useThemeStore";
+import { TargetRange, Unit } from "@/types/dashboardTypes.js";
+import { useReadingStore } from "@/store/useReadingStore.js";
+import { useThemeStore } from "@/store/useThemeStore.js";
 import { useStats } from "@/providers/StatsProvider";
-import { useUserStore } from "@/store/useUserStore";
-import { convertToMmol } from "@/libs/utils/utils";
+import { useUserStore } from "@/store/useUserStore.js";
+import { convertToMmol } from "@/libs/utils/utils.js";
 import Button from "@/components/ui/common/Button";
-import { Reading } from "@/types/userTypes";
+import { Reading } from "@/types/userTypes.js";
 
 const StatCard = ({
   title,

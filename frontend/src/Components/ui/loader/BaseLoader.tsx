@@ -1,4 +1,4 @@
-import { useThemeStore } from "@/store/useThemeStore";
+import { useThemeStore } from "@/store/useThemeStore.js";
 import { Loader, MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";
 

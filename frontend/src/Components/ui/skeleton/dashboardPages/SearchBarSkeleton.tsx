@@ -1,4 +1,4 @@
-import { useThemeStore } from "@/store/useThemeStore";
+import { useThemeStore } from "@/store/useThemeStore.js";
 import Skeleton from "react-loading-skeleton";
 
 const SearchBarSkeleton = () => {

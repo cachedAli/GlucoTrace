@@ -5,12 +5,12 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { StatName, Stats } from "@/types/dashboardTypes";
+import { StatName, Stats } from "@/types/dashboardTypes.js";
 import {
   getPreviousStat,
   saveStat as saveStatAPI,
   archiveStats,
-} from "../services/statsServices";
+} from "../services/statsServices.js";
 
 interface StatsState {
   [key: string]: Stats | null;

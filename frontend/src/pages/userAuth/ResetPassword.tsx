@@ -4,12 +4,12 @@ import clsx from "clsx";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { resetPasswordFields } from "@/libs/constants/authPage/formFields";
-import { resetPasswordSchema } from "@/libs/validations/authSchema";
+import { resetPasswordSchema } from "@/libs/validations/authSchema.js";
 import AuthLayout from "@/components/layout/userAuth/AuthLayout";
 import FormSkeleton from "@/components/ui/skeleton/FormSkeleton";
-import { useAuthStore } from "@/store/useAuthStore";
+import { useAuthStore } from "@/store/useAuthStore.js";
 import LazyLoader from "@/libs/LazyLoader";
-import { Form } from "@/router/LazyRoutes";
+import { Form } from "@/router/LazyRoutes.js";
 
 type Data = {
   password: string;

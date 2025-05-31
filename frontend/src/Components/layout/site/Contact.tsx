@@ -1,16 +1,16 @@
 import { useRef } from "react";
 
-import { contactFormFields } from "@/libs/constants/authPage/formFields";
-import { contactSchema } from "@/libs/validations/authSchema";
-import { contact } from "@/libs/constants/homepage";
+import { contactFormFields } from "@/libs/constants/authPage/formFields.js";
+import { contactSchema } from "@/libs/validations/authSchema.js";
+import { contact } from "@/libs/constants/homepage.js";
 
 import FormSkeleton from "@/components/ui/skeleton/FormSkeleton";
-import usePreloadOnScroll from "@/hooks/usePreloadOnScroll";
-import { preloadForm } from "@/router/preloadRoutes";
-import { Form } from "@/router/LazyRoutes";
+import usePreloadOnScroll from "@/hooks/usePreloadOnScroll.js";
+import { preloadForm } from "@/router/preloadRoutes.js";
+import { Form } from "@/router/LazyRoutes.js";
 import LazyLoader from "@/libs/LazyLoader";
-import { useAuthStore } from "@/store/useAuthStore";
-import { capitalizeFirstLetter } from "@/libs/utils/utils";
+import { useAuthStore } from "@/store/useAuthStore.js";
+import { capitalizeFirstLetter } from "@/libs/utils/utils.js";
 
 type Data = {
   firstName: string;

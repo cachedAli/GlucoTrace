@@ -1,14 +1,14 @@
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { supabase } from "@/libs/supabaseClient";
+import { supabase } from "@/libs/supabaseClient.js";
 
 import Otp from "@/components/layout/userAuth/Otp";
-import { useAuthStore } from "@/store/useAuthStore";
+import { useAuthStore } from "@/store/useAuthStore.js";
 import {
   preloadDashboardLayout,
   preloadOverview,
-} from "@/router/preloadRoutes";
+} from "@/router/preloadRoutes.js";
 
 type Data = {
   otp: string;

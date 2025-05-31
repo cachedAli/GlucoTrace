@@ -1,12 +1,12 @@
 import PageTitle from "@/components/layout/dashboard/mainContent/PageTitle";
-import { addReadingSchema } from "@/libs/validations/dashboardSchema";
+import { addReadingSchema } from "@/libs/validations/dashboardSchema.js";
 import QuickStats from "@/components/ui/dashboard/stats/QuickStats";
-import StatFields from "@/libs/constants/dashboard/statFields";
+import StatFields from "@/libs/constants/dashboard/statFields.js";
 import { addReadingFields } from "@/libs/constants/dashboard";
-import { useReadingStore } from "@/store/useReadingStore";
-import { useUserStore } from "@/store/useUserStore";
+import { useReadingStore } from "@/store/useReadingStore.js";
+import { useUserStore } from "@/store/useUserStore.js";
 import Form from "@/components/ui/common/Form";
-import { Unit } from "@/types/dashboardTypes";
+import { Unit } from "@/types/dashboardTypes.js";
 
 type Data = {
   glucose: number;

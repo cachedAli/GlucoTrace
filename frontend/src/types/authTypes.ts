@@ -1,5 +1,5 @@
 import { string } from "zod";
-import { MedicalProfile } from "./userTypes";
+import { MedicalProfile } from "./userTypes.js";
 
 
 export type SignInData = {

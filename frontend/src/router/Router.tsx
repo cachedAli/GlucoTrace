@@ -16,7 +16,7 @@ import {
   Report,
   Settings,
   Trends,
-} from "./LazyRoutes";
+} from "./LazyRoutes.js";
 import DashboardPagesSkeleton from "@/components/ui/skeleton/dashboard/DashboardPagesSkeleton";
 import DashboardSkeleton from "@/components/ui/skeleton/dashboard/DashboardSkeleton";
 import { GlobalErrorPage, NotFoundPage } from "./ErrorPage";

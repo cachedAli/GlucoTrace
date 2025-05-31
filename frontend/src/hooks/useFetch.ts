@@ -1,4 +1,4 @@
-import { authApi } from "@/libs/axios";
+import { authApi } from "@/libs/axios.js";
 import { AxiosError, AxiosResponse } from "axios";
 import { toast } from "sonner";
 

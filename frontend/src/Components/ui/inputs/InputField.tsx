@@ -10,7 +10,7 @@ import TextField from "@mui/material/TextField";
 import { Link } from "react-router-dom";
 
 import { DateInput, GlucoseInput, TimeInput } from "./AddReadingPageInputs";
-import { BaseProps, CommonInputProps } from "@/types/formTypes";
+import { BaseProps, CommonInputProps } from "@/types/formTypes.js";
 import {
   FormControl,
   FormHelperText,

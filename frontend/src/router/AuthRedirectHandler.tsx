@@ -4,12 +4,12 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 import SphereLoader from "@/components/ui/loader/SphereLoader";
-import { useDashboardStore } from "@/store/useDashboardStore";
-import { useReadingStore } from "@/store/useReadingStore";
-import { createUserObject } from "@/libs/utils/utils";
-import { useAuthStore } from "@/store/useAuthStore";
-import { useUserStore } from "@/store/useUserStore";
-import { supabase } from "@/libs/supabaseClient";
+import { useDashboardStore } from "@/store/useDashboardStore.js";
+import { useReadingStore } from "@/store/useReadingStore.js";
+import { createUserObject } from "@/libs/utils/utils.js";
+import { useAuthStore } from "@/store/useAuthStore.js";
+import { useUserStore } from "@/store/useUserStore.js";
+import { supabase } from "@/libs/supabaseClient.js";
 
 const AuthRedirectHandler = () => {
   const navigate = useNavigate();

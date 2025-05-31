@@ -2,9 +2,9 @@ import React from "react";
 
 import { ThemeProvider, ToggleButton, ToggleButtonGroup } from "@mui/material";
 
-import getInputTheme from "@/components/ui/inputs/inputTheme";
-import { useDashboardStore } from "@/store/useDashboardStore";
-import { useThemeStore } from "@/store/useThemeStore";
+import getInputTheme from "@/components/ui/inputs/inputTheme.js";
+import { useDashboardStore } from "@/store/useDashboardStore.js";
+import { useThemeStore } from "@/store/useThemeStore.js";
 import CustomDateRange from "./CustomDateRange";
 
 type TimeRangeValue = "last7Days" | "thisMonth" | "custom";

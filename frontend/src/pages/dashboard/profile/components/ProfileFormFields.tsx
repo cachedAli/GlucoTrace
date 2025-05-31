@@ -9,9 +9,9 @@ import {
 import {
   profileGlucosePreferenceSchema,
   profileUserInfoSchema,
-} from "@/libs/validations/dashboardSchema";
-import { useDashboardStore } from "@/store/useDashboardStore";
-import { useUserStore } from "@/store/useUserStore";
+} from "@/libs/validations/dashboardSchema.js";
+import { useDashboardStore } from "@/store/useDashboardStore.js";
+import { useUserStore } from "@/store/useUserStore.js";
 import ProfilePicture from "./ProfilePicture";
 
 type UserInfoData = {

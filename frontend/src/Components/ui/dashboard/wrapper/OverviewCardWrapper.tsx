@@ -1,6 +1,6 @@
 import React from "react";
 
-import { cn } from "@/libs/utils/utils";
+import { cn } from "@/libs/utils/utils.js";
 
 type OverviewCardWrapperProps = {
   label: string;

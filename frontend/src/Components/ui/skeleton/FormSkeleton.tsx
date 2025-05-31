@@ -3,7 +3,7 @@ import clsx from "clsx";
 
 import "react-loading-skeleton/dist/skeleton.css";
 import Skeleton from "react-loading-skeleton";
-import { FormField } from "@/types/formTypes";
+import { FormField } from "@/types/formTypes.js";
 
 interface FormSkeletonProps {
   fields: FormField[];

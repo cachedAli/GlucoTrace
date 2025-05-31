@@ -1,13 +1,13 @@
 import { useState } from "react";
 
 import { forgotPasswordFields } from "@/libs/constants/authPage/formFields";
-import { forgotPasswordSchema } from "@/libs/validations/authSchema";
+import { forgotPasswordSchema } from "@/libs/validations/authSchema.js";
 import AuthLayout from "@/components/layout/userAuth/AuthLayout";
 import FormSkeleton from "@/components/ui/skeleton/FormSkeleton";
-import { useAuthStore } from "@/store/useAuthStore";
+import { useAuthStore } from "@/store/useAuthStore.js";
 import Otp from "@/components/layout/userAuth/Otp";
 import LazyLoader from "@/libs/LazyLoader";
-import { Form } from "@/router/LazyRoutes";
+import { Form } from "@/router/LazyRoutes.js";
 
 type Data = {
   email: string;

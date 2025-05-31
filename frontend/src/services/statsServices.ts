@@ -1,7 +1,7 @@
-import { useFetch } from "@/hooks/useFetch";
-import { statApi } from "@/libs/axios";
-import { supabase } from "@/libs/supabaseClient";
-import { Stats } from "@/types/dashboardTypes";
+import { useFetch } from "@/hooks/useFetch.js";
+import { statApi } from "@/libs/axios.js";
+import { supabase } from "@/libs/supabaseClient.js";
+import { Stats } from "@/types/dashboardTypes.js";
 
 
 export const getPreviousStat = async (statName: string): Promise<Stats | null> => {

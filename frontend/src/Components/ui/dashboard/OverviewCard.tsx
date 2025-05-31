@@ -3,8 +3,8 @@ import clsx from "clsx";
 
 import OverviewCardWrapper from "./wrapper/OverviewCardWrapper";
 import Button from "../common/Button";
-import { useReadingStore } from "@/store/useReadingStore";
-import { useThemeStore } from "@/store/useThemeStore";
+import { useReadingStore } from "@/store/useReadingStore.js";
+import { useThemeStore } from "@/store/useThemeStore.js";
 import OverviewCardsSkeleton from "../skeleton/dashboardPages/CardsSkeleton";
 
 type InsightItem = {

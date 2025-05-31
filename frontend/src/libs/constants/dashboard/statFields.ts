@@ -10,11 +10,11 @@ import { FaDroplet, FaClock } from "react-icons/fa6";
 import { FaShieldAlt } from "react-icons/fa";
 import { TiWarning } from "react-icons/ti";
 
-import { estimateHba1c, getBestReadingDay, getMealImpact, getStableGlucose, getThisWeekReadings, getThisWeekReadingsDescription, getWeeklyLoggingSummary } from "@/libs/utils/statFieldUtils";
-import { convertToMmol, getReadingStatus } from "@/libs/utils/utils";
-import { useStatCalculation } from "@/hooks/useStatCalculation";
-import { useReadingStore } from "@/store/useReadingStore";
-import { useUserStore } from "@/store/useUserStore";
+import { estimateHba1c, getBestReadingDay, getMealImpact, getStableGlucose, getThisWeekReadings, getThisWeekReadingsDescription, getWeeklyLoggingSummary } from "@/libs/utils/statFieldUtils.js";
+import { convertToMmol, getReadingStatus } from "@/libs/utils/utils.js";
+import { useStatCalculation } from "@/hooks/useStatCalculation.js";
+import { useReadingStore } from "@/store/useReadingStore.js";
+import { useUserStore } from "@/store/useUserStore.js";
 
 
 const StatFields = () => {
