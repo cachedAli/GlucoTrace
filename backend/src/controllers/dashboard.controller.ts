@@ -3,7 +3,7 @@ import { sendReportEmail } from "../services/email/email.service.js";
 import { Email, MedicalProfile, Reading, Req, Res } from "../types/user.types.js";
 
 
-
+// 
 export const updateDarkMode = async (req: Req<{ darkMode: boolean }>, res: Res) => {
     const { darkMode } = req.body;
     const token = req.headers.authorization?.replace("Bearer ", "");
