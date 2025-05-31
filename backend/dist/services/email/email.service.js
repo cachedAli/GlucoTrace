@@ -1,73 +1,59 @@
 import dotenv from "dotenv";
-import { Email } from "../../types/user.types.js";
 import { sender, transport } from "./email.config.js";
 import { FORGOT_PASSWORD_EMAIL_TEMPLATE } from "./templates/forgotPasswordEmailTemplate.js";
 import { PASSWORD_RESET_REQUEST_TEMPLATE } from "./templates/passwordResetRequestTemplate.js";
 import { PASSWORD_RESET_SUCCESS_TEMPLATE } from "./templates/resetPasswordSuccessTemplate.js";
 import { VERIFICATION_EMAIL_TEMPLATE } from "./templates/verificationEmailTemplate.js";
-
-dotenv.config()
-
-export const sendVerificationEmail = async (email: string, verificationToken: string) => {
+dotenv.config();
+export const sendVerificationEmail = async (email, verificationToken) => {
     const recipient = email;
-
     try {
         const res = await transport.sendMail({
             from: `"${sender.name}" <${sender.email}`,
             to: recipient,
             subject: "Verify your email",
-            html: VERIFICATION_EMAIL_TEMPLATE.replace(
-                "{verificationCode}", verificationToken
-            )
+            html: VERIFICATION_EMAIL_TEMPLATE.replace("{verificationCode}", verificationToken)
         });
-        console.log("email send successfully", res)
-    } catch (error) {
-        console.log(error)
+        console.log("email send successfully", res);
+    }
+    catch (error) {
+        console.log(error);
         throw new Error(`Error sending verification email: ${error}`);
     }
-}
-
-export const sendResetPasswordVerificationEmail = async (email: string | undefined, verificationToken: string) => {
+};
+export const sendResetPasswordVerificationEmail = async (email, verificationToken) => {
     const recipient = email;
-
     try {
         const res = await transport.sendMail({
             from: `"${sender.name}" <${sender.email}`,
             to: recipient,
             subject: "Password Reset Verification",
-            html: FORGOT_PASSWORD_EMAIL_TEMPLATE.replace(
-                "{otpCode}", verificationToken
-            )
+            html: FORGOT_PASSWORD_EMAIL_TEMPLATE.replace("{otpCode}", verificationToken)
         });
-        console.log("email send successfully", res)
-    } catch (error) {
-        console.log(error)
+        console.log("email send successfully", res);
+    }
+    catch (error) {
+        console.log(error);
         throw new Error(`Error sending verification email: ${error}`);
     }
-}
-
-export const sendResetPasswordEmail = async (email: Email, resetPasswordUrl: string) => {
+};
+export const sendResetPasswordEmail = async (email, resetPasswordUrl) => {
     const recipient = email;
-
     try {
         const res = await transport.sendMail({
             from: `"${sender.name}" <${sender.email}>`,
             to: recipient,
             subject: "Reset Password",
-            html: PASSWORD_RESET_REQUEST_TEMPLATE.replace(
-                "{resetURL}",
-                resetPasswordUrl
-            ),
+            html: PASSWORD_RESET_REQUEST_TEMPLATE.replace("{resetURL}", resetPasswordUrl),
         });
         console.log("Email sent successfully", res);
-    } catch (error) {
+    }
+    catch (error) {
         throw new Error(`Error sending reset password email ${error}`);
     }
 };
-
-export const sendResetPasswordSuccessEmail = async (email: Email) => {
+export const sendResetPasswordSuccessEmail = async (email) => {
     const recipient = email;
-
     try {
         const res = await transport.sendMail({
             from: `"${sender.name}" <${sender.email}>`,
@@ -76,19 +62,13 @@ export const sendResetPasswordSuccessEmail = async (email: Email) => {
             html: PASSWORD_RESET_SUCCESS_TEMPLATE,
         });
         console.log("Email sent successfully", res);
-    } catch (error) {
+    }
+    catch (error) {
         throw new Error(`Error sending email ${error}`);
     }
 };
-
-export const sendReportEmail = async (
-    email: Email,
-    fullName: string,
-    customMessage: string | undefined,
-    file: Express.Multer.File
-) => {
+export const sendReportEmail = async (email, fullName, customMessage, file) => {
     const recipient = email;
-
     const plainText = [
         `Hello,`,
         ``,
@@ -105,7 +85,6 @@ export const sendReportEmail = async (
         ``,
         `Thanks`
     ].join('\n');
-
     try {
         const res = await transport.sendMail({
             from: `"${sender.name}" <${sender.email}>`,
@@ -120,14 +99,13 @@ export const sendReportEmail = async (
                 },
             ],
         });
-
         console.log("Email sent successfully:", res);
-    } catch (error) {
+    }
+    catch (error) {
         console.error("Failed to send email:", error);
     }
 };
-
-export const sendContactEmail = async (email: Email, fullName: string, message: string) => {
+export const sendContactEmail = async (email, fullName, message) => {
     const recipient = process.env.EMAIL_PERSONAL;
     const plainText = [
         `You have received a new message from the contact form.`,
@@ -146,10 +124,11 @@ export const sendContactEmail = async (email: Email, fullName: string, message: 
             replyTo: email,
             subject: `New Contact Form Message From ${fullName}`,
             text: plainText
-        })
+        });
         console.log("Email sent successfully:", res);
-    } catch (error) {
+    }
+    catch (error) {
         console.error("Failed to send email:", error);
         return;
     }
-}
+};
