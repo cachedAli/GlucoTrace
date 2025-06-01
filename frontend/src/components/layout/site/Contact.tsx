@@ -4,7 +4,7 @@ import { contactFormFields } from "@/libs/constants/authPage/formFields";
 import { contactSchema } from "@/libs/validations/authSchema";
 import { contact } from "@/libs/constants/homepage";
 
-import FormSkeleton from "@/components_temp/ui/skeleton/FormSkeleton";
+import FormSkeleton from "@/components/ui/skeleton/FormSkeleton";
 import usePreloadOnScroll from "@/hooks/usePreloadOnScroll";
 import { capitalizeFirstLetter } from "@/libs/utils/utils";
 import { preloadForm } from "@/router/preloadRoutes";

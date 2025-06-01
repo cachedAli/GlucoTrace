@@ -6,9 +6,9 @@ import { useNavigate } from "react-router-dom";
 
 import { readingHistory } from "@/libs/constants/dashboard/readingHistory";
 import { useDashboardStore } from "@/store/useDashboardStore";
-import Dropdown from "@/components_temp/ui/dashboard/Dropdown";
+import Dropdown from "@/components/ui/dashboard/Dropdown";
 import { useReadingStore } from "@/store/useReadingStore";
-import Button from "@/components_temp/ui/common/Button";
+import Button from "@/components/ui/common/Button";
 
 const ActionButtons = () => {
   return (

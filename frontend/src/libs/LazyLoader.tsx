@@ -1,4 +1,4 @@
-import SphereLoader from "@/components_temp/ui/loader/SphereLoader";
+import SphereLoader from "@/components/ui/loader/SphereLoader";
 import { Suspense } from "react";
 
 const LazyLoader = ({

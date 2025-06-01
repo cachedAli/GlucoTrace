@@ -2,13 +2,13 @@ import { lazy } from "react";
 
 
 // Site and User Auth
-export const Form = lazy(() => import("../components_temp/ui/common/Form"))
+export const Form = lazy(() => import("../components/ui/common/Form"))
 
 // Dashboard
-export const DashboardLayout = lazy(() => import("../components_temp/layout/dashboard/DashboardLayout"))
-export const Sidebar = lazy(() => import("../components_temp/layout/dashboard/sidebar/Sidebar"))
-export const Header = lazy(() => import("../components_temp/layout/dashboard/header/Header"))
-export const DashboardOverlay = lazy(() => import("../components_temp/layout/dashboard/DashboardOverlay"))
+export const DashboardLayout = lazy(() => import("../components/layout/dashboard/DashboardLayout"))
+export const Sidebar = lazy(() => import("../components/layout/dashboard/sidebar/Sidebar"))
+export const Header = lazy(() => import("../components/layout/dashboard/header/Header"))
+export const DashboardOverlay = lazy(() => import("../components/layout/dashboard/DashboardOverlay"))
 
 export const Overview = lazy(() => import("../pages/dashboard/overview/Overview"))
 export const AddReading = lazy(() => import("../pages/dashboard/AddReading"))

@@ -17,8 +17,8 @@ import {
   Settings,
   Trends,
 } from "./LazyRoutes";
-import DashboardPagesSkeleton from "@/components_temp/ui/skeleton/dashboard/DashboardPagesSkeleton";
-import DashboardSkeleton from "@/components_temp/ui/skeleton/dashboard/DashboardSkeleton";
+import DashboardPagesSkeleton from "@/components/ui/skeleton/dashboard/DashboardPagesSkeleton";
+import DashboardSkeleton from "@/components/ui/skeleton/dashboard/DashboardSkeleton";
 import { GlobalErrorPage, NotFoundPage } from "./ErrorPage";
 import AuthRedirectHandler from "./AuthRedirectHandler";
 import ProtectedRoute from "./ProtectedRoute";

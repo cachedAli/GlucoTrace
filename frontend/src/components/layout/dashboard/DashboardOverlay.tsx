@@ -1,12 +1,12 @@
 import { AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
-import ConfirmationModal from "@/components_temp/ui/dashboard/ConfirmationModal";
+import ConfirmationModal from "@/components/ui/dashboard/ConfirmationModal";
 import { useDashboardStore } from "@/store/useDashboardStore";
 import { useReadingStore } from "@/store/useReadingStore";
 import MobileNavDropUp from "./sidebar/MobileNavDropUp";
 import { useAuthStore } from "@/store/useAuthStore";
-import Setup from "@/components_temp/ui/dashboard/Setup";
+import Setup from "@/components/ui/dashboard/Setup";
 import { supabase } from "@/libs/supabaseClient";
 import { useEffect } from "react";
 import { shareReportFields } from "@/libs/constants/dashboard";

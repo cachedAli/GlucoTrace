@@ -2,7 +2,7 @@ import React from "react";
 
 import { ThemeProvider, ToggleButton, ToggleButtonGroup } from "@mui/material";
 
-import getInputTheme from "@/components_temp/ui/inputs/inputTheme";
+import getInputTheme from "@/components/ui/inputs/inputTheme";
 import { useDashboardStore } from "@/store/useDashboardStore";
 import { useThemeStore } from "@/store/useThemeStore";
 import CustomDateRange from "./CustomDateRange";

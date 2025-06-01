@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { supabase } from "@/libs/supabaseClient";
 
-import Otp from "@/components_temp/layout/userAuth/Otp";
+import Otp from "@/components/layout/userAuth/Otp";
 import { useAuthStore } from "@/store/useAuthStore";
 import {
   preloadDashboardLayout,

@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { Autocomplete, TextField, ThemeProvider } from "@mui/material";
 import { SearchIcon } from "lucide-react";
 
-import getInputTheme from "@/components_temp/ui/inputs/inputTheme";
+import getInputTheme from "@/components/ui/inputs/inputTheme";
 import { useReadingStore } from "@/store/useReadingStore";
 import { useThemeStore } from "@/store/useThemeStore";
 import { useUserStore } from "@/store/useUserStore";

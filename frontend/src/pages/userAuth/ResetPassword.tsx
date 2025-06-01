@@ -5,8 +5,8 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { resetPasswordFields } from "@/libs/constants/authPage/formFields";
 import { resetPasswordSchema } from "@/libs/validations/authSchema";
-import AuthLayout from "@/components_temp/layout/userAuth/AuthLayout";
-import FormSkeleton from "@/components_temp/ui/skeleton/FormSkeleton";
+import AuthLayout from "@/components/layout/userAuth/AuthLayout";
+import FormSkeleton from "@/components/ui/skeleton/FormSkeleton";
 import { useAuthStore } from "@/store/useAuthStore";
 import LazyLoader from "@/libs/LazyLoader";
 import { Form } from "@/router/LazyRoutes";

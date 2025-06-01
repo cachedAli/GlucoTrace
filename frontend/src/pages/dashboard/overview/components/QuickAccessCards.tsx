@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import { Download, Plus } from "lucide-react";
 
-import OverviewCard from "@/components_temp/ui/dashboard/OverviewCard";
+import OverviewCard from "@/components/ui/dashboard/OverviewCard";
 import {
   estimateHba1c,
   getMonthChange,

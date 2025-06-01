@@ -3,7 +3,7 @@ import { pdf } from "@react-pdf/renderer";
 import { saveAs } from "file-saver";
 
 import { useDashboardStore } from "@/store/useDashboardStore";
-import Button from "@/components_temp/ui/common/Button";
+import Button from "@/components/ui/common/Button";
 import GlucoseReportPDF from "./GenerateReportPdf";
 
 const ActionButtons = ({ data }: any) => {

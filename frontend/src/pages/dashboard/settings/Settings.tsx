@@ -1,5 +1,5 @@
-import PageTitle from "@/components_temp/layout/dashboard/mainContent/PageTitle";
-import { CustomSwitch } from "@/components_temp/ui/dashboard/CustomSwitch";
+import PageTitle from "@/components/layout/dashboard/mainContent/PageTitle";
+import { CustomSwitch } from "@/components/ui/dashboard/CustomSwitch";
 import { useThemeStore } from "@/store/useThemeStore";
 import { useUserStore } from "@/store/useUserStore";
 import { Switch } from "@mui/material";
