@@ -266,7 +266,7 @@ const FormButtons = ({
         className={cn(
           "col-span-2 !h-14 rounded-[14px]",
           "max-sm:text-base max-sm:!h-12",
-          buttonAlignment === "custom" ? "order-2" : "order-1",
+          buttonAlignment === "custom" ? "order-2" : "",
           buttonClassName
         )}
       >
@@ -283,7 +283,7 @@ const FormButtons = ({
               className={cn(
                 "!h-14 rounded-[14px]",
                 "max-sm:text-base max-sm:!h-12",
-                buttonAlignment === "custom" ? "order-1" : "order-2",
+                buttonAlignment === "custom" ? "order-1" : "",
                 backButtonClassName
               )}
             >
