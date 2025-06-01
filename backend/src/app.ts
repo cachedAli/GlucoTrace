@@ -10,9 +10,14 @@ const authRoutes = router;
 const userRoutes = userRouter;
 const statRoutes = statRouter;
 
-app.use(cors())
-
 app.use(express.json())
+
+app.use(
+    cors({
+        origin: process.env.CLIENT_URL,
+        credentials: true,
+    })
+);
 
 app.get("/", (req, res) => {
     res.send("hola")
