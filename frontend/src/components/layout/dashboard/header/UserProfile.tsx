@@ -34,7 +34,9 @@ const UserProfile = () => {
           )}
         >
           {user?.medicalProfile?.diabetesType
-            ? `${user?.medicalProfile?.diabetesType} Diabetic`
+            ? user?.medicalProfile?.diabetesType === "Pre-diabetes"
+              ? "Pre-Diabetic"
+              : `${user?.medicalProfile?.diabetesType} Diabetic`
             : "Not Specified"}
         </h3>
       </div>
