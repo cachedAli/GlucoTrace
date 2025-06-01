@@ -1,4 +1,4 @@
-import PageTitle from "@/components/layout/dashboard/mainContent/PageTitle";
+import PageTitle from "@/components_temp/layout/dashboard/mainContent/PageTitle";
 import GenerateReport from "./components/GenerateReport";
 import TimeRange from "./components/TimeRange";
 

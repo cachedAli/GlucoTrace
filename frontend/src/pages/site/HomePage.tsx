@@ -1,13 +1,13 @@
 import { useRef } from "react";
 
-import DiabetesAdvice from "@/components/layout/site/sections/adviceSection/DiabetesAdvice";
-import HealthAdvice from "@/components/layout/site/sections/adviceSection/HealthAdvice";
-import FeatureSection from "@/components/layout/site/sections/FeatureSection";
-import HeroSection from "@/components/layout/site/sections/HeroSection";
-import ScrollToTopButton from "@/components/ui/ScrollToTopButton";
-import Contact from "@/components/layout/site/Contact";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
+import DiabetesAdvice from "@/components_temp/layout/site/sections/adviceSection/DiabetesAdvice";
+import HealthAdvice from "@/components_temp/layout/site/sections/adviceSection/HealthAdvice";
+import FeatureSection from "@/components_temp/layout/site/sections/FeatureSection";
+import HeroSection from "@/components_temp/layout/site/sections/HeroSection";
+import ScrollToTopButton from "@/components_temp/ui/ScrollToTopButton";
+import Contact from "@/components_temp/layout/site/Contact";
+import Header from "@/components_temp/layout/Header";
+import Footer from "@/components_temp/layout/Footer";
 
 const HomePage = () => {
   const headerRef = useRef<HTMLElement | null>(null);

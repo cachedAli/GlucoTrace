@@ -1,7 +1,7 @@
 import { Link, useRouteError, isRouteErrorResponse } from "react-router-dom";
 import { Heart, Home, RotateCcw, ArrowLeft } from "lucide-react";
 import { useEffect } from "react";
-import Button from "@/components/ui/common/Button";
+import Button from "@/components_temp/ui/common/Button";
 
 interface ErrorPageProps {
   type?: "404" | "500" | "general";

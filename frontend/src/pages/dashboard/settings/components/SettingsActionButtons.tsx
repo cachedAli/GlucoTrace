@@ -1,8 +1,8 @@
-import { CustomSwitch } from "@/components/ui/dashboard/CustomSwitch";
+import { CustomSwitch } from "@/components_temp/ui/dashboard/CustomSwitch";
 import { useDashboardStore } from "@/store/useDashboardStore";
 import { useThemeStore } from "@/store/useThemeStore";
 import { useUserStore } from "@/store/useUserStore";
-import Button from "@/components/ui/common/Button";
+import Button from "@/components_temp/ui/common/Button";
 import { SunMoon, Trash2 } from "lucide-react";
 
 const SettingsActionButtons = () => {

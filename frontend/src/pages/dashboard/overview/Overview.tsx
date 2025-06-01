@@ -1,6 +1,6 @@
-import PageTitle from "@/components/layout/dashboard/mainContent/PageTitle";
-import QuickStats from "@/components/ui/dashboard/stats/QuickStats";
-import LineChart from "@/components/ui/dashboard/charts/LineChart";
+import PageTitle from "@/components_temp/layout/dashboard/mainContent/PageTitle";
+import QuickStats from "@/components_temp/ui/dashboard/stats/QuickStats";
+import LineChart from "@/components_temp/ui/dashboard/charts/LineChart";
 import StatFields from "@/libs/constants/dashboard/statFields";
 import QuickAccessCards from "./components/QuickAccessCards";
 

@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
-import SphereLoader from "@/components/ui/loader/SphereLoader";
+import SphereLoader from "@/components_temp/ui/loader/SphereLoader";
 import { useDashboardStore } from "@/store/useDashboardStore";
 import { useReadingStore } from "@/store/useReadingStore";
 import { createUserObject } from "@/libs/utils/utils";

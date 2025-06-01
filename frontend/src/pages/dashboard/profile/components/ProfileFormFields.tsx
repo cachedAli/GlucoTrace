@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import clsx from "clsx";
 
-import Form from "@/components/ui/common/Form";
+import Form from "@/components_temp/ui/common/Form";
 import {
   profileGlucosePreferenceFields,
   profileUserInfoFields,

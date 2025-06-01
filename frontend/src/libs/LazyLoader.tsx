@@ -1,4 +1,4 @@
-import SphereLoader from "@/components/ui/loader/SphereLoader";
+import SphereLoader from "@/components_temp/ui/loader/SphereLoader";
 import { Suspense } from "react";
 
 const LazyLoader = ({
@@ -9,7 +9,9 @@ const LazyLoader = ({
   fallback?: React.ElementType;
 }) => {
   return (
-    <Suspense fallback={FallbackComponent ? <FallbackComponent /> : <SphereLoader/>}>
+    <Suspense
+      fallback={FallbackComponent ? <FallbackComponent /> : <SphereLoader />}
+    >
       {children}
     </Suspense>
   );

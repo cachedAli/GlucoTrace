@@ -2,8 +2,8 @@ import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { signUpFields } from "@/libs/constants/authPage/formFields";
-import AuthLayout from "@/components/layout/userAuth/AuthLayout";
-import FormSkeleton from "@/components/ui/skeleton/FormSkeleton";
+import AuthLayout from "@/components_temp/layout/userAuth/AuthLayout";
+import FormSkeleton from "@/components_temp/ui/skeleton/FormSkeleton";
 import { signUpSchema } from "@/libs/validations/authSchema";
 import { useAuthStore } from "@/store/useAuthStore";
 import { SignUpData } from "@/types/authTypes";

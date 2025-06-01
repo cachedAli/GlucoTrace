@@ -8,15 +8,15 @@ import {
   getThisWeekReadings,
   getUpdatedHighLowStats,
 } from "@/libs/utils/statFieldUtils";
-import OverviewCardWrapper from "@/components/ui/dashboard/wrapper/OverviewCardWrapper";
-import OverviewCardsSkeleton from "@/components/ui/skeleton/dashboardPages/CardsSkeleton";
+import OverviewCardWrapper from "@/components_temp/ui/dashboard/wrapper/OverviewCardWrapper";
+import OverviewCardsSkeleton from "@/components_temp/ui/skeleton/dashboardPages/CardsSkeleton";
 import { TargetRange, Unit } from "@/types/dashboardTypes";
 import { useReadingStore } from "@/store/useReadingStore";
 import { useThemeStore } from "@/store/useThemeStore";
 import { useStats } from "@/providers/StatsProvider";
 import { useUserStore } from "@/store/useUserStore";
 import { convertToMmol } from "@/libs/utils/utils";
-import Button from "@/components/ui/common/Button";
+import Button from "@/components_temp/ui/common/Button";
 import { Reading } from "@/types/userTypes";
 
 const StatCard = ({

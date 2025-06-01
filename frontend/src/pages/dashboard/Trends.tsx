@@ -1,6 +1,6 @@
-import PageTitle from "@/components/layout/dashboard/mainContent/PageTitle";
-import TrendCharts from "@/components/ui/dashboard/charts/TrendCharts";
-import QuickStats from "@/components/ui/dashboard/stats/QuickStats";
+import PageTitle from "@/components_temp/layout/dashboard/mainContent/PageTitle";
+import TrendCharts from "@/components_temp/ui/dashboard/charts/TrendCharts";
+import QuickStats from "@/components_temp/ui/dashboard/stats/QuickStats";
 import StatFields from "@/libs/constants/dashboard/statFields";
 
 const Trends = () => {

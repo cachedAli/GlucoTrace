@@ -3,7 +3,7 @@ import clsx from "clsx";
 
 import DashboardPagesSkeleton from "./DashboardPagesSkeleton";
 import SidebarSkeleton from "./SidebarSkeleton";
-import HeaderSkeleton from "../dashboard/HeaderSkeleton";
+import HeaderSkeleton from "./HeaderSkeleton";
 
 const DashboardSkeleton = () => {
   return (

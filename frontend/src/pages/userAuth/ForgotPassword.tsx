@@ -2,10 +2,10 @@ import { useState } from "react";
 
 import { forgotPasswordFields } from "@/libs/constants/authPage/formFields";
 import { forgotPasswordSchema } from "@/libs/validations/authSchema";
-import AuthLayout from "@/components/layout/userAuth/AuthLayout";
-import FormSkeleton from "@/components/ui/skeleton/FormSkeleton";
+import AuthLayout from "@/components_temp/layout/userAuth/AuthLayout";
+import FormSkeleton from "@/components_temp/ui/skeleton/FormSkeleton";
 import { useAuthStore } from "@/store/useAuthStore";
-import Otp from "@/components/layout/userAuth/Otp";
+import Otp from "@/components_temp/layout/userAuth/Otp";
 import LazyLoader from "@/libs/LazyLoader";
 import { Form } from "@/router/LazyRoutes";
 
@@ -31,7 +31,7 @@ const ForgotPassword = () => {
     verifyForgotPasswordEmail,
     verifyForgotPasswordLoading,
   } = useAuthStore();
-  
+
   const description = `Enter your email address to receive a verification code for resetting your password.`;
 
   const submitForm = async (data: Data) => {

@@ -1,5 +1,5 @@
-import Button from "@/components/ui/common/Button";
-import BaseLoader from "@/components/ui/loader/BaseLoader";
+import Button from "@/components_temp/ui/common/Button";
+import BaseLoader from "@/components_temp/ui/loader/BaseLoader";
 import { useDashboardStore } from "@/store/useDashboardStore";
 import { useUserStore } from "@/store/useUserStore";
 import imageCompression from "browser-image-compression";

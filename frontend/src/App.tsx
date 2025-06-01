@@ -4,7 +4,7 @@ import { MantineProvider } from "@mantine/core";
 import { Toaster } from "sonner";
 
 import { useDashboardStore } from "./store/useDashboardStore";
-import { toastOptions } from "./components/ui/toastStyles";
+import { toastOptions } from "./components_temp/ui/toastStyles";
 import { useAuthStore } from "./store/useAuthStore";
 import Router from "./router/Router";
 

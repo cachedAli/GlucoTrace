@@ -2,7 +2,7 @@ import { FileText } from "lucide-react";
 import { format } from "date-fns";
 import clsx from "clsx";
 
-import ReportCardsSkeleton from "@/components/ui/skeleton/dashboardPages/CardsSkeleton";
+import ReportCardsSkeleton from "@/components_temp/ui/skeleton/dashboardPages/CardsSkeleton";
 import { useReadingStore } from "@/store/useReadingStore";
 import { logobase64Dark } from "@/assets/logobase64Dark";
 import { useThemeStore } from "@/store/useThemeStore";

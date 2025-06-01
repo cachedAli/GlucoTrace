@@ -3,8 +3,8 @@ import React, { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { signInFields } from "@/libs/constants/authPage/formFields";
-import FormSkeleton from "@/components/ui/skeleton/FormSkeleton";
-import AuthLayout from "@/components/layout/userAuth/AuthLayout";
+import FormSkeleton from "@/components_temp/ui/skeleton/FormSkeleton";
+import AuthLayout from "@/components_temp/layout/userAuth/AuthLayout";
 import { SignInSchema } from "@/libs/validations/authSchema";
 import { useAuthStore } from "@/store/useAuthStore";
 import { SignInData } from "@/types/authTypes";

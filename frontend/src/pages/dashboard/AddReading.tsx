@@ -1,11 +1,11 @@
-import PageTitle from "@/components/layout/dashboard/mainContent/PageTitle";
+import PageTitle from "@/components_temp/layout/dashboard/mainContent/PageTitle";
 import { addReadingSchema } from "@/libs/validations/dashboardSchema";
-import QuickStats from "@/components/ui/dashboard/stats/QuickStats";
+import QuickStats from "@/components_temp/ui/dashboard/stats/QuickStats";
 import StatFields from "@/libs/constants/dashboard/statFields";
 import { addReadingFields } from "@/libs/constants/dashboard";
 import { useReadingStore } from "@/store/useReadingStore";
 import { useUserStore } from "@/store/useUserStore";
-import Form from "@/components/ui/common/Form";
+import Form from "@/components_temp/ui/common/Form";
 import { Unit } from "@/types/dashboardTypes";
 
 type Data = {

@@ -1,10 +1,10 @@
 
 
 // Site
-export const preloadForm = () => import("../components/ui/common/Form")
+export const preloadForm = () => import("../components_temp/ui/common/Form")
 
 // Dashboard
-export const preloadDashboardLayout = () => import("../components/layout/dashboard/DashboardLayout");
+export const preloadDashboardLayout = () => import("../components_temp/layout/dashboard/DashboardLayout");
 
 export const preloadOverview = () => import("../pages/dashboard/overview/Overview");
 export const preloadAddReading = () => import("../pages/dashboard/AddReading");
