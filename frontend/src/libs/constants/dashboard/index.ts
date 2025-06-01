@@ -32,7 +32,7 @@ export const navLinks = [
 export const setupFields: FormField[] = [
   { name: "age", type: "number", label: "Age", colSpan: 1, smColSpan: true },
   { name: "gender", type: "select", label: "Gender", colSpan: 1, smColSpan: true, options: ["Male", "Female", "other"] },
-  { name: "diabetesType", type: "select", label: "Diabetes Type", colSpan: 1, smColSpan: true, options: ["Type 1", "Type 2", "Pre-diabetic"] },
+  { name: "diabetesType", type: "select", label: "Diabetes Type", colSpan: 1, smColSpan: true, options: ["Type 1", "Type 2", "Pre-diabetes"] },
   { name: "unit", type: "select", label: "Preferred Unit", colSpan: 1, smColSpan: true, options: ["mg/dL", "mmol/L"] },
   { name: "diagnosisDate", type: "date", label: "Diagnosis Date", colSpan: 2, smColSpan: true },
 ];
