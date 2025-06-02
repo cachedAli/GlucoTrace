@@ -29,7 +29,7 @@ const DiabetesAdvice = () => {
   return (
     <section
       ref={ref}
-      className="h-screen mx-2 rounded-tl-2xl rounded-tr-2xl bg-cover bg-center bg-no-repeat bg-fixed flex items-center justify-center"
+      className="h-screen relative mx-2 rounded-tl-2xl rounded-tr-2xl bg-cover bg-center bg-no-repeat bg-fixed flex items-center justify-center"
       style={{
         backgroundImage: `url('/homepage/${
           inView && isImageLoaded ? "diabeticBG2.webp" : "blurBG2.png"
@@ -38,12 +38,13 @@ const DiabetesAdvice = () => {
         backgroundColor: "#f0f0f0",
       }}
     >
+      <div className="absolute inset-0 bg-black/20 rounded-tl-2xl rounded-tr-2xl"></div>
       <motion.div
         initial={{ scale: 0.5 }}
         whileInView={{ scale: 1 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
         viewport={{ once: true, amount: 0.3 }}
-        className="bg-black text-white max-w-screen-2xl w-full text-center flex flex-col justify-center items-center bg-opacity-80 px-8 py-8  rounded-xl gap-4 lg:mx-40 md:mx-20 mx-8"
+        className="bg-black text-white max-w-screen-2xl w-full text-center flex flex-col justify-center items-center bg-opacity-85 px-8 py-8  rounded-xl gap-4 lg:mx-40 md:mx-20 mx-8 z-10"
       >
         <h1 className="md:text-4xl text-2xl font-nunito font-semibold">
           {complications.heading}

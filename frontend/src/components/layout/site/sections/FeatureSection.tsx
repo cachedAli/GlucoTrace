@@ -31,7 +31,7 @@ const FeatureSection = () => {
   return (
     <main
       id="features"
-      className="selection:bg-indigo-800 max-w-screen-2xl w-full mx-auto selection:text-white bg-slate-50"
+      className="selection:bg-indigo-800 max-w-full w-full mx-auto selection:text-white bg-slate-50"
     >
       <FeatureHeader descriptionWordsToBold={descriptionWordsToBold} />
       <FeatureCards wordsToBold={wordsToBold} />

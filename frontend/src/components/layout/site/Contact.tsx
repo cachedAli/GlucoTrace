@@ -46,17 +46,19 @@ const Contact = () => {
     <section
       ref={formRef}
       id="contact"
-      className="bg-slate-50 max-w-screen-2xl w-full mx-auto  selection:bg-indigo-800 selection:text-white"
+      className="bg-slate-50 max-w-full w-full mx-auto  selection:bg-indigo-800 selection:text-white"
     >
-      <ContactDetails />
-      <ContactForm
-        contactFormFields={contactFormFields}
-        contactSchema={contactSchema}
-        submit={handleContact}
-        loading={contactUsLoading}
-        formRef={formRef}
-        usePreloadOnScroll={usePreloadOnScroll}
-      />
+      <div className="max-w-screen-2xl mx-auto">
+        <ContactDetails />
+        <ContactForm
+          contactFormFields={contactFormFields}
+          contactSchema={contactSchema}
+          submit={handleContact}
+          loading={contactUsLoading}
+          formRef={formRef}
+          usePreloadOnScroll={usePreloadOnScroll}
+        />
+      </div>
     </section>
   );
 };
@@ -71,7 +73,7 @@ const ContactForm = ({
 }: any) => {
   const isPreloaded = usePreloadOnScroll(formRef, preloadForm);
   return (
-    <div className="flex flex-col gap-6  px-6 pb-20 pt-6 md:px-4 md:mx-20">
+    <div className="flex flex-col gap-6 px-6 pb-20 pt-6 md:px-4 md:mx-20">
       {isPreloaded && (
         <LazyLoader
           fallback={() => <FormSkeleton fields={contactFormFields} />}

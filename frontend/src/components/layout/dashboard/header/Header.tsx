@@ -3,7 +3,7 @@ import clsx from "clsx";
 import glucoTraceDark from "/homepage/GlucoTraceDark.webp";
 import { useUserStore } from "@/store/useUserStore";
 import glucoTrace from "/homepage/GlucoTrace.webp";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import SearchBar from "./searchBar/SearchBar";
 import UserProfile from "./UserProfile";
 
@@ -42,19 +42,21 @@ const Logo = () => {
   const user = useUserStore((state) => state.user);
   return (
     <div className="flex items-center h-10">
-      {user?.darkMode ? (
-        <img
-          src={glucoTraceDark}
-          alt="GlucoTrace"
-          className="max-w-[173px] w-auto mb-2 max-sm:max-w-[120px]"
-        />
-      ) : (
-        <img
-          src={glucoTrace}
-          alt="GlucoTrace"
-          className="max-h-[80px] w-auto text-blue-500 max-sm:max-h-[52px]"
-        />
-      )}
+      <Link to="/dashboard">
+        {user?.darkMode ? (
+          <img
+            src={glucoTraceDark}
+            alt="GlucoTrace"
+            className="max-w-[173px] w-auto mb-2 max-sm:max-w-[120px]"
+          />
+        ) : (
+          <img
+            src={glucoTrace}
+            alt="GlucoTrace"
+            className="max-h-[80px] w-auto text-blue-500 max-sm:max-h-[52px]"
+          />
+        )}
+      </Link>
     </div>
   );
 };
