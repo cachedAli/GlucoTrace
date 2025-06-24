@@ -25,7 +25,7 @@ A web-based diabetes tracking platform that helps users monitor and manage their
 To run this project locally:
 
 ```bash
-git clone https://github.com/yourusername/glucotrace.git
-cd glucotrace
+git clone https://github.com/cachedAli/GlucoTrace.git
+cd GlucoTrace
 npm install
 npm run dev
